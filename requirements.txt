@@ -1,0 +1,5 @@
+requests
+cmake
+dlib
+face-recognition
+opencv-python
