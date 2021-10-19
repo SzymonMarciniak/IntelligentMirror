@@ -1,8 +1,13 @@
 from tkinter import *
- 
+from time import sleep
 
 
-def OpenToolbar(tk) -> Frame:
+def OpenToolbar(toolbarFrame: Tk, 
+                clockIcon: PhotoImage,
+                sunIcon: PhotoImage,
+                homeIcon: PhotoImage,
+                contactsIcon: PhotoImage,
+                settingsIcon: PhotoImage) -> None:
     """ 
     Display a main toolbar buttons
     
@@ -10,19 +15,24 @@ def OpenToolbar(tk) -> Frame:
     ---------
     tk: Tk()
         Name of main window
+    
+    clockIcon: PhotoImage
+        Clock image
+    
+    sunIcon: PhotoImage
+        Sun image
+    
+    homeIcon: PhotoImage
+        Home image
+
+    contactsIcon: PhotoImage
+        Contact image
+
+    settingsIcon: PhotoImage
+        Settings image
 
     """
     
-    toolbarFrame = Frame(tk)
-
-    prefix = "/home/szymonm/Desktop/VSC_projects/Mirror/IntelligentMirror/icons/"
-
-    clockIcon = PhotoImage(file=f"{prefix}clock_black.png") 
-    sunIcon = PhotoImage(file=f"{prefix}sun_black.png") 
-    homeIcon = PhotoImage(file=f"{prefix}home_black.png") 
-    contactsIcon = PhotoImage(file=f"{prefix}contacts_black.png") 
-    settingsIcon = PhotoImage(file=f"{prefix}settings_black.png") 
-
     clock_button = Button(toolbarFrame, image=clockIcon, highlightbackground='black', bg='black')
     weather_button = Button(toolbarFrame, image=sunIcon, highlightbackground='black', bg='black')
     home_button = Button(toolbarFrame, image=homeIcon, highlightbackground='black', bg='black')
@@ -36,4 +46,14 @@ def OpenToolbar(tk) -> Frame:
     contact_button.pack(side=TOP)
     settings_button.pack(side=TOP)
 
-    return toolbarFrame
+    toolbarFrame.place(x=0,y=0)
+    #toolbarFrame.place(x=-200,y=0)
+
+    
+    #toolbarFrame.pack(side=TOP, anchor=SW)
+   
+
+# def OpenToolbarAnimation(toolbarFrame: Frame) -> None:
+
+#     x_pos = -200
+        
