@@ -1,5 +1,4 @@
 from tkinter import *
-from time import sleep
 
 
 def OpenToolbar(toolbarFrame: Tk, 
@@ -9,7 +8,7 @@ def OpenToolbar(toolbarFrame: Tk,
                 contactsIcon: PhotoImage,
                 settingsIcon: PhotoImage) -> None:
     """ 
-    Display a main toolbar buttons
+    Display toolbar main buttons
     
     Parametrs
     ---------
@@ -46,14 +45,24 @@ def OpenToolbar(toolbarFrame: Tk,
     contact_button.pack(side=TOP)
     settings_button.pack(side=TOP)
 
-    toolbarFrame.place(x=0,y=0)
-    #toolbarFrame.place(x=-200,y=0)
+    
+    toolbarFrame.place(x=-200,y=0)
 
     
-    #toolbarFrame.pack(side=TOP, anchor=SW)
-   
+  
+def OpenToolbarAnimation(toolbarFrame: Frame) -> None:
+    """
+    Create toolbar display animation 
 
-# def OpenToolbarAnimation(toolbarFrame: Frame) -> None:
+    Parametrs
+    ---------
+    toolbarFrame: Frame
+        Name of toolbar frame
+    """
 
-#     x_pos = -200
+    for x_pos in range(-200,1,10):
+        toolbarFrame.place(x=x_pos, y=0)
+        toolbarFrame.update()
+    
+        
         

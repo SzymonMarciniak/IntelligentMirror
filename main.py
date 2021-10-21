@@ -2,6 +2,7 @@ from tkinter import *
 from toolbar.display_toolbar import *
 from time import *
 
+
 tk = Tk()
 tk.configure(background="black")
 tk.attributes("-fullscreen", True)
@@ -19,12 +20,14 @@ contactsIcon = PhotoImage(file=f"{prefix}contacts_black.png")
 settingsIcon = PhotoImage(file=f"{prefix}settings_black.png") 
 
 
-x = 0
-def MainOpenToolbar(x):
-    
-    OpenToolbar(toolbarFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon)
-    #OpenToolarAnimation
+def toolbar_animation(x):
+    """
+    Turn on toolbar animation
+    """
+    OpenToolbarAnimation(toolbarFrame)
 
-tk.bind("<Right>", MainOpenToolbar)
+
+OpenToolbar(toolbarFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon)
+tk.bind("<Right>", toolbar_animation)
 
 tk.mainloop()
