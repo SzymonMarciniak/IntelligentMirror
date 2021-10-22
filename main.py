@@ -1,6 +1,9 @@
 from tkinter import *
-from toolbar.display_toolbar import *
 from time import *
+import threading
+
+from toolbar.display_toolbar import *
+from mouse.VirtualMouse import virtual_mouse 
 
 
 tk = Tk()
@@ -29,5 +32,9 @@ def toolbar_animation(x):
 
 OpenToolbar(toolbarFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon)
 tk.bind("<Right>", toolbar_animation)
+
+MouseThread = threading.Thread(target=virtual_mouse)
+MouseThread.start() 
+
 
 tk.mainloop()
