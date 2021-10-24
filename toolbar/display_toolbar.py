@@ -1,5 +1,5 @@
 from tkinter import *
-
+from toolbar.ButtonsComands import *
 
 def OpenToolbar(toolbarFrame: Tk, 
                 clockIcon: PhotoImage,
@@ -32,11 +32,11 @@ def OpenToolbar(toolbarFrame: Tk,
 
     """
     
-    clock_button = Button(toolbarFrame, image=clockIcon, highlightbackground='black', bg='black')
-    weather_button = Button(toolbarFrame, image=sunIcon, highlightbackground='black', bg='black')
-    home_button = Button(toolbarFrame, image=homeIcon, highlightbackground='black', bg='black')
-    contact_button = Button(toolbarFrame, image=contactsIcon, highlightbackground='black', bg='black')
-    settings_button = Button(toolbarFrame, image=settingsIcon, highlightbackground='black', bg='black')
+    clock_button = Button(toolbarFrame, image=clockIcon, highlightbackground='black', bg='black', command=clock_button_comand)
+    weather_button = Button(toolbarFrame, image=sunIcon, highlightbackground='black', bg='black', command=weather_button_command)
+    home_button = Button(toolbarFrame, image=homeIcon, highlightbackground='black', bg='black', command=home_button_command)
+    contact_button = Button(toolbarFrame, image=contactsIcon, highlightbackground='black', bg='black', command=contact_button_comand)
+    settings_button = Button(toolbarFrame, image=settingsIcon, highlightbackground='black', bg='black', command=settings_button_command)
 
 
     clock_button.pack(side=TOP)
