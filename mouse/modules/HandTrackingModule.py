@@ -1,6 +1,6 @@
 
 from tkinter import Image
-from typing import List, Tuple
+from typing import List
 import cv2
 import mediapipe as mp
 import time
@@ -99,12 +99,14 @@ class HandDetector():
 
         return self.lmList, bbox
 
-    def fingers_up(self) -> List:
+    def fingers_up(self) -> int:
         """
         This function counts fingers up
 
         Return
         ------
+        totalFingers: Int
+            Number of fingers up
         fingers: List
             The list contains a boolean value for each finger. 0 if the finger is down, 1 if the finger is up 
         """
@@ -126,9 +128,9 @@ class HandDetector():
                 else:
                     fingers.append(0)
 
-        # totalFingers = fingers.count(1)
+        totalFingers = fingers.count(1)
 
-        return fingers
+        return totalFingers, fingers
 
     def find_distance(self, p1: int, p2: int, img: Image, draw=True,r=15, t=3) -> float:
         """

@@ -12,7 +12,7 @@ def virtual_mouse():
     
     wCam, hCam = 640, 480
     frameR = 100 # Frame Reduction
-    smoothening = 7
+    smoothening = 10
 
     pTime = 0
     plocX, plocY = 0, 0
@@ -34,18 +34,28 @@ def virtual_mouse():
         img = detector.find_hands(img)
         lmList, bbox = detector.find_position(img)
 
-        # Get the tip of the index and middle fingers
+        # Get the tip of the finger up
         if len(lmList) != 0:
-            x1, y1 = lmList[8][1:]
+            _, fingers = detector.fingers_up()
+            if fingers[1] == 1:
+                x1, y1 = lmList[8][1:]
+            elif fingers[2] == 1:
+                x1, y1 = lmList[12][1:]
+            elif fingers[3] == 1:
+                x1, y1 = lmList[16][1:]
+            elif fingers[0] == 1:
+                x1, y1 = lmList[4][1:]
+            elif fingers [4] == 1:
+                x1, y1 = lmList[20][1:] 
             
             
-        # Check which fingers are up
-            fingers = detector.fingers_up()
+        # Check how many fingers are up
+            total_fingers, _ = detector.fingers_up()
             cv2.rectangle(img, (frameR, frameR), (wCam - frameR, hCam - frameR),
             (255, 0, 255), 2)
 
-            # Only Index Finger : Moving Mode
-            if fingers[1] == 1 and fingers[2] == 0:
+            # Moving Mode
+            if total_fingers >=3:
 
                 # Convert Coordinates
                 x3 = np.interp(x1, (frameR, wCam - frameR), (0, wScr))
@@ -63,20 +73,12 @@ def virtual_mouse():
                 cv2.circle(img, (x1, y1), 15, (255, 0, 255), cv2.FILLED)
                 plocX, plocY = clocX, clocY
                 
-            # Both Index and middle fingers are up : Clicking Mode
-            if fingers[1] == 1 and fingers[2] == 1:
-
-                # Find distance between fingers
-                length, img, lineInfo = detector.find_distance(8, 12, img)
-               
-                # Click mouse if distance short
-                if length < 40:
-                    cv2.circle(img, (lineInfo[4], lineInfo[5]),
-                    15, (0, 255, 0), cv2.FILLED)
-                    x = wScr - clocX
-                    x = int(x)
-                    y = int(clocY)
-                    click(x, y)
+            # Clicking Mode
+            else:
+                x = wScr - clocX
+                x = int(x)
+                y = int(clocY)
+                click(x, y)
 
         # Frame Rate
         cTime = time.time()
