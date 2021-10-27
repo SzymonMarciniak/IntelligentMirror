@@ -8,4 +8,4 @@ To run the program you need set an environment variable - PYTHONPATH
 **export PYTHONPATH=/PROJECT/PATH**
 
 exaple:
-*/home/szymonm/Desktop/VSC_projects/Mirror*
+*export PYTHONPATH=/home/szymonm/Desktop/VSC_projects/Mirror*
