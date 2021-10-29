@@ -7,5 +7,5 @@ To run the program you need set an environment variable - PYTHONPATH
 
 **export PYTHONPATH=/PROJECT/PATH**
 
-exaple:
+example:
 *export PYTHONPATH=/home/szymonm/Desktop/VSC_projects/Mirror*
