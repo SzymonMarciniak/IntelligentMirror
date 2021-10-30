@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
-import mouse.modules.HandTrackingModule as htm
 import time
 import pyautogui
+
+import IntelligentMirror.mouse.modules.HandTrackingModule as htm
 
 
 def virtual_mouse():
@@ -12,7 +13,7 @@ def virtual_mouse():
     
     wCam, hCam = 640, 480
     frameR = 100 # Frame Reduction
-    smoothening = 10
+    smoothening = 6
 
     pTime = 0
     plocX, plocY = 0, 0
