@@ -3,14 +3,15 @@
 It will be a Intelligent Mirror
 
 ## ENV
-To run the program you need set an environment variable - PYTHONPATH \
-
-You must change prefix in these files: main.py, weather_function.py
+To run the program you need set an environment variable - PYTHONPATH 
 
 **export PYTHONPATH=/PROJECT/PATH**
 
 example:
-*export PYTHONPATH=/home/szymon/Desktop/my_projects/Mirror*
+*export PYTHONPATH=/home/szymon/Desktop/my_projects/Mirror* \
+
+
+You must change prefix in these files: *main.py*, *weather_function.py*
 
 ## Install
 
