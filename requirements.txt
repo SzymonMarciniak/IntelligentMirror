@@ -1,5 +1,8 @@
+python-tk
 requests
 cmake
 dlib
 face-recognition
 opencv-python
+pyautoui
+mediapipe
