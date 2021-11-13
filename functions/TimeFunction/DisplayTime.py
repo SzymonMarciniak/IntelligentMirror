@@ -40,7 +40,7 @@ class CurrentTime:
             """
             Clock operation
             """
-            print("pokjiohu")
+           
             timeString = time.strftime(" %H:%M ")
 
             self.clockLabel.config(text=timeString)
