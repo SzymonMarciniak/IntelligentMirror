@@ -90,7 +90,7 @@ class mouse:
                     cv2.circle(img, (x1, y1), 15, (255, 0, 255), cv2.FILLED)
                     plocX, plocY = clocX, clocY
 
-                    #Turn on toolbar animation
+                    #Show/Hide toolbar 
                     if x <=205:
                         if toolbar_animation:
                             pass
@@ -98,7 +98,11 @@ class mouse:
                             toolbar_animation = True
                             Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame)
                     else: 
-                        pass
+                        if toolbar_animation:
+                            toolbar_animation = False
+                            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
+                        else:
+                            pass
 
                     
                 # Clicking Mode

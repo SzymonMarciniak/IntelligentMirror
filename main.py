@@ -47,14 +47,21 @@ toolbar = Toolbar(tk,toolbarFrame, clockIcon, sunIcon, homeIcon, contactsIcon, s
 Mouse = mouse(toolbarFrame)
 
 
-def toolbar_animation(x):
+def open_toolbar(x):
     """
-    Turn on toolbar animation
+    Open toolbar 
     """
     toolbar.OpenToolbarAnimation()
 
+def close_toolbar(x):
+    """
+    Close toolbar
+    """
+    toolbar.HideToolbarAnimation()
 
-tk.bind("<Right>", toolbar_animation)
+
+tk.bind("<Right>", open_toolbar)
+tk.bind("<Left>", close_toolbar)
 
 if __name__ == "__main__":
     toolbar.OpenToolbar()

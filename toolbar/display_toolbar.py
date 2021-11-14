@@ -104,7 +104,7 @@ class Toolbar:
 
     def OpenToolbarAnimation(self) -> None:
         """
-        Create toolbar display animation 
+        Show toolbar 
         """
         for x_pos in range(-200,1,10):
             self.toolbarFrame.place(x=x_pos, y=0)
@@ -112,7 +112,7 @@ class Toolbar:
     
     def OpenToolbarAnimation_DF(toolbarFrame: Frame):
         """
-        Create toolbar display animation from diffrent file
+        Show toolbar from diffrent file
         Paramets
         --------
         toolbarFrame: Frame
@@ -121,6 +121,28 @@ class Toolbar:
         for x_pos in range(-200,1,10):
             toolbarFrame.place(x=x_pos, y=0)
             toolbarFrame.update()
+    
+    def HideToolbarAnimation(self):
+        """
+        Hide toolbar
+        """
+        for x_pos in range(1,-200,-1):
+            self.toolbarFrame.place(x=x_pos, y=0)
+            self.toolbarFrame.update()
+    
+    def HideToolbarAnimation_DF(toolbarFrame):
+        """
+        Hide toolbar from diffrent file
+        Paramets
+        --------
+        toolbarFrame: Frame
+            Frame for toolbar
+        """
+        for x_pos in range(1,-200,-3):
+            toolbarFrame.place(x=x_pos, y=0)
+            toolbarFrame.update()
+
+
     
     def time_function(self):
         """It is a bridge into a function activate"""
