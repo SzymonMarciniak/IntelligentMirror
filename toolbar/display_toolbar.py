@@ -110,6 +110,17 @@ class Toolbar:
             self.toolbarFrame.place(x=x_pos, y=0)
             self.toolbarFrame.update()
     
+    def OpenToolbarAnimation_DF(toolbarFrame: Frame):
+        """
+        Create toolbar display animation from diffrent file
+        Paramets
+        --------
+        toolbarFrame: Frame
+            Frame for toolbar
+        """
+        for x_pos in range(-200,1,10):
+            toolbarFrame.place(x=x_pos, y=0)
+            toolbarFrame.update()
     
     def time_function(self):
         """It is a bridge into a function activate"""

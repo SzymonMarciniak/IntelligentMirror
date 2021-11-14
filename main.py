@@ -4,8 +4,9 @@ from time import *
 import threading
 
 from IntelligentMirror.toolbar.display_toolbar import Toolbar
+from IntelligentMirror.mouse.VirtualMouse import mouse
 from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
-from IntelligentMirror.mouse.VirtualMouse import virtual_mouse 
+ 
 
 
 prefix = "/home/szymon/Desktop/my_projects/Mirror/IntelligentMirror/icons/"
@@ -15,7 +16,6 @@ tk.configure(background="black")
 tk.attributes("-fullscreen", True)
 tk.config(cursor="fleur")
 tk.bind("<Escape>", exit)
-
 
 toolbarFrame = Frame(tk)
 
@@ -43,6 +43,9 @@ function_activate = FunctionsActivateClass(tk,clockLabel, dateLabel, timeFrame, 
 
 toolbar = Toolbar(tk,toolbarFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon, clockLabel, dateLabel, \
                 timeFrame, temp, pressure, humidity, image_weather, weatherFrame)
+                
+Mouse = mouse(toolbarFrame)
+
 
 def toolbar_animation(x):
     """
@@ -51,18 +54,13 @@ def toolbar_animation(x):
     toolbar.OpenToolbarAnimation()
 
 
-
 tk.bind("<Right>", toolbar_animation)
-
-
-
 
 if __name__ == "__main__":
     toolbar.OpenToolbar()
 
-
-# MouseThread = threading.Thread(target=virtual_mouse)
-# MouseThread.start() 
+MouseThread = threading.Thread(target=Mouse.virtual_mouse)
+MouseThread.start() 
 
 
 tk.mainloop()
