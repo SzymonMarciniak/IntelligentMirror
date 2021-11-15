@@ -2,14 +2,14 @@ from datetime import date
 from tkinter import *
 from time import *
 import threading
+import os
 
 from IntelligentMirror.toolbar.display_toolbar import Toolbar
 from IntelligentMirror.mouse.VirtualMouse import mouse
 from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
  
-
-
-prefix = "/home/szymon/Desktop/my_projects/Mirror/IntelligentMirror/icons/"
+prefix = os.getcwd()
+icon_prefix = f"{prefix}IntelligentMirror/icons/"
 
 tk = Tk()
 tk.configure(background="black")
@@ -31,11 +31,11 @@ humidity = Label(weatherFrame, font=("Arial", 25))
 image_weather = Label(weatherFrame, font=("Arial", 40))
 
 
-clockIcon = PhotoImage(file=f"{prefix}clock_black.png") 
-sunIcon = PhotoImage(file=f"{prefix}sun_black.png") 
-homeIcon = PhotoImage(file=f"{prefix}home_black.png") 
-contactsIcon = PhotoImage(file=f"{prefix}contacts_black.png") 
-settingsIcon = PhotoImage(file=f"{prefix}settings_black.png") 
+clockIcon = PhotoImage(file=f"{icon_prefix}clock_black.png") 
+sunIcon = PhotoImage(file=f"{icon_prefix}sun_black.png") 
+homeIcon = PhotoImage(file=f"{icon_prefix}home_black.png") 
+contactsIcon = PhotoImage(file=f"{icon_prefix}contacts_black.png") 
+settingsIcon = PhotoImage(file=f"{icon_prefix}settings_black.png") 
 
 
 function_activate = FunctionsActivateClass(tk,clockLabel, dateLabel, timeFrame, \
