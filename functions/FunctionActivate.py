@@ -1,6 +1,7 @@
 from tkinter import *
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
 from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
+from IntelligentMirror.mouse.move_functions import MoveFunction
 
 class FunctionsActivateClass:
     """This class is responsible for activating the functions"""
@@ -53,6 +54,7 @@ class FunctionsActivateClass:
 
         self.time = CurrentTime(self.clockLabel, self.dateLabel, self.timeFrame)
         self.weather = CurrentWeather(self.temp, self.pressure, self.humidity, self.image_weather, self.weatherFrame)
+        self.move_function = MoveFunction()
 
 
 
@@ -60,6 +62,8 @@ class FunctionsActivateClass:
     def time_function(self):
         """Activates the time function"""
         self.time.clock_date()
+        self.move_function.move(self.timeFrame)
+
     
     def weather_function(self):
         """Activates the weather function"""

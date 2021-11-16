@@ -2,6 +2,8 @@ from tkinter import *
 from datetime import date
 import calendar
 import time
+import json 
+import os
 
 class CurrentTime:
     """
@@ -33,8 +35,9 @@ class CurrentTime:
         """
         Clock displaying
         """
-
-        self.timeFrame.place(x=1500,y=10)
+        
+        x,y = CurrentTime.check_position(self)
+        self.timeFrame.place(x=x,y=y)
 
         def tick():
             """
@@ -59,3 +62,22 @@ class CurrentTime:
             self.clockLabel.pack(side=BOTTOM)
 
         tick()
+    
+    def check_position(self) -> int:
+        """
+        This function is responsible for checking actual time position
+        Returns
+        -------
+        x: int
+            Value of "x" time position
+        y: int 
+            value of "y" time position
+        """
+
+        prefix = os.getcwd()
+        prefix = f"{prefix}/IntelligentMirror/functions/TimeFunction/"
+        with open(f"{prefix}time_position.json", "r", encoding="utf-8") as file:
+            data = json.load(file)
+            x = (data["position"]["x"])
+            y = (data["position"]["y"])
+        return x, y

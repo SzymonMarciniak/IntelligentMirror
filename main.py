@@ -9,7 +9,7 @@ from IntelligentMirror.mouse.VirtualMouse import mouse
 from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
  
 prefix = os.getcwd()
-icon_prefix = f"{prefix}IntelligentMirror/icons/"
+icon_prefix = f"{prefix}/IntelligentMirror/icons/"
 
 tk = Tk()
 tk.configure(background="black")

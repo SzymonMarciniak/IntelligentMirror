@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
-import time
+import os
 import pyautogui
 from tkinter import * 
+import json
 
 import IntelligentMirror.mouse.modules.HandTrackingModule as htm
 from IntelligentMirror.toolbar.display_toolbar import Toolbar
@@ -19,6 +20,15 @@ class mouse:
 
         """
         self.toolbarFrame = toolbarFrame 
+        self.mouse_event_var = False
+        self.prefix = os.getcwd()
+    
+    def click_and_move(self):
+        with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "w", encoding="utf-8") as file:
+            data = {"event": "True"}
+            json.dump(data, file)
+
+        pyautogui.click(button='left')
         
     def virtual_mouse(self):
         """
@@ -48,6 +58,10 @@ class mouse:
                 pyautogui.moveTo(x, y)
                 pyautogui.click(x=x, y=y)
 
+                Mouse = mouse(x)
+                Mouse.click_and_move()
+
+
             # Find hand Landmarks
             success, img = cap.read()
             img = detector.find_hands(img)
@@ -73,6 +87,11 @@ class mouse:
             
                 # Moving Mode
                 if total_fingers >=3:
+                    
+                    #Save mouse mode
+                    with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "w", encoding="utf-8") as file:
+                        data = {"event": "False"}
+                        json.dump(data, file)
 
                     # Convert Coordinates
                     x3 = np.interp(x1, (frameR, wCam - frameR), (0, wScr))
@@ -87,8 +106,15 @@ class mouse:
                     x = int(x)
                     y = int(clocY)
                     pyautogui.moveTo(x, y)
-                    cv2.circle(img, (x1, y1), 15, (255, 0, 255), cv2.FILLED)
                     plocX, plocY = clocX, clocY
+
+                    #save mouse coordinates
+                   
+                    with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_position.json", "w", encoding="utf-8") as file: 
+                        data = {"position":
+                        {"x":x,
+                         "y":y}}
+                        json.dump(data, file)
 
                     #Show/Hide toolbar 
                     if x <=205:
@@ -116,6 +142,3 @@ class mouse:
             #cv2.imshow("Image", img)
             cv2.waitKey(1)
 
-
-if __name__ == "__main__":
-    mouse.virtual_mouse()
