@@ -1,4 +1,7 @@
 from tkinter import *
+import json 
+import os 
+
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
 from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
 from IntelligentMirror.mouse.move_functions import MoveFunction
@@ -54,17 +57,26 @@ class FunctionsActivateClass:
 
         self.time = CurrentTime(self.clockLabel, self.dateLabel, self.timeFrame)
         self.weather = CurrentWeather(self.temp, self.pressure, self.humidity, self.image_weather, self.weatherFrame)
-        self.move_function = MoveFunction()
+
+        self.prefix = os.getcwd()
 
 
 
 
     def time_function(self):
-        """Activates the time function"""
+        """Activates time function"""
+        self.move_function = MoveFunction(self.timeFrame)
+       
+        with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "w", encoding="utf-8") as file:
+            data = {"event": "True"}
+            json.dump(data, file)
+        file.close()
+
         self.time.clock_date()
-        self.move_function.move(self.timeFrame)
+        self.move_function.move()
 
     
     def weather_function(self):
-        """Activates the weather function"""
+        """Activates weather function"""
+        self.move_function = MoveFunction()
         self.weather.weather()

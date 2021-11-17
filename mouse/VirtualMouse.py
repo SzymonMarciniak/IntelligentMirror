@@ -23,12 +23,7 @@ class mouse:
         self.mouse_event_var = False
         self.prefix = os.getcwd()
     
-    def click_and_move(self):
-        with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "w", encoding="utf-8") as file:
-            data = {"event": "True"}
-            json.dump(data, file)
-
-        pyautogui.click(button='left')
+    
         
     def virtual_mouse(self):
         """
@@ -58,8 +53,10 @@ class mouse:
                 pyautogui.moveTo(x, y)
                 pyautogui.click(x=x, y=y)
 
-                Mouse = mouse(x)
-                Mouse.click_and_move()
+                with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "w", encoding="utf-8") as file:
+                    data = {"event": "True"}
+                    json.dump(data, file)
+                file.close()
 
 
             # Find hand Landmarks
@@ -82,39 +79,44 @@ class mouse:
                     x1, y1 = lmList[20][1:] 
                 
                 
-            # Check how many fingers are up
+                # Check how many fingers are up
                 total_fingers, _ = detector.fingers_up()
+
+                # Convert Coordinates
+                x3 = np.interp(x1, (frameR, wCam - frameR), (0, wScr))
+                y3 = np.interp(y1, (frameR, hCam - frameR), (0, hScr))
+
+                # Smoothen Values
+                clocX = plocX + (x3 - plocX) / smoothening
+                clocY = plocY + (y3 - plocY) / smoothening
+                    
+                # Move Mouse
+                x = wScr - clocX
+                x = int(x)
+                y = int(clocY)
             
                 # Moving Mode
                 if total_fingers >=3:
+
+                    pyautogui.mouseUp(button="left")
                     
                     #Save mouse mode
                     with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "w", encoding="utf-8") as file:
                         data = {"event": "False"}
                         json.dump(data, file)
+                    file.close()
 
-                    # Convert Coordinates
-                    x3 = np.interp(x1, (frameR, wCam - frameR), (0, wScr))
-                    y3 = np.interp(y1, (frameR, hCam - frameR), (0, hScr))
-
-                    # Smoothen Values
-                    clocX = plocX + (x3 - plocX) / smoothening
-                    clocY = plocY + (y3 - plocY) / smoothening
-                
-                    # Move Mouse
-                    x = wScr - clocX
-                    x = int(x)
-                    y = int(clocY)
+                    
                     pyautogui.moveTo(x, y)
                     plocX, plocY = clocX, clocY
 
                     #save mouse coordinates
-                   
                     with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_position.json", "w", encoding="utf-8") as file: 
                         data = {"position":
                         {"x":x,
                          "y":y}}
                         json.dump(data, file)
+                    file.close()
 
                     #Show/Hide toolbar 
                     if x <=205:
@@ -136,7 +138,32 @@ class mouse:
                     x = wScr - clocX
                     x = int(x)
                     y = int(clocY)
-                    click(x, y)
+
+                    with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_position.json", "w", encoding="utf-8") as file: 
+                        data = {"position":
+                        {"x":x,
+                         "y":y}}
+                        json.dump(data, file)
+                    file.close()
+
+                    with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "r", encoding="utf-8") as file:
+                        data = json.load(file)
+                        activate = (data["event"])  
+                    file.close()
+                    
+                    print(activate)
+
+                    if activate == "False":
+                        click(x, y)
+                    else:
+                        pyautogui.mouseDown(button="left")
+                        pyautogui.moveTo(x, y)
+                        plocX, plocY = clocX, clocY
+
+                    with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "w", encoding="utf-8") as file: #Over 
+                        data = {"event": "True"}
+                        json.dump(data, file)
+                    file.close()
 
             # Display
             #cv2.imshow("Image", img)
