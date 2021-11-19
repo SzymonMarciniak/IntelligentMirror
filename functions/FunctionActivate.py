@@ -78,5 +78,14 @@ class FunctionsActivateClass:
     
     def weather_function(self):
         """Activates weather function"""
-        self.move_function = MoveFunction()
+        self.move_function = MoveFunction(self.weatherFrame)
+
+        with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "w", encoding="utf-8") as file:
+            data = {"event": "True"}
+            json.dump(data, file)
+        file.close()
+
         self.weather.weather()
+        self.move_function.move()
+    
+    

@@ -3,6 +3,7 @@ import shutil
 from tkinter import *
 from PIL import ImageTk, Image
 import os
+import json
 
 class CurrentWeather:
     """This class is responsible for correctly displaying the current weather"""
@@ -40,7 +41,8 @@ class CurrentWeather:
     def weather(self):
         """Enables the weather display function"""
        
-        self.weatherFrame.place(x=10, y=10, width=350, height=179)
+        x,y = CurrentWeather.check_position(self)
+        self.weatherFrame.place(x=x, y=y, width=350, height=179)
            
         def weather_loading():
             """Checking the current weather"""
@@ -93,5 +95,26 @@ class CurrentWeather:
 
             else:
                 print("Weather not found")
-
+        
         weather_loading()
+    
+    def check_position(self) -> int:
+        """
+        This function is responsible for checking actual weather position
+        Returns
+        -------
+        x: int
+            Value of "x" time position
+        y: int 
+            value of "y" time position
+        """
+
+        prefix = os.getcwd()
+        prefix = f"{prefix}/IntelligentMirror/functions/WeatherFunction/"
+        with open(f"{prefix}weather_position.json", "r", encoding="utf-8") as file:
+            data = json.load(file)
+            x = (data["position"]["x"])
+            y = (data["position"]["y"])
+        return x, y
+
+        

@@ -17,6 +17,7 @@ class MoveFunction:
 
     def move(self) -> None:
         """Method responsible for moveing"""
+        print("HERE")
 
         with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "r", encoding="utf-8") as file1:
                 data1 = json.load(file1)
