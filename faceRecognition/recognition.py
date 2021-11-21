@@ -5,9 +5,9 @@ import numpy as np
 import os 
 
 class FaceRecognition:
+    """This class is resposible for recognition user's face"""
     def __init__(self) -> None:
 
-        
         prefix = os.getcwd()
         self.prefix = f"{prefix}/IntelligentMirror/faceRecognition/"
 
@@ -33,6 +33,7 @@ class FaceRecognition:
         self.no_face = 0
 
     def recognition(self):
+        """This function detecting faces"""
 
         while True:
 
@@ -113,7 +114,6 @@ class FaceRecognition:
         cv2.destroyAllWindows()
     
 if __name__ == "__main__":
-
     rec = FaceRecognition()
     rec.recognition()
 
