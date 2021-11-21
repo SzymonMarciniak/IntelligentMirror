@@ -4,5 +4,5 @@ cmake
 dlib
 face-recognition
 opencv-python
-pyautoui
+pyautogui
 mediapipe
