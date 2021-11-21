@@ -151,7 +151,6 @@ class mouse:
                         activate = (data["event"])  
                     file.close()
                     
-                    print(activate)
 
                     if activate == "False":
                         click(x, y)

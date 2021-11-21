@@ -1,4 +1,3 @@
-from datetime import date
 from tkinter import *
 from time import *
 import threading
@@ -7,6 +6,7 @@ import os
 from IntelligentMirror.toolbar.display_toolbar import Toolbar
 from IntelligentMirror.mouse.VirtualMouse import mouse
 from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
+from IntelligentMirror.faceRecognition.recognition import FaceRecognition
  
 prefix = os.getcwd()
 icon_prefix = f"{prefix}/IntelligentMirror/icons/"
@@ -46,6 +46,8 @@ toolbar = Toolbar(tk,toolbarFrame, clockIcon, sunIcon, homeIcon, contactsIcon, s
                 
 Mouse = mouse(toolbarFrame)
 
+recognition = FaceRecognition()
+
 
 def open_toolbar(x):
     """
@@ -68,6 +70,9 @@ if __name__ == "__main__":
 
 MouseThread = threading.Thread(target=Mouse.virtual_mouse)
 MouseThread.start() 
+
+Facethread = threading.Thread(target=recognition.recognition)
+Facethread.start()
 
 
 tk.mainloop()
