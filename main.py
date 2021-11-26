@@ -4,10 +4,9 @@ import threading
 import os
 
 from IntelligentMirror.toolbar.display_toolbar import Toolbar
-from IntelligentMirror.mouse.VirtualMouse import mouse
 from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
-from IntelligentMirror.faceRecognition.recognition import FaceRecognition
- 
+from IntelligentMirror.camera.video_capture import Camera
+
 prefix = os.getcwd()
 icon_prefix = f"{prefix}/IntelligentMirror/icons/"
 
@@ -44,10 +43,12 @@ function_activate = FunctionsActivateClass(tk,clockLabel, dateLabel, timeFrame, 
 toolbar = Toolbar(tk,toolbarFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon, clockLabel, dateLabel, \
                 timeFrame, temp, pressure, humidity, image_weather, weatherFrame)
                 
-Mouse = mouse(toolbarFrame)
+# Mouse = mouse(toolbarFrame)
 
-recognition = FaceRecognition()
+# recognition = FaceRecognition()
 
+camera = Camera.FaceRecognition()
+cam = Camera.mouse(toolbarFrame)
 
 def open_toolbar(x):
     """
@@ -59,8 +60,6 @@ def close_toolbar(x):
     """
     Close toolbar
     """
-    toolbar.HideToolbarAnimation()
-
 
 tk.bind("<Right>", open_toolbar)
 tk.bind("<Left>", close_toolbar)
@@ -68,11 +67,13 @@ tk.bind("<Left>", close_toolbar)
 if __name__ == "__main__":
     toolbar.OpenToolbar()
 
-MouseThread = threading.Thread(target=Mouse.virtual_mouse)
+
+MouseThread = threading.Thread(target=cam.virtual_mouse)
 MouseThread.start() 
 
-Facethread = threading.Thread(target=recognition.recognition)
-Facethread.start()
+# Facethread = threading.Thread(target=recognition.recognition)
+# Facethread.start()
 
-
+cameraThread = threading.Thread(target=camera.recognition)
+cameraThread.start()
 tk.mainloop()

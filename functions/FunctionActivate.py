@@ -4,7 +4,7 @@ import os
 
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
 from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
-from IntelligentMirror.mouse.move_functions import MoveFunction
+from IntelligentMirror.camera.move_functions import MoveFunction
 
 class FunctionsActivateClass:
     """This class is responsible for activating the functions"""
@@ -67,7 +67,7 @@ class FunctionsActivateClass:
         """Activates time function"""
         self.move_function = MoveFunction(self.timeFrame)
        
-        with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "w", encoding="utf-8") as file:
+        with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
             data = {"event": "True"}
             json.dump(data, file)
         file.close()
@@ -80,7 +80,7 @@ class FunctionsActivateClass:
         """Activates weather function"""
         self.move_function = MoveFunction(self.weatherFrame)
 
-        with open(f"{self.prefix}/IntelligentMirror/mouse/mouse_event.json", "w", encoding="utf-8") as file:
+        with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
             data = {"event": "True"}
             json.dump(data, file)
         file.close()
