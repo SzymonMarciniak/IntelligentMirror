@@ -46,66 +46,75 @@ class Camera:
             self.process_this_frame = True
             self.no_face = 0
 
+            self.RFace = "Unknown"
+
         def recognition(self):
             global frame
             """This function detecting faces"""
 
             while True:
-
-
                 _, frame = Camera.cap.read()
-                
-                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-
-                rgb_small_frame = small_frame[:, :, ::-1]
-
-                face_locations = face_recognition.face_locations(rgb_small_frame)
-                face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-
-
-                if self.process_this_frame:
+                try:
                     
+                    small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+
+                    rgb_small_frame = small_frame[:, :, ::-1]
+
                     face_locations = face_recognition.face_locations(rgb_small_frame)
                     face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
-                    face_names = []
-                    for face_encoding in face_encodings:
+
+                    if self.process_this_frame:
                         
-                        matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
-                        name = "unknown"
-                        if name == "unknown":
-                            self.no_face = self.no_face + 1
-                            print(self.no_face)
-                            if self.no_face == 20:
-                                RFace = name
-                                
+                        face_locations = face_recognition.face_locations(rgb_small_frame)
+                        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+
+                        face_names = []
+                        for face_encoding in face_encodings:
+                            
+                            matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
+                            name = "unknown"
+                            if name == "unknown":
+                                self.no_face = self.no_face + 1
+                                #print(self.no_face)
+                                if self.no_face == 1:
+                                    self.RFace = name
+                                    
+                            
+                            face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
+                            best_match_index = np.argmin(face_distances)
+                            if matches[best_match_index]:
+                                name = self.known_face_names[best_match_index]
+                                self.RFace = name
+                                self.no_face = 0
+
+                            face_names.append(name)
+                    else:
+                        self.no_face = self.no_face + 1
+                        #print(self.no_face)
                         
-                        face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
-                        best_match_index = np.argmin(face_distances)
-                        if matches[best_match_index]:
-                            name = self.known_face_names[best_match_index]
-                            RFace = name
-                            self.no_face = 0
-
-                        face_names.append(name)
-                else:
-                    self.no_face = self.no_face + 1
-                    print(self.no_face)
+                        if self.no_face == 100:
+                            self.RFace = "unknown"
                     
-                    if self.no_face == 20:
-                        RFace = "unknown"
-                    
+                    print(self.RFace)
+                    #time.sleep(0.01)
+                        
 
 
-                self.process_this_frame = not self.process_this_frame
+                    self.process_this_frame = not self.process_this_frame
+
+                    #cv2.imshow('Video', frame)
+
+                except:
+                    pass 
+                
 
                 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
-                #time.sleep(0.1)
+               
 
-
-            self.video_capture.release()
+           
             cv2.destroyAllWindows()
     
 
@@ -147,8 +156,11 @@ class Camera:
             wScr, hScr = 1920, 1080
 
             toolbar_animation = False 
+
+            no_fingers = 0 
             
             while True:
+                
                 try:
                 
 
@@ -199,43 +211,45 @@ class Camera:
                         y = int(clocY)
                     
                         # Moving Mode
-                        print(total_fingers)
+                        
                         if total_fingers >=3:
 
-                            pyautogui.mouseUp(button="left")
-                            
-                            #Save mouse mode
-                            with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
-                                data = {"event": "False"}
-                                json.dump(data, file)
-                            file.close()
+                            no_fingers += 1
+                            if no_fingers >= 5:
 
-                            
-                            pyautogui.moveTo(x, y)
-                            print(x, y)
-                            plocX, plocY = clocX, clocY
+                                pyautogui.mouseUp(button="left")
+                                
+                                #Save mouse mode
+                                with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
+                                    data = {"event": "False"}
+                                    json.dump(data, file)
+                                file.close()
 
-                            #save mouse coordinates
-                            with open(f"{self.prefix}/IntelligentMirror/camera/mouse_position.json", "w", encoding="utf-8") as file: 
-                                data = {"position":
-                                {"x":x,
-                                "y":y}}
-                                json.dump(data, file)
-                            file.close()
+                                
+                                pyautogui.moveTo(x, y)
+                                plocX, plocY = clocX, clocY
 
-                            #Show/Hide toolbar 
-                            if x <=205:
-                                if toolbar_animation:
-                                    pass
+                                #save mouse coordinates
+                                with open(f"{self.prefix}/IntelligentMirror/camera/mouse_position.json", "w", encoding="utf-8") as file: 
+                                    data = {"position":
+                                    {"x":x,
+                                    "y":y}}
+                                    json.dump(data, file)
+                                file.close()
+
+                                #Show/Hide toolbar 
+                                if x <=205:
+                                    if toolbar_animation:
+                                        pass
+                                    else: 
+                                        toolbar_animation = True
+                                        Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame)
                                 else: 
-                                    toolbar_animation = True
-                                    Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame)
-                            else: 
-                                if toolbar_animation:
-                                    toolbar_animation = False
-                                    Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
-                                else:
-                                    pass
+                                    if toolbar_animation:
+                                        toolbar_animation = False
+                                        Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
+                                    else:
+                                        pass
 
                             
                         # Clicking Mode
@@ -243,6 +257,8 @@ class Camera:
                             x = wScr - clocX
                             x = int(x)
                             y = int(clocY)
+
+                            no_fingers = 0
 
                             with open(f"{self.prefix}/IntelligentMirror/camera/mouse_position.json", "w", encoding="utf-8") as file: 
                                 data = {"position":
@@ -255,8 +271,6 @@ class Camera:
                                 data = json.load(file)
                                 activate = (data["event"])  
                             file.close()
-
-                            print(activate)
                             
 
                             if activate == "False":
@@ -270,12 +284,14 @@ class Camera:
                                 data = {"event": "True"}
                                 json.dump(data, file)
                             file.close()
+                    
+                    print(no_fingers)
 
                     # Display
                     #cv2.imshow("Image", img)
                     cv2.waitKey(1)
                 except:
-                    print("errot")
+                    print("error")
 
 if __name__ == "__main__":
     fr = Camera.FaceRecognition()
