@@ -68,7 +68,7 @@ class FunctionsActivateClass:
         self.move_function = MoveFunction(self.timeFrame)
        
         with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
-            data = {"event": "True"}
+            data = {"event": {"event": "True", "frame": "time"}}
             json.dump(data, file)
         file.close()
 
@@ -81,7 +81,7 @@ class FunctionsActivateClass:
         self.move_function = MoveFunction(self.weatherFrame)
 
         with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
-            data = {"event": "True"}
+            data = {"event": {"event": "True", "frame": "weather"}}
             json.dump(data, file)
         file.close()
 

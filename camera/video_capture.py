@@ -99,8 +99,6 @@ class Camera:
                     print(self.RFace)
                     #time.sleep(0.01)
                         
-
-
                     self.process_this_frame = not self.process_this_frame
 
                     #cv2.imshow('Video', frame)
@@ -168,8 +166,12 @@ class Camera:
                         pyautogui.moveTo(x, y)
                         pyautogui.click(x=x, y=y)
 
+                        with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "r", encoding="utf-8") as file0:
+                            data = json.load(file0)
+                            data["event"]["event"] = "True"
+                        file0.close()
+
                         with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
-                            data = {"event": "True"}
                             json.dump(data, file)
                         file.close()
 
@@ -215,13 +217,17 @@ class Camera:
                         if total_fingers >=3:
 
                             no_fingers += 1
-                            if no_fingers >= 5:
+                            if no_fingers >= 10:
 
                                 pyautogui.mouseUp(button="left")
                                 
                                 #Save mouse mode
+                                with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "r", encoding="utf-8") as file0:
+                                    data = json.load(file0)
+                                    data["event"]["event"] = "False"
+                                file0.close()
+
                                 with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
-                                    data = {"event": "False"}
                                     json.dump(data, file)
                                 file.close()
 
@@ -269,7 +275,7 @@ class Camera:
 
                             with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "r", encoding="utf-8") as file:
                                 data = json.load(file)
-                                activate = (data["event"])  
+                                activate = (data["event"]["event"])  
                             file.close()
                             
 
@@ -279,9 +285,13 @@ class Camera:
                                 pyautogui.mouseDown(button="left")
                                 pyautogui.moveTo(x, y)
                                 plocX, plocY = clocX, clocY
+                            
+                            with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "r", encoding="utf-8") as file0:
+                                data = json.load(file0)
+                                data["event"]["event"] = "True"
+                            file0.close()
 
                             with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file: #Over 
-                                data = {"event": "True"}
                                 json.dump(data, file)
                             file.close()
                     
