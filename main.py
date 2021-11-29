@@ -43,10 +43,6 @@ function_activate = FunctionsActivateClass(tk,clockLabel, dateLabel, timeFrame, 
 toolbar = Toolbar(tk,toolbarFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon, clockLabel, dateLabel, \
                 timeFrame, temp, pressure, humidity, image_weather, weatherFrame)
                 
-# Mouse = mouse(toolbarFrame)
-
-# recognition = FaceRecognition()
-
 camera = Camera.FaceRecognition()
 cam = Camera.mouse(toolbarFrame)
 
@@ -60,6 +56,7 @@ def close_toolbar(x):
     """
     Close toolbar
     """
+    toolbar.HideToolbarAnimation()
 
 tk.bind("<Right>", open_toolbar)
 tk.bind("<Left>", close_toolbar)
@@ -71,9 +68,7 @@ if __name__ == "__main__":
 MouseThread = threading.Thread(target=cam.virtual_mouse)
 MouseThread.start() 
 
-# Facethread = threading.Thread(target=recognition.recognition)
-# Facethread.start()
-
 cameraThread = threading.Thread(target=camera.recognition)
 cameraThread.start()
+
 tk.mainloop()

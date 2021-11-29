@@ -18,7 +18,7 @@ class Camera:
 
     cap = cv2.VideoCapture(0)
     
-    class FaceRecognition():
+    class FaceRecognition:
         
         """This class is resposible for recognition user's face"""
         def __init__(self) -> None:
@@ -165,6 +165,7 @@ class Camera:
                     def click(x: int,y: int) -> None:
                         pyautogui.moveTo(x, y)
                         pyautogui.click(x=x, y=y)
+                        
 
                         with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "r", encoding="utf-8") as file0:
                             data = json.load(file0)
@@ -281,6 +282,11 @@ class Camera:
 
                             if activate == "False":
                                 click(x, y)
+                                toolbar_animation = False
+                                if x <= 200:
+                                    for x_pos in range(1,-200,-3):
+                                        self.toolbarFrame.place(x=x_pos, y=0)
+                                        self.toolbarFrame.update()
                             else:
                                 pyautogui.mouseDown(button="left")
                                 pyautogui.moveTo(x, y)
@@ -295,7 +301,7 @@ class Camera:
                                 json.dump(data, file)
                             file.close()
                     
-                    print(no_fingers)
+                    #print(no_fingers)
 
                     # Display
                     #cv2.imshow("Image", img)
