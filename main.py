@@ -16,18 +16,12 @@ tk.attributes("-fullscreen", True)
 tk.config(cursor="fleur")
 tk.bind("<Escape>", exit)
 
+
 toolbarFrame = Frame(tk)
 
 timeFrame = LabelFrame(tk, bg="black", bd=0)
 weatherFrame = LabelFrame(tk, bg="black", bd=0)
-
-clockLabel = Label(timeFrame, font=("Arial", 60), bg="black", fg="white")
-dateLabel = Label(timeFrame, font=("Arial", 30), bg="black", fg="white")
-
-temp = Label(weatherFrame, font=("Arial", 50))
-pressure = Label(weatherFrame, font=("Arial", 35))
-humidity = Label(weatherFrame, font=("Arial", 25))
-image_weather = Label(weatherFrame, font=("Arial", 40))
+gmailFrame = LabelFrame(tk, bg="black", bd=0)
 
 
 clockIcon = PhotoImage(file=f"{icon_prefix}clock_black.png") 
@@ -37,22 +31,20 @@ contactsIcon = PhotoImage(file=f"{icon_prefix}contacts_black.png")
 settingsIcon = PhotoImage(file=f"{icon_prefix}settings_black.png") 
 
 
-function_activate = FunctionsActivateClass(tk,clockLabel, dateLabel, timeFrame, \
-                                            temp, pressure, humidity, image_weather, weatherFrame)
+function_activate = FunctionsActivateClass(tk, timeFrame, weatherFrame, gmailFrame)
 
-toolbar = Toolbar(tk,toolbarFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon, clockLabel, dateLabel, \
-                timeFrame, temp, pressure, humidity, image_weather, weatherFrame)
+toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon)
                 
 camera = Camera.FaceRecognition()
 cam = Camera.mouse(toolbarFrame)
 
-def open_toolbar(x):
+def open_toolbar(x) -> None:
     """
     Open toolbar 
     """
     toolbar.OpenToolbarAnimation()
 
-def close_toolbar(x):
+def close_toolbar(x) -> None:
     """
     Close toolbar
     """

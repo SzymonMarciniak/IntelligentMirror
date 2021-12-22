@@ -12,7 +12,7 @@ class HandDetector():
     This class includes modules responsible for: finding hands and their positions, counting fingers up and the distance between them.
     """
 
-    def __init__(self, mode=False, maxHands=2,model_complexity=1, detectionCon=0.6, trackCon=0.5):
+    def __init__(self, mode=False, maxHands=2,model_complexity=1, detectionCon=0.6, trackCon=0.5) -> None:
 
         self.mode = mode
         self.maxHands = maxHands
@@ -174,7 +174,7 @@ class HandDetector():
         return length, img, [x1, y1, x2, y2, cx, cy]
 
 
-def main():
+def main() -> None:
     """
     Turn on entire HandDetector class and display camera preview 
     """

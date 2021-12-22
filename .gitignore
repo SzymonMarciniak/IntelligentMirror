@@ -1,1 +1,4 @@
 *.pyc
+/functions/WeatherFunction/weather_img.png
+/camera/data/
+positions.txt

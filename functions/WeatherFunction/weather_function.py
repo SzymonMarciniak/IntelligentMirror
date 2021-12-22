@@ -7,28 +7,24 @@ import json
 
 class CurrentWeather:
     """This class is responsible for correctly displaying the current weather"""
-    def __init__(self, temp: Label, pressure: Label, humidity: Label, image: Label, weatherFrame: Frame) -> None:
+    def __init__(self,tk:Frame, weatherFrame: Frame) -> None:
         """
         Parametrs
         ---------
-        temp: Label
-            Label for current temerature 
-        pressure: Label
-            Label for current pressure
-        humidity: Label 
-            Label for current humidity 
-        image: Label 
-            Label for current weather image 
+        tk: Frame
+            Main window frame 
         weatherFrame: Frame 
             Frame for all weather labels 
         """
 
-        self.temp = temp 
-        self.pressure = pressure 
-        self.humidity = humidity
-        self.image = image
+        
         self.weatherFrame = weatherFrame
+        self.tk = tk
 
+        self.temp = Label(weatherFrame, font=("Arial", 50))
+        self.pressure = Label(weatherFrame, font=("Arial", 35))
+        self.humidity = Label(weatherFrame, font=("Arial", 25))
+        self.image = Label(weatherFrame, font=("Arial", 40))
 
 
         prefix = os.getcwd()
@@ -38,7 +34,7 @@ class CurrentWeather:
         weather_icon_new = weather_icon_old.resize((140,140))
         self.weather_icon = ImageTk.PhotoImage(weather_icon_new)
 
-    def weather(self):
+    def weather(self) -> None:
         """Enables the weather display function"""
        
         x,y = CurrentWeather.check_position(self)

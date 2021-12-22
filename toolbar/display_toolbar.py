@@ -8,25 +8,27 @@ class Toolbar:
     def __init__(self,
                 tk: Frame,
                 toolbarFrame: Tk, 
+                timeFrame: Frame,
+                weatherFrame: Frame,
+                gmailFrame: Frame,
                 clockIcon: PhotoImage,
                 sunIcon: PhotoImage,
                 homeIcon: PhotoImage,
                 contactsIcon: PhotoImage,
-                settingsIcon: PhotoImage,
-                clockLabel: Label,
-                dateLabel: Label,
-                timeFrame: Frame,
-                temp: Label,
-                pressure: Label,
-                humidity:Label,
-                image_weather: Label,
-                weatherFrame: Frame) -> None:
+                settingsIcon: PhotoImage) -> None:
         """
         Parametrs
         ---------
         tk: Tk()
             Name of main window
-        
+        toolbarFrame: Frame
+            Frame for toolbar buttons
+        timeFrame: Frame
+            Frame for clock label and date label
+        weatherFrame: Frame 
+            Frame for all weather labels 
+        gmailFrame: Frame
+            Frame for all gmails labels
         clockIcon: PhotoImage
             Clock image
         sunIcon: PhotoImage
@@ -37,45 +39,23 @@ class Toolbar:
             Contact image
         settingsIcon: PhotoImage
             Settings image
-        clockLabel: Label
-            Label for clock
-        dateLabel: Label
-            Label for date
-        timeFrame: Frame
-            Frame for clock label and date label
-
-        temp: Label
-            Label for current temerature 
-        pressure: Label
-            Label for current pressure
-        humidity: Label 
-            Label for current humidity 
-        image_weather: Label 
-            Label for current weather image 
-        weatherFrame: Frame 
-            Frame for all weather labels 
-
         """
 
         self.tk = tk
         self.toolbarFrame = toolbarFrame
+
+        self.timeFrame = timeFrame
+        self.weatherFrame = weatherFrame
+        self.gmailFrame = gmailFrame
+
         self.clockIcon = clockIcon
         self.sunIcon = sunIcon
         self.homeIcon = homeIcon
         self.contactsIcon = contactsIcon
         self.settingsIcon = settingsIcon
-        self.clockLabel = clockLabel
-        self.dateLabel = dateLabel
-        self.timeFrame = timeFrame
+    
 
-        self.temp = temp
-        self.pressure = pressure
-        self.humidity = humidity
-        self.image_weather = image_weather
-        self.weatherFrame = weatherFrame
-
-        self.functions_activate = FunctionsActivateClass(self.tk, self.clockLabel, self.dateLabel, self.timeFrame, \
-                                    self.temp, self.pressure, self.humidity, self.image_weather, self.weatherFrame)
+        self.functions_activate = FunctionsActivateClass(self.tk, self.timeFrame, self.weatherFrame, self.gmailFrame)
 
 
     def OpenToolbar(self) -> None:
@@ -83,12 +63,12 @@ class Toolbar:
         Display toolbar main buttons
         
         """
-        toolbar = Toolbar(self.tk,self.toolbarFrame, self.clockIcon, self.sunIcon, self.homeIcon, self.contactsIcon, self.settingsIcon, self.clockLabel, self.dateLabel,self.timeFrame, \
-            self.temp, self.pressure, self.humidity, self.image_weather, self.weatherFrame)
+        toolbar = Toolbar(self.tk,self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.clockIcon, self.sunIcon, \
+             self.homeIcon, self.contactsIcon, self.settingsIcon)
 
         clock_button = Button(self.toolbarFrame, image=self.clockIcon, highlightbackground='black', bg='black', command=toolbar.time_function)
-        weather_button = Button(self.toolbarFrame, image=self.sunIcon, highlightbackground='black', bg='black', command=toolbar.weather_function)       #
-        home_button = Button(self.toolbarFrame, image=self.homeIcon, highlightbackground='black', bg='black', command=toolbar.OpenToolbarAnimation)         #to change
+        weather_button = Button(self.toolbarFrame, image=self.sunIcon, highlightbackground='black', bg='black', command=toolbar.weather_function)      
+        home_button = Button(self.toolbarFrame, image=self.homeIcon, highlightbackground='black', bg='black', command=toolbar.gmail_function)         #to change
         contact_button = Button(self.toolbarFrame, image=self.contactsIcon, highlightbackground='black', bg='black', command=toolbar.OpenToolbarAnimation)  #
         settings_button = Button(self.toolbarFrame, image=self.settingsIcon, highlightbackground='black', bg='black', command=toolbar.OpenToolbarAnimation) #
 
@@ -110,7 +90,7 @@ class Toolbar:
             self.toolbarFrame.place(x=x_pos, y=0)
             self.toolbarFrame.update()
     
-    def OpenToolbarAnimation_DF(toolbarFrame: Frame):
+    def OpenToolbarAnimation_DF(toolbarFrame: Frame) -> None:
         """
         Show toolbar from diffrent file
         Paramets
@@ -122,7 +102,7 @@ class Toolbar:
             toolbarFrame.place(x=x_pos, y=0)
             toolbarFrame.update()
     
-    def HideToolbarAnimation(self):
+    def HideToolbarAnimation(self) -> None:
         """
         Hide toolbar
         """
@@ -130,7 +110,7 @@ class Toolbar:
             self.toolbarFrame.place(x=x_pos, y=0)
             self.toolbarFrame.update()
     
-    def HideToolbarAnimation_DF(toolbarFrame):
+    def HideToolbarAnimation_DF(toolbarFrame: Frame) -> None:
         """
         Hide toolbar from diffrent file
         Paramets
@@ -144,11 +124,15 @@ class Toolbar:
 
 
     
-    def time_function(self):
+    def time_function(self) -> None:
         """It is a bridge into a function activate"""
         self.functions_activate.time_function()
     
-    def weather_function(self):
+    def weather_function(self) -> None:
         """It is a bridge into a function activate"""
         self.functions_activate.weather_function()
+
+    def gmail_function(self) -> None:
+        """It is a bridge into a function activate"""
+        self.functions_activate.gmail_function()
     

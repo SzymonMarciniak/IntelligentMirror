@@ -48,7 +48,7 @@ class Camera:
 
             self.RFace = "Unknown"
 
-        def recognition(self):
+        def recognition(self) -> None:
             global frame
             """This function detecting faces"""
 
@@ -136,7 +136,7 @@ class Camera:
         
         
             
-        def virtual_mouse(self):
+        def virtual_mouse(self) -> None:
             """
             This function is responsible for control mouse (moveing and clicking). You control mouse with your hand.
             """

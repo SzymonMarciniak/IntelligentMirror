@@ -9,27 +9,19 @@ class CurrentTime:
     """
     This class is responsible for the display and correct operation of the clock 
     """
-    def __init__(self,
-                clockLabel: Label, 
-                dateLabel: Label, 
-                timeFrame: Frame) -> None:
+    def __init__(self, tk: Frame, timeFrame:Frame) -> None:
         """
         Parametrs
         ---------
-        clockLabel: Label
-            Label for clock
-        
-        dateLabel: Label
-            Label for date
-        
+        tk: Frame
+            Main window frame
         timeFrame: Frame
             Frame for clock label and date label
         """
 
-
-        self.clockLabel = clockLabel
-        self.dateLabel = dateLabel
         self.timeFrame = timeFrame
+        self.clockLabel = Label(timeFrame, font=("Arial", 60), bg="black", fg="white")
+        self.dateLabel = Label(timeFrame, font=("Arial", 30), bg="black", fg="white")
     
     def clock_date(self) -> None:
         """

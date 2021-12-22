@@ -4,6 +4,7 @@ import os
 
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
 from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
+from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 from IntelligentMirror.camera.move_functions import MoveFunction
 
 class FunctionsActivateClass:
@@ -11,59 +12,40 @@ class FunctionsActivateClass:
 
     def __init__(self,
                 tk: Frame,
-                clockLabel: Label,
-                dateLabel: Label,
                 timeFrame: Frame,
-                temp: Label,
-                pressure: Label,
-                humidity:Label,
-                image_weather: Label,
-                weatherFrame: Frame) -> None:
+                weatherFrame: Frame,
+                gmailFrame: Frame) -> None:
 
         """
         Parametrs
         ---------
         tk: Tk()
             Name of main window
-            
-        clockLabel: Label
-            Label for clock
-        dateLabel: Label
-            Label for date
         timeFrame: Frame
             Frame for clock label and date label
-        
-        temp: Label
-            Label for current temerature 
-        pressure: Label
-            Label for current pressure
-        humidity: Label 
-            Label for current humidity 
-        image_weather: Label 
-            Label for current weather image 
         weatherFrame: Frame 
             Frame for all weather labels 
+        gmailFrame: Frame
+            Frame for all gmail labels
         """
         self.tk = tk
-        self.clockLabel = clockLabel
-        self.dateLabel = dateLabel
+
         self.timeFrame = timeFrame
-
-        self.temp = temp 
-        self.pressure = pressure
-        self.humidity = humidity
-        self.image_weather = image_weather
         self.weatherFrame = weatherFrame
+        self.gmailFrame = gmailFrame
 
-        self.time = CurrentTime(self.clockLabel, self.dateLabel, self.timeFrame)
-        self.weather = CurrentWeather(self.temp, self.pressure, self.humidity, self.image_weather, self.weatherFrame)
+
+        self.time = CurrentTime(self.tk, self.timeFrame)
+        self.weather = CurrentWeather(self.tk, self.weatherFrame)
+        self.gmail = GmailMain(self.tk, self.gmailFrame)
 
         self.prefix = os.getcwd()
 
 
 
 
-    def time_function(self):
+
+    def time_function(self) -> None:
         """Activates time function"""
         self.move_function = MoveFunction(self.timeFrame)
        
@@ -75,8 +57,7 @@ class FunctionsActivateClass:
         self.time.clock_date()
         self.move_function.move()
 
-    
-    def weather_function(self):
+    def weather_function(self) -> None:
         """Activates weather function"""
         self.move_function = MoveFunction(self.weatherFrame)
 
@@ -86,6 +67,18 @@ class FunctionsActivateClass:
         file.close()
 
         self.weather.weather()
+        self.move_function.move()
+    
+    def gmail_function(self) -> None:
+        """Activates gmail function"""
+        self.move_function = MoveFunction(self.gmailFrame)
+
+        with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
+            data = {"event": {"event": "True", "frame": "gmail"}}
+            json.dump(data, file)
+        file.close()
+
+        self.gmail.main()
         self.move_function.move()
     
     
