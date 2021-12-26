@@ -35,8 +35,7 @@ function_activate = FunctionsActivateClass(tk, timeFrame, weatherFrame, gmailFra
 
 toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon)
                 
-camera = Camera.FaceRecognition()
-cam = Camera.mouse(toolbarFrame)
+camera = Camera(tk, toolbarFrame)
 
 def open_toolbar(x) -> None:
     """
@@ -57,10 +56,7 @@ if __name__ == "__main__":
     toolbar.OpenToolbar()
 
 
-MouseThread = threading.Thread(target=cam.virtual_mouse)
+MouseThread = threading.Thread(target=camera.FaceRecognition)
 MouseThread.start() 
-
-cameraThread = threading.Thread(target=camera.recognition)
-cameraThread.start()
 
 tk.mainloop()

@@ -21,17 +21,18 @@ class MoveFunction:
         
 
         with open(f"{self.prefix}mouse_event.json", "r", encoding="utf-8") as file1:
-                data1 = json.load(file1)
-                activate = (data1["event"]["event"])
+            data1 = json.loads(file1.read())
+            activate = (data1["event"]["event"])
         file1.close()
+        time.sleep(0.05)
 
         while activate == "True":
             with open(f"{self.prefix}mouse_event.json", "r", encoding="utf-8") as file1:
-                data1 = json.load(file1)
+                data1 = json.loads(file1.read())
                 activate = (data1["event"]["event"])
             file1.close()
 
-            time.sleep(0.01)
+            
             with open(f"{self.prefix}mouse_position.json", "r", encoding="utf-8") as file2:
                 data2 = json.loads(file2.read())
                 x_pos = (data2["position"]["x"])
@@ -54,6 +55,7 @@ class MoveFunction:
         
             self.frame.place(x=x_pos, y=y_pos)
             self.frame.update()
+            time.sleep(0.05)
         self.frame.update()
         
 
