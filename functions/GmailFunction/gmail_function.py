@@ -3,7 +3,6 @@ import imaplib
 import email
 from email.header import decode_header
 from typing import List
-import webbrowser
 import os
 import json
 from tkinter import *
@@ -103,7 +102,7 @@ class GmailMain:
     """
     Display gmail frame
 
-    Paramets
+    Paramerts
     --------
     tk: Frame
         Frame of main window
@@ -136,6 +135,55 @@ class GmailMain:
         self.subject_label_3 = Label(self.gm3, font=("", 15),  bg="black", fg="white")
 
         self.gmailLabelFrame = Frame(self.preGmail)
+
+        self.gm0.bind("<Button-1>", self.drag_start_frame)
+        self.gm0.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.from_label_0.bind("<Button-1>", self.drag_start_frame)
+        self.from_label_0.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.gm1.bind("<Button-1>", self.drag_start_frame)
+        self.gm1.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.from_label_1.bind("<Button-1>", self.drag_start_frame)
+        self.from_label_1.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.gm2.bind("<Button-1>", self.drag_start_frame)
+        self.gm2.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.from_label_2.bind("<Button-1>", self.drag_start_frame)
+        self.from_label_2.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.gm3.bind("<Button-1>", self.drag_start_frame)
+        self.gm3.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.from_label_3.bind("<Button-1>", self.drag_start_frame)
+        self.from_label_3.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.gmailFrame.bind("<Button-1>", GmailMain.drag_start)
+        self.gmailFrame.bind("<B1-Motion>", GmailMain.drag_motion)
+
+        self.subject_label_0.bind("<Button-1>", self.drag_start_frame)
+        self.subject_label_0.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.subject_label_1.bind("<Button-1>", self.drag_start_frame)
+        self.subject_label_1.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.subject_label_2.bind("<Button-1>", self.drag_start_frame)
+        self.subject_label_2.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.subject_label_3.bind("<Button-1>", self.drag_start_frame)
+        self.subject_label_3.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.preGmail.bind("<Button-1>", self.drag_start_frame)
+        self.preGmail.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.preGmail_Label.bind("<Button-1>", self.drag_start_frame)
+        self.preGmail_Label.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.gmailLabelFrame.bind("<Button-1>", self.drag_start_frame)
+        self.gmailLabelFrame.bind("<B1-Motion>", self.drag_motion_frame)
+
     
     def set_from_gamil_headers(self) -> List:
         """
@@ -235,4 +283,88 @@ class GmailMain:
 
         self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
 
+    
+    @staticmethod
+    def drag_start(event):
+        widget = event.widget
+        widget.startX = event.x
+        widget.startY = event.y
+    
+    @staticmethod
+    def drag_motion(event):
+        widget = event.widget
+        x = widget.winfo_x() - widget.startX + event.x
+        y = widget.winfo_y() - widget.startY + event.y
 
+        tk_width = 1920
+        tk_height = 1080
+        frame_width = widget.winfo_width()
+        frame_height = widget.winfo_height()
+
+        max_x = tk_width - frame_width
+        max_y = tk_height - frame_height
+
+        if x > max_x:
+            x = max_x
+        elif x < 0:
+            x = 0
+
+        if y > max_y:
+            y = max_y
+        elif y < 0:
+            y = 0
+        
+        widget.place(x=x, y=y)
+
+        data = {
+            "position": {
+                "x": x,
+                "y": y
+            }
+        }
+        
+        prefix = os.getcwd()
+        with open(f"{prefix}/IntelligentMirror/functions/GmailFunction/gmail_position.json", "w", encoding="utf-8") as file:
+            json.dump(data, file)
+        file.close()
+
+        
+    def drag_start_frame(self, event):
+        self.gmailFrame.startX = event.x
+        self.gmailFrame.startY = event.y
+    
+    
+    def drag_motion_frame(self, event):
+        x = self.gmailFrame.winfo_x() - self.gmailFrame.startX + event.x
+        y = self.gmailFrame.winfo_y() - self.gmailFrame.startY + event.y
+
+        tk_width = 1920
+        tk_height = 1080
+        frame_width = self.gmailFrame.winfo_width()
+        frame_height = self.gmailFrame.winfo_height()
+
+        max_x = tk_width - frame_width
+        max_y = tk_height - frame_height
+
+        if x > max_x:
+            x = max_x
+        elif x < 0:
+            x = 0
+
+        if y > max_y:
+            y = max_y
+        elif y < 0:
+            y = 0
+
+        self.gmailFrame.place(x=x, y=y)
+
+        data = {
+            "position": {
+                "x": x,
+                "y": y
+            }
+        }
+
+        with open(f"{self.prefix}/IntelligentMirror/functions/GmailFunction/gmail_position.json", "w", encoding="utf-8") as file:
+            json.dump(data, file)
+        file.close()

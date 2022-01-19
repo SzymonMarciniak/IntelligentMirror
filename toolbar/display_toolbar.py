@@ -79,7 +79,7 @@ class Toolbar:
         settings_button.pack(side=TOP)
 
         
-        self.toolbarFrame.place(x=-200,y=0)
+        self.toolbarFrame.place(x=-210,y=0)
 
 
     def OpenToolbarAnimation(self) -> None:
@@ -89,6 +89,7 @@ class Toolbar:
         for x_pos in range(-200,1,10):
             self.toolbarFrame.place(x=x_pos, y=0)
             self.toolbarFrame.update()
+        
     
     def OpenToolbarAnimation_DF(toolbarFrame: Frame) -> None:
         """
@@ -101,12 +102,13 @@ class Toolbar:
         for x_pos in range(-200,1,10):
             toolbarFrame.place(x=x_pos, y=0)
             toolbarFrame.update()
+           
     
     def HideToolbarAnimation(self) -> None:
         """
         Hide toolbar
         """
-        for x_pos in range(1,-200,-1):
+        for x_pos in range(1,-211,-1):
             self.toolbarFrame.place(x=x_pos, y=0)
             self.toolbarFrame.update()
     
@@ -118,7 +120,7 @@ class Toolbar:
         toolbarFrame: Frame
             Frame for toolbar
         """
-        for x_pos in range(1,-200,-3):
+        for x_pos in range(1,-211,-3):
             toolbarFrame.place(x=x_pos, y=0)
             toolbarFrame.update()
 

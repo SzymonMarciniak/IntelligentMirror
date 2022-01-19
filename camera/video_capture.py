@@ -176,7 +176,7 @@ class Camera:
         frameR = 100 # Frame Reduction
         smoothening = 6
 
-        pTime = 0
+       
         plocX, plocY = 0, 0
         clocX, clocY = 0, 0
 
@@ -343,9 +343,7 @@ class Camera:
                             data["event"]["event"] = "True"
                         file0.close()
 
-                        with open(f"{self.prefix}/mouse_event.json", "w", encoding="utf-8") as file: #Over 
-                            json.dump(data, file)
-                        file.close()
+
 
                    
 

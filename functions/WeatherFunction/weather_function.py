@@ -5,6 +5,8 @@ from PIL import ImageTk, Image
 import os
 import json
 
+prefix_ = os.getcwd()
+
 class CurrentWeather:
     """This class is responsible for correctly displaying the current weather"""
     def __init__(self,tk:Frame, weatherFrame: Frame) -> None:
@@ -26,9 +28,23 @@ class CurrentWeather:
         self.humidity = Label(weatherFrame, font=("Arial", 25))
         self.image = Label(weatherFrame, font=("Arial", 40))
 
+        self.weatherFrame.bind("<Button-1>", CurrentWeather.drag_start)
+        self.weatherFrame.bind("<B1-Motion>", CurrentWeather.drag_motion)
 
-        prefix = os.getcwd()
-        self.prefix = f"{prefix}/IntelligentMirror/functions/WeatherFunction/"
+        self.temp.bind("<Button-1>", self.drag_start_frame)
+        self.temp.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.pressure.bind("<Button-1>", self.drag_start_frame)
+        self.pressure.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.humidity.bind("<Button-1>", self.drag_start_frame)
+        self.humidity.bind("<B1-Motion>", self.drag_motion_frame)
+
+        self.image.bind("<Button-1>", self.drag_start_frame)
+        self.image.bind("<B1-Motion>", self.drag_motion_frame)
+
+        
+        self.prefix = f"{prefix_}/IntelligentMirror/functions/WeatherFunction/"
 
         weather_icon_old = Image.open(f"{self.prefix}weather_img.png")
         weather_icon_new = weather_icon_old.resize((140,140))
@@ -113,4 +129,87 @@ class CurrentWeather:
             y = (data["position"]["y"])
         return x, y
 
+    
+    @staticmethod
+    def drag_start(event):
+        widget = event.widget
+        widget.startX = event.x
+        widget.startY = event.y
+    
+    @staticmethod
+    def drag_motion(event):
+        widget = event.widget
+        x = widget.winfo_x() - widget.startX + event.x
+        y = widget.winfo_y() - widget.startY + event.y
+
+        tk_width = 1920
+        tk_height = 1080
+        frame_width = widget.winfo_width()
+        frame_height = widget.winfo_height()
+
+        max_x = tk_width - frame_width
+        max_y = tk_height - frame_height
+
+        if x > max_x:
+            x = max_x
+        elif x < 0:
+            x = 0
+
+        if y > max_y:
+            y = max_y
+        elif y < 0:
+            y = 0
         
+        widget.place(x=x, y=y)
+
+        data = {
+            "position": {
+                "x": x,
+                "y": y
+            }
+        }
+        
+        with open(f"{prefix_}/IntelligentMirror/functions/WeatherFunction/weather_position.json", "w", encoding="utf-8") as file:
+            json.dump(data, file)
+        file.close()
+
+        
+    def drag_start_frame(self, event):
+        self.weatherFrame.startX = event.x
+        self.weatherFrame.startY = event.y
+    
+    
+    def drag_motion_frame(self, event):
+        x = self.weatherFrame.winfo_x() - self.weatherFrame.startX + event.x
+        y = self.weatherFrame.winfo_y() - self.weatherFrame.startY + event.y
+
+        tk_width = 1920
+        tk_height = 1080
+        frame_width = self.weatherFrame.winfo_width()
+        frame_height = self.weatherFrame.winfo_height()
+
+        max_x = tk_width - frame_width
+        max_y = tk_height - frame_height
+
+        if x > max_x:
+            x = max_x
+        elif x < 0:
+            x = 0
+
+        if y > max_y:
+            y = max_y
+        elif y < 0:
+            y = 0
+
+        self.weatherFrame.place(x=x, y=y)
+
+        data = {
+            "position": {
+                "x": x,
+                "y": y
+            }
+        }
+
+        with open(f"{self.prefix}weather_position.json", "w", encoding="utf-8") as file:
+            json.dump(data, file)
+        file.close()

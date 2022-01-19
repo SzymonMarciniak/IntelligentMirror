@@ -59,4 +59,5 @@ if __name__ == "__main__":
 MouseThread = threading.Thread(target=camera.FaceRecognition)
 MouseThread.start() 
 
+
 tk.mainloop()
