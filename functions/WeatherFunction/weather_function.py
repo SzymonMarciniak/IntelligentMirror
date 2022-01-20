@@ -46,6 +46,9 @@ class CurrentWeather:
         
         self.prefix = f"{prefix_}/IntelligentMirror/functions/WeatherFunction/"
 
+        #self.get_image()
+
+    def get_image(self):
         weather_icon_old = Image.open(f"{self.prefix}weather_img.png")
         weather_icon_new = weather_icon_old.resize((140,140))
         self.weather_icon = ImageTk.PhotoImage(weather_icon_new)
@@ -81,7 +84,7 @@ class CurrentWeather:
                 url_i = 'http://openweathermap.org/img/wn/{icon}.png'.format(icon=icon_id)
                 response_i = requests.get(url_i, stream=True)
                 if response_i.status_code == 200:
-                    with open(f"{self.prefix}/weather_img.png", "wb") as img:
+                    with open(f"{self.prefix}weather_img.png", "wb") as img:
                         shutil.copyfileobj(response_i.raw, img)
                             
 
@@ -98,6 +101,7 @@ class CurrentWeather:
                 self.humidity.configure(bg="black", fg="white")
                 self.humidity.after(900000, weather_loading)
 
+                self.get_image()
                 self.image.config(image=self.weather_icon, bg="black")
                 self.image.after(900000, weather_loading)
 
