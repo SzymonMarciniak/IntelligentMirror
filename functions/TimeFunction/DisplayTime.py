@@ -7,7 +7,8 @@ import os
 
 
 prefix = os.getcwd()
-prefix = f"{prefix}/IntelligentMirror/functions/TimeFunction/"
+db = f"{prefix}/IntelligentMirror/DataBase.json"
+      
 
 class CurrentTime:
     """
@@ -80,12 +81,11 @@ class CurrentTime:
             value of "y" time position
         """
 
-        self.prefix = os.getcwd()
-        self.prefix = f"{self.prefix}/IntelligentMirror/functions/TimeFunction/"
-        with open(f"{self.prefix}time_position.json", "r", encoding="utf-8") as file:
+    
+        with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            x = (data["position"]["x"])
-            y = (data["position"]["y"])
+            x = data["db"]["functions"]["positions"]["time"]["x"]
+            y = data["db"]["functions"]["positions"]["time"]["y"]
         return x, y
 
 
@@ -122,16 +122,15 @@ class CurrentTime:
         
         widget.place(x=x, y=y)
 
-        data = {
-            "position": {
-                "x": x,
-                "y": y
-            }
-        }
         
-        with open(f"{prefix}time_position.json", "w", encoding="utf-8") as file:
-            json.dump(data, file)
-        file.close()
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["functions"]["positions"]["time"]["x"] = x
+            data["db"]["functions"]["positions"]["time"]["y"] = y
+
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
 
     
     def drag_start_frame(self, event):
@@ -163,15 +162,12 @@ class CurrentTime:
 
         self.timeFrame.place(x=x, y=y)
 
-        data = {
-            "position": {
-                "x": x,
-                "y": y
-            }
-        }
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["functions"]["positions"]["time"]["x"] = x
+            data["db"]["functions"]["positions"]["time"]["y"] = y
 
-        with open(f"{self.prefix}time_position.json", "w", encoding="utf-8") as file:
-            json.dump(data, file)
-        file.close()
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
 
 

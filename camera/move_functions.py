@@ -1,7 +1,6 @@
 from tkinter import * 
 import os 
 import json
-import time 
  
 class MoveFunction:
     """This function is responsible for moveing labelframe of choosing function"""
@@ -13,6 +12,7 @@ class MoveFunction:
             Choosing function LabelFrame
         """
         self.prefix_ = os.getcwd() 
+        self.db = f"{self.prefix_}/IntelligentMirror/DataBase.json"
         self.prefix = f"{self.prefix_}/IntelligentMirror/camera/"
         self.frame = frame
 
@@ -20,29 +20,25 @@ class MoveFunction:
     def move(self) -> None:
         """Method responsible for moveing and keep an eye on the boundaries"""
         
-        with open(f"{self.prefix}mouse_event.json", "r", encoding="utf-8") as file1:
+        with open(self.db, "r", encoding="utf-8") as file1:
             data1 = json.loads(file1.read())
-            activate = (data1["event"]["event"])
+            activate = data1["db"]["camera"]["mouse_event"]["event"]
         file1.close()
         
 
         while activate == "True":
 
-            with open(f"{self.prefix}mouse_event.json", "r", encoding="utf-8") as file1:
+            with open(self.db, "r", encoding="utf-8") as file1:
                 data1 = json.loads(file1.read())
-                activate = (data1["event"]["event"])
-                widget = (data1["event"]["frame"])
+                activate = data1["db"]["camera"]["mouse_event"]["event"]
+                widget = data1["db"]["camera"]["mouse_event"]["frame"]
             file1.close()
 
 
-           
-                
-            with open(f"{self.prefix_}/IntelligentMirror/functions/{widget.capitalize()}Function/{widget}_position.json", "r", encoding="utf-8") as file2:
-                data2 = json.loads(file2.read())
-                x_pos = (data2["position"]["x"])
-                y_pos = (data2["position"]["y"])
-            file2.close()
-
+            with open(self.db, "r", encoding="utf-8") as file:
+                data = json.load(file)
+                x_pos = data["db"]["functions"]["positions"][widget]["x"]
+                y_pos = data["db"]["functions"]["positions"][widget]["y"]
 
             tk_width = 1920
             tk_height = 1080

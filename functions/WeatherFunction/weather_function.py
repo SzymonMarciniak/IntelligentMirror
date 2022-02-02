@@ -6,6 +6,7 @@ import os
 import json
 
 prefix_ = os.getcwd()
+db = f"{prefix_}/IntelligentMirror/DataBase.json"
 
 class CurrentWeather:
     """This class is responsible for correctly displaying the current weather"""
@@ -46,7 +47,6 @@ class CurrentWeather:
         
         self.prefix = f"{prefix_}/IntelligentMirror/functions/WeatherFunction/"
 
-        #self.get_image()
 
     def get_image(self):
         weather_icon_old = Image.open(f"{self.prefix}weather_img.png")
@@ -58,7 +58,7 @@ class CurrentWeather:
        
         x,y = CurrentWeather.check_position(self)
         self.weatherFrame.place(x=x, y=y, width=350, height=179)
-           
+            
         def weather_loading():
             """Checking the current weather"""
             api_key = "2e45239b1a0c0bd073f2c968d78cc172"
@@ -125,12 +125,10 @@ class CurrentWeather:
             value of "y" time position
         """
 
-        prefix = os.getcwd()
-        prefix = f"{prefix}/IntelligentMirror/functions/WeatherFunction/"
-        with open(f"{prefix}weather_position.json", "r", encoding="utf-8") as file:
+        with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            x = (data["position"]["x"])
-            y = (data["position"]["y"])
+            x = data["db"]["functions"]["positions"]["weather"]["x"]
+            y = data["db"]["functions"]["positions"]["weather"]["y"]
         return x, y
 
     
@@ -166,16 +164,13 @@ class CurrentWeather:
         
         widget.place(x=x, y=y)
 
-        data = {
-            "position": {
-                "x": x,
-                "y": y
-            }
-        }
-        
-        with open(f"{prefix_}/IntelligentMirror/functions/WeatherFunction/weather_position.json", "w", encoding="utf-8") as file:
-            json.dump(data, file)
-        file.close()
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["functions"]["positions"]["weather"]["x"] = x
+            data["db"]["functions"]["positions"]["weather"]["y"] = y
+
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
 
         
     def drag_start_frame(self, event):
@@ -207,13 +202,10 @@ class CurrentWeather:
 
         self.weatherFrame.place(x=x, y=y)
 
-        data = {
-            "position": {
-                "x": x,
-                "y": y
-            }
-        }
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["functions"]["positions"]["weather"]["x"] = x
+            data["db"]["functions"]["positions"]["weather"]["y"] = y
 
-        with open(f"{self.prefix}weather_position.json", "w", encoding="utf-8") as file:
-            json.dump(data, file)
-        file.close()
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)

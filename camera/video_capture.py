@@ -21,6 +21,7 @@ class Camera:
 
 
         prefix = os.getcwd()
+        self.db = f"{prefix}/IntelligentMirror/DataBase.json"
         self.prefix = f"{prefix}/IntelligentMirror/camera"
 
         persons = [person for person in os.listdir(f"{self.prefix}/data")]
@@ -59,14 +60,6 @@ class Camera:
                 return True 
             else: 
                 return False 
-        
-        def hand_info(hands):
-            hand = hands[0]
-            bbox= hand["bbox"]
-            center = hand["center"]
-            hand_type= hand["type"]
-            fingers_up= detector.fingers_up(hand)
-            return fingers_up[0], hand_type, bbox, center
      
         
         while True:
@@ -132,12 +125,15 @@ class Camera:
                             self.RFace = "None"
                             self.nick.config(text=self.RFace)
                     
-                    data = {
-                        "user": self.RFace,
-                    }
-                    with open(f"{self.prefix}/user.json", "w", encoding="utf-8") as user_file:
+
+                    with open(self.db, "r", encoding="utf-8") as file:
+                        data = json.load(file)
+                        data["db"]["camera"]["actuall_user"] = self.RFace
+                    
+                    with open(self.db, "w", encoding="utf-8") as user_file:
                         json.dump(data, user_file)
-                    user_file.close()
+                   
+                       
 
                     print(self.RFace)
                     time.sleep(0.25)
@@ -201,19 +197,15 @@ class Camera:
                     pyautogui.click(x=x, y=y)
                         
 
-                    with open(f"{self.prefix}/mouse_event.json", "r", encoding="utf-8") as file0:
+                    with open(self.db, "r", encoding="utf-8") as file0:
                         data = json.load(file0)
-                        data["event"]["event"] = "True"
-                    file0.close()
+                        data["db"]["camera"]["mouse_event"]["event"] = "True"
 
-                    with open(f"{self.prefix}/mouse_event.json", "w", encoding="utf-8") as file:
+                    with open(self.db, "w", encoding="utf-8") as file:
                         json.dump(data, file)
-                    file.close()
-
-
-                # Find hand Landmarks
-
                    
+
+                # Find hand Landmarks    
                 hands, img = detector.find_hands(img, draw=False)
 
                 if not hands:
@@ -267,13 +259,13 @@ class Camera:
 
                                 
                             #Save mouse mode
-                            with open(f"{self.prefix}/mouse_event.json", "r", encoding="utf-8") as file0:
+                            with open(self.db, "r", encoding="utf-8") as file0:
                                 data = json.load(file0)
-                                data["event"]["event"] = "False"
+                                data["db"]["camera"]["mouse_event"]["event"] = "False"
                             file0.close()
 
 
-                            with open(f"{self.prefix}/mouse_event.json", "w", encoding="utf-8") as file:
+                            with open(self.db, "w", encoding="utf-8") as file:
                                 json.dump(data, file)
                             file.close()
 
@@ -281,15 +273,16 @@ class Camera:
                             pyautogui.moveTo(x, y)
                             plocX, plocY = clocX, clocY
 
-                        
-
                             #save mouse coordinates
-                            with open(f"{self.prefix}/mouse_position.json", "w", encoding="utf-8") as file: 
-                                data = {"position":
-                                {"x":x,
-                                "y":y}}
+                            with open(self.db, "r", encoding="utf-8") as file0:
+                                data = json.load(file0)
+                                data["db"]["functions"]["positions"]["mouse"]["x"] = x
+                                data["db"]["functions"]["positions"]["mouse"]["y"] = Y
+
+                            with open(self.db, "w", encoding="utf-8") as file: 
                                 json.dump(data, file)
                             file.close()
+
                             #Show/Hide toolbar 
                             if x <=205:
                                 if toolbar_animation:
@@ -313,16 +306,18 @@ class Camera:
 
                         no_fingers = 0
 
-                        with open(f"{self.prefix}/mouse_position.json", "w", encoding="utf-8") as file: 
-                            data = {"position":
-                            {"x":x,
-                            "y":y}}
+                        with open(self.db, "r", encoding="utf-8") as file0:
+                            data = json.load(file0)
+                            data["db"]["functions"]["positions"]["mouse"]["x"] = x
+                            data["db"]["functions"]["positions"]["mouse"]["y"] = Y
+
+                        with open(self.db, "w", encoding="utf-8") as file: 
                             json.dump(data, file)
                         file.close()
 
-                        with open(f"{self.prefix}/mouse_event.json", "r", encoding="utf-8") as file:
+                        with open(self.db, "r", encoding="utf-8") as file:
                             data = json.load(file)
-                            activate = (data["event"]["event"])  
+                            activate = data["db"]["camera"]["mouse_event"]["event"]
                         file.close()
                             
 
@@ -338,9 +333,9 @@ class Camera:
                             pyautogui.moveTo(x, y)
                             plocX, plocY = clocX, clocY
                             
-                        with open(f"{self.prefix}/mouse_event.json", "r", encoding="utf-8") as file0:
+                        with open(self.db, "r", encoding="utf-8") as file0:
                             data = json.load(file0)
-                            data["event"]["event"] = "True"
+                            data["db"]["camera"]["mouse_event"]["event"] = "True"
                         file0.close()
 
 

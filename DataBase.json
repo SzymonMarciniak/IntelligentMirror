@@ -1,0 +1,43 @@
+{
+    "db": {
+        "camera": {
+            "actuall_user": "None",
+            "mouse_event": {
+                "event": "False",
+                "frame": "gmail"
+            }
+        },
+        "functions": {
+            "gmail": {
+                "accounts": {
+                    "szymon_marciniak": {
+                        "login": "szymonmarciniak24@gmail.com",
+                        "haslo": "haslo123"
+                    },
+                    "agata_marciniak": {
+                        "login": "agatka@gmail.com",
+                        "haslo": "haslo123"
+                    }
+                }
+            },
+            "positions": {
+                "mouse": {
+                    "x": 1597,
+                    "y": 506
+                },
+                "time": {
+                    "x": 634,
+                    "y": 224
+                },
+                "weather": {
+                    "x": 694,
+                    "y": 502
+                },
+                "gmail": {
+                    "x": 1293,
+                    "y": 85
+                }
+            }
+        }
+    }
+}

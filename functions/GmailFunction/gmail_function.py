@@ -1,4 +1,3 @@
-
 import imaplib
 import email
 from email.header import decode_header
@@ -12,6 +11,9 @@ global Subject_list, From_list
 Subject_list = []
 From_list = []
 
+prefix = os.getcwd()
+db = f"{prefix}/IntelligentMirror/DataBase.json"
+
 class Gmail:
     """Gmail module"""
 
@@ -20,6 +22,7 @@ class Gmail:
     def __init__(self) ->None:
         super().__init__()
         self.prefix = os.getcwd()
+        self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
 
 
     def start(self) -> List:
@@ -40,13 +43,13 @@ class Gmail:
         Rface = "szymon_marciniak"
                         
 
-        with open(f"{self.prefix}/IntelligentMirror/functions/GmailFunction/gmail_accounts.json", "r", encoding="utf-8") as gmail_f:
+        with open(self.db, "r", encoding="utf-8") as gmail_f:
             gmail = json.load(gmail_f)
-            gmail_f.close()
+            
 
             if Rface != "unknown":
-                username = gmail["gmail"][Rface]["login"]
-                password = gmail["gmail"][Rface]["haslo"]
+                username = gmail["db"]["functions"]["gmail"]["accounts"][Rface]["login"]
+                password = gmail["db"]["functions"]["gmail"]["accounts"][Rface]["haslo"]
 
 
                 From = " "
@@ -113,6 +116,7 @@ class GmailMain:
         gmail = Gmail()
         self.data = gmail.start() 
         self.prefix = os.getcwd()
+        self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
 
         tk.configure(background="black")
 
@@ -135,6 +139,13 @@ class GmailMain:
         self.subject_label_3 = Label(self.gm3, font=("", 15),  bg="black", fg="white")
 
         self.gmailLabelFrame = Frame(self.preGmail)
+
+        self.gmailLogo = PhotoImage(file=f"{self.prefix}/IntelligentMirror/functions/GmailFunction/gmail_logo.png")
+        self.GmailLogo = Label(self.gmailLabelFrame, image=self.gmailLogo, fg='gray', bg='gray')
+        self.GmailLogo.pack(side=LEFT)
+
+        self.GmailLogo.bind("<Button-1>", self.drag_start_frame)
+        self.GmailLogo.bind("<B1-Motion>", self.drag_motion_frame)
 
         self.gm0.bind("<Button-1>", self.drag_start_frame)
         self.gm0.bind("<B1-Motion>", self.drag_motion_frame)
@@ -270,16 +281,16 @@ class GmailMain:
                     
 
         self.preGmail.place(x=1, y=c, width=220, height=d+c)
-        self.gmailLabelFrame.pack(side=RIGHT, padx=15)
+        self.gmailLabelFrame.pack(side=RIGHT, padx=8)
         self.gm0.place(x=1, y=c+d,    width=220, height=82)
         self.gm1.place(x=1, y=b*1+c+d,width=220, height=82)
         self.gm2.place(x=1, y=b*2+c+d,width=220, height=82)
         self.gm3.place(x=1, y=b*3+c+d,width=220, height=82)
 
-        with open(f"{self.prefix}/IntelligentMirror/functions/GmailFunction/gmail_position.json", "r", encoding="utf-8") as file:
+        with open(self.db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            x_pos = (data["position"]["x"])
-            y_pos = (data["position"]["y"])
+            x_pos = data["db"]["functions"]["positions"]["gmail"]["x"]
+            y_pos = data["db"]["functions"]["positions"]["gmail"]["y"]
 
         self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
 
@@ -316,18 +327,15 @@ class GmailMain:
         
         widget.place(x=x, y=y)
 
-        data = {
-            "position": {
-                "x": x,
-                "y": y
-            }
-        }
         
-        prefix = os.getcwd()
-        with open(f"{prefix}/IntelligentMirror/functions/GmailFunction/gmail_position.json", "w", encoding="utf-8") as file:
-            json.dump(data, file)
-        file.close()
 
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["functions"]["positions"]["gmail"]["x"] = x
+            data["db"]["functions"]["positions"]["gmail"]["y"] = y
+
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
         
     def drag_start_frame(self, event):
         self.gmailFrame.startX = event.x
@@ -358,13 +366,10 @@ class GmailMain:
 
         self.gmailFrame.place(x=x, y=y)
 
-        data = {
-            "position": {
-                "x": x,
-                "y": y
-            }
-        }
+        with open(self.db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["functions"]["positions"]["gmail"]["x"] = x
+            data["db"]["functions"]["positions"]["gmail"]["y"] = y
 
-        with open(f"{self.prefix}/IntelligentMirror/functions/GmailFunction/gmail_position.json", "w", encoding="utf-8") as file:
-            json.dump(data, file)
-        file.close()
+        with open(self.db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)

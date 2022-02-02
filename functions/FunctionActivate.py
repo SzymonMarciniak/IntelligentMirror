@@ -40,6 +40,7 @@ class FunctionsActivateClass:
         self.gmail = GmailMain(self.tk, self.gmailFrame)
 
         self.prefix = os.getcwd()
+        self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
 
 
 
@@ -48,9 +49,13 @@ class FunctionsActivateClass:
     def time_function(self) -> None:
         """Activates time function"""
         self.move_function = MoveFunction(self.timeFrame)
-       
-        with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
-            data = {"event": {"event": "True", "frame": "time"}}
+
+        with open(self.db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["camera"]["mouse_event"]["event"] = "False"
+            data["db"]["camera"]["mouse_event"]["frame"] = "time"
+
+        with open(self.db, "w", encoding="utf-8") as file:
             json.dump(data, file)
         file.close()
 
@@ -61,8 +66,12 @@ class FunctionsActivateClass:
         """Activates weather function"""
         self.move_function = MoveFunction(self.weatherFrame)
 
-        with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
-            data = {"event": {"event": "True", "frame": "weather"}}
+        with open(self.db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["camera"]["mouse_event"]["event"] = "False"
+            data["db"]["camera"]["mouse_event"]["frame"] = "weather"
+
+        with open(self.db, "w", encoding="utf-8") as file:
             json.dump(data, file)
         file.close()
 
@@ -73,8 +82,12 @@ class FunctionsActivateClass:
         """Activates gmail function"""
         self.move_function = MoveFunction(self.gmailFrame)
 
-        with open(f"{self.prefix}/IntelligentMirror/camera/mouse_event.json", "w", encoding="utf-8") as file:
-            data = {"event": {"event": "True", "frame": "gmail"}}
+        with open(self.db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["camera"]["mouse_event"]["event"] = "False"
+            data["db"]["camera"]["mouse_event"]["frame"] = "gmail"
+
+        with open(self.db, "w", encoding="utf-8") as file:
             json.dump(data, file)
         file.close()
 
