@@ -31,7 +31,7 @@ class CurrentWeather:
 
         self.weatherFrame.bind("<Button-1>", CurrentWeather.drag_start)
         self.weatherFrame.bind("<B1-Motion>", CurrentWeather.drag_motion)
-        self.weatherFrame.bind("<ButtonRelease-1>", CurrentWeather.drag_stop)
+        self.weatherFrame.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.temp.bind("<Button-1>", self.drag_start_frame)
         self.temp.bind("<B1-Motion>", self.drag_motion_frame)
@@ -172,18 +172,7 @@ class CurrentWeather:
         widget.stopX = x
         widget.stopY = y
     
-    @staticmethod
-    def drag_stop(event):
-        widget = event.widget
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            data["db"]["functions"]["positions"]["weather"]["x"] = widget.stopX 
-            data["db"]["functions"]["positions"]["weather"]["y"] = widget.stopY 
-
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-
-        
+   
     def drag_start_frame(self, event):
         self.weatherFrame.startX = event.x
         self.weatherFrame.startY = event.y
@@ -217,7 +206,7 @@ class CurrentWeather:
         self.weatherFrame.stopY = y
 
     
-    def drag_stop(self, event):
+    def drag_stop(self, event=None):
 
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)

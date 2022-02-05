@@ -146,7 +146,7 @@ class GmailMain:
 
         self.gmailFrame.bind("<Button-1>", GmailMain.drag_start)
         self.gmailFrame.bind("<B1-Motion>", GmailMain.drag_motion)
-        self.gmailFrame.bind("<ButtonRelease-1>", GmailMain.drag_stop)
+        self.gmailFrame.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.GmailLogo.bind("<Button-1>", self.drag_start_frame)
         self.GmailLogo.bind("<B1-Motion>", self.drag_motion_frame)
@@ -347,16 +347,6 @@ class GmailMain:
         widget.stopX = x
         widget.stopY = y
 
-    @staticmethod
-    def drag_stop(event):
-        widget = event.widget
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            data["db"]["functions"]["positions"]["gmail"]["x"] = widget.stopX 
-            data["db"]["functions"]["positions"]["gmail"]["y"] = widget.stopY 
-
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
         
     def drag_start_frame(self, event):
         self.gmailFrame.startX = event.x
@@ -390,7 +380,7 @@ class GmailMain:
         self.gmailFrame.stopX = x
         self.gmailFrame.stopY = y
 
-    def drag_stop(self, event):
+    def drag_stop(self, event=None):
 
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
