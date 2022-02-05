@@ -131,7 +131,7 @@ class Camera:
                         data["db"]["camera"]["actuall_user"] = self.RFace
                     
                     with open(self.db, "w", encoding="utf-8") as user_file:
-                        json.dump(data, user_file)
+                        json.dump(data, user_file, ensure_ascii=False, indent=4)
                    
                        
 
@@ -202,7 +202,7 @@ class Camera:
                         data["db"]["camera"]["mouse_event"]["event"] = "True"
 
                     with open(self.db, "w", encoding="utf-8") as file:
-                        json.dump(data, file)
+                        json.dump(data, file, ensure_ascii=False, indent=4)
                    
 
                 # Find hand Landmarks    
@@ -266,7 +266,7 @@ class Camera:
 
 
                             with open(self.db, "w", encoding="utf-8") as file:
-                                json.dump(data, file)
+                                json.dump(data, file, ensure_ascii=False, indent=4)
                             file.close()
 
                                 
@@ -280,7 +280,7 @@ class Camera:
                                 data["db"]["functions"]["positions"]["mouse"]["y"] = Y
 
                             with open(self.db, "w", encoding="utf-8") as file: 
-                                json.dump(data, file)
+                                json.dump(data, file, ensure_ascii=False, indent=4)
                             file.close()
 
                             #Show/Hide toolbar 
@@ -312,7 +312,7 @@ class Camera:
                             data["db"]["functions"]["positions"]["mouse"]["y"] = Y
 
                         with open(self.db, "w", encoding="utf-8") as file: 
-                            json.dump(data, file)
+                            json.dump(data, file, ensure_ascii=False, indent=4)
                         file.close()
 
                         with open(self.db, "r", encoding="utf-8") as file:

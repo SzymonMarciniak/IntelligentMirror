@@ -144,56 +144,73 @@ class GmailMain:
         self.GmailLogo = Label(self.gmailLabelFrame, image=self.gmailLogo, fg='gray', bg='gray')
         self.GmailLogo.pack(side=LEFT)
 
+        self.gmailFrame.bind("<Button-1>", GmailMain.drag_start)
+        self.gmailFrame.bind("<B1-Motion>", GmailMain.drag_motion)
+        self.gmailFrame.bind("<ButtonRelease-1>", GmailMain.drag_stop)
+
         self.GmailLogo.bind("<Button-1>", self.drag_start_frame)
         self.GmailLogo.bind("<B1-Motion>", self.drag_motion_frame)
-
+        self.GmailLogo.bind("<ButtonRelease-1>", self.drag_stop)
+        
         self.gm0.bind("<Button-1>", self.drag_start_frame)
         self.gm0.bind("<B1-Motion>", self.drag_motion_frame)
+        self.gm0.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.from_label_0.bind("<Button-1>", self.drag_start_frame)
         self.from_label_0.bind("<B1-Motion>", self.drag_motion_frame)
+        self.from_label_0.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.gm1.bind("<Button-1>", self.drag_start_frame)
         self.gm1.bind("<B1-Motion>", self.drag_motion_frame)
+        self.gm1.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.from_label_1.bind("<Button-1>", self.drag_start_frame)
         self.from_label_1.bind("<B1-Motion>", self.drag_motion_frame)
+        self.from_label_1.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.gm2.bind("<Button-1>", self.drag_start_frame)
         self.gm2.bind("<B1-Motion>", self.drag_motion_frame)
+        self.gm2.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.from_label_2.bind("<Button-1>", self.drag_start_frame)
         self.from_label_2.bind("<B1-Motion>", self.drag_motion_frame)
+        self.from_label_2.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.gm3.bind("<Button-1>", self.drag_start_frame)
         self.gm3.bind("<B1-Motion>", self.drag_motion_frame)
+        self.gm3.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.from_label_3.bind("<Button-1>", self.drag_start_frame)
         self.from_label_3.bind("<B1-Motion>", self.drag_motion_frame)
-
-        self.gmailFrame.bind("<Button-1>", GmailMain.drag_start)
-        self.gmailFrame.bind("<B1-Motion>", GmailMain.drag_motion)
+        self.from_label_3.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.subject_label_0.bind("<Button-1>", self.drag_start_frame)
         self.subject_label_0.bind("<B1-Motion>", self.drag_motion_frame)
+        self.subject_label_0.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.subject_label_1.bind("<Button-1>", self.drag_start_frame)
         self.subject_label_1.bind("<B1-Motion>", self.drag_motion_frame)
+        self.subject_label_1.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.subject_label_2.bind("<Button-1>", self.drag_start_frame)
         self.subject_label_2.bind("<B1-Motion>", self.drag_motion_frame)
+        self.subject_label_2.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.subject_label_3.bind("<Button-1>", self.drag_start_frame)
         self.subject_label_3.bind("<B1-Motion>", self.drag_motion_frame)
+        self.subject_label_3.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.preGmail.bind("<Button-1>", self.drag_start_frame)
         self.preGmail.bind("<B1-Motion>", self.drag_motion_frame)
+        self.preGmail.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.preGmail_Label.bind("<Button-1>", self.drag_start_frame)
         self.preGmail_Label.bind("<B1-Motion>", self.drag_motion_frame)
+        self.preGmail_Label.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.gmailLabelFrame.bind("<Button-1>", self.drag_start_frame)
         self.gmailLabelFrame.bind("<B1-Motion>", self.drag_motion_frame)
+        self.gmailLabelFrame.bind("<ButtonRelease-1>", self.drag_stop)
 
     
     def set_from_gamil_headers(self) -> List:
@@ -327,12 +344,16 @@ class GmailMain:
         
         widget.place(x=x, y=y)
 
-        
+        widget.stopX = x
+        widget.stopY = y
 
+    @staticmethod
+    def drag_stop(event):
+        widget = event.widget
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            data["db"]["functions"]["positions"]["gmail"]["x"] = x
-            data["db"]["functions"]["positions"]["gmail"]["y"] = y
+            data["db"]["functions"]["positions"]["gmail"]["x"] = widget.stopX 
+            data["db"]["functions"]["positions"]["gmail"]["y"] = widget.stopY 
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
@@ -366,10 +387,15 @@ class GmailMain:
 
         self.gmailFrame.place(x=x, y=y)
 
-        with open(self.db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            data["db"]["functions"]["positions"]["gmail"]["x"] = x
-            data["db"]["functions"]["positions"]["gmail"]["y"] = y
+        self.gmailFrame.stopX = x
+        self.gmailFrame.stopY = y
 
-        with open(self.db, 'w', encoding='utf-8') as f:
+    def drag_stop(self, event):
+
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["functions"]["positions"]["gmail"]["x"] = self.gmailFrame.stopX 
+            data["db"]["functions"]["positions"]["gmail"]["y"] = self.gmailFrame.stopY 
+
+        with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)

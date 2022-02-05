@@ -30,12 +30,15 @@ class CurrentTime:
 
         self.timeFrame.bind("<Button-1>", CurrentTime.drag_start)
         self.timeFrame.bind("<B1-Motion>", CurrentTime.drag_motion)
+        self.timeFrame.bind("<ButtonRelease-1>", CurrentTime.drag_stop)
 
         self.clockLabel.bind("<Button-1>", self.drag_start_frame)
         self.clockLabel.bind("<B1-Motion>", self.drag_motion_frame)
+        self.clockLabel.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.dateLabel.bind("<Button-1>", self.drag_start_frame)
         self.dateLabel.bind("<B1-Motion>", self.drag_motion_frame)
+        self.dateLabel.bind("<ButtonRelease-1>", self.drag_stop)
     
     
     def clock_date(self) -> None:
@@ -122,14 +125,20 @@ class CurrentTime:
         
         widget.place(x=x, y=y)
 
-        
+        widget.stopX = x
+        widget.stopY = y
+
+    @staticmethod
+    def drag_stop(event):
+        widget = event.widget
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            data["db"]["functions"]["positions"]["time"]["x"] = x
-            data["db"]["functions"]["positions"]["time"]["y"] = y
+            data["db"]["functions"]["positions"]["time"]["x"] = widget.stopX 
+            data["db"]["functions"]["positions"]["time"]["y"] = widget.stopY 
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
+
 
 
     
@@ -162,10 +171,18 @@ class CurrentTime:
 
         self.timeFrame.place(x=x, y=y)
 
+        self.timeFrame.stopX = x
+        self.timeFrame.stopY = y
+
+
+       
+
+    def drag_stop(self, event):
+
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            data["db"]["functions"]["positions"]["time"]["x"] = x
-            data["db"]["functions"]["positions"]["time"]["y"] = y
+            data["db"]["functions"]["positions"]["time"]["x"] = self.timeFrame.stopX 
+            data["db"]["functions"]["positions"]["time"]["y"] = self.timeFrame.stopY 
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)

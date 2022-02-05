@@ -31,18 +31,23 @@ class CurrentWeather:
 
         self.weatherFrame.bind("<Button-1>", CurrentWeather.drag_start)
         self.weatherFrame.bind("<B1-Motion>", CurrentWeather.drag_motion)
+        self.weatherFrame.bind("<ButtonRelease-1>", CurrentWeather.drag_stop)
 
         self.temp.bind("<Button-1>", self.drag_start_frame)
         self.temp.bind("<B1-Motion>", self.drag_motion_frame)
+        self.temp.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.pressure.bind("<Button-1>", self.drag_start_frame)
         self.pressure.bind("<B1-Motion>", self.drag_motion_frame)
+        self.pressure.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.humidity.bind("<Button-1>", self.drag_start_frame)
         self.humidity.bind("<B1-Motion>", self.drag_motion_frame)
+        self.humidity.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.image.bind("<Button-1>", self.drag_start_frame)
         self.image.bind("<B1-Motion>", self.drag_motion_frame)
+        self.image.bind("<ButtonRelease-1>", self.drag_stop)
 
         
         self.prefix = f"{prefix_}/IntelligentMirror/functions/WeatherFunction/"
@@ -164,10 +169,16 @@ class CurrentWeather:
         
         widget.place(x=x, y=y)
 
+        widget.stopX = x
+        widget.stopY = y
+    
+    @staticmethod
+    def drag_stop(event):
+        widget = event.widget
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            data["db"]["functions"]["positions"]["weather"]["x"] = x
-            data["db"]["functions"]["positions"]["weather"]["y"] = y
+            data["db"]["functions"]["positions"]["weather"]["x"] = widget.stopX 
+            data["db"]["functions"]["positions"]["weather"]["y"] = widget.stopY 
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
@@ -202,10 +213,16 @@ class CurrentWeather:
 
         self.weatherFrame.place(x=x, y=y)
 
+        self.weatherFrame.stopX = x
+        self.weatherFrame.stopY = y
+
+    
+    def drag_stop(self, event):
+
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            data["db"]["functions"]["positions"]["weather"]["x"] = x
-            data["db"]["functions"]["positions"]["weather"]["y"] = y
+            data["db"]["functions"]["positions"]["weather"]["x"] = self.weatherFrame.stopX 
+            data["db"]["functions"]["positions"]["weather"]["y"] = self.weatherFrame.stopY 
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)

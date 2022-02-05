@@ -56,7 +56,7 @@ class FunctionsActivateClass:
             data["db"]["camera"]["mouse_event"]["frame"] = "time"
 
         with open(self.db, "w", encoding="utf-8") as file:
-            json.dump(data, file)
+            json.dump(data, file, ensure_ascii=False, indent=4)
         file.close()
 
         self.time.clock_date()
@@ -72,7 +72,7 @@ class FunctionsActivateClass:
             data["db"]["camera"]["mouse_event"]["frame"] = "weather"
 
         with open(self.db, "w", encoding="utf-8") as file:
-            json.dump(data, file)
+            json.dump(data, file, ensure_ascii=False, indent=4)
         file.close()
 
         self.weather.weather()
@@ -88,7 +88,7 @@ class FunctionsActivateClass:
             data["db"]["camera"]["mouse_event"]["frame"] = "gmail"
 
         with open(self.db, "w", encoding="utf-8") as file:
-            json.dump(data, file)
+            json.dump(data, file, ensure_ascii=False, indent=4)
         file.close()
 
         self.gmail.main()
