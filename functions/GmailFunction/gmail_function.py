@@ -1,6 +1,7 @@
 import imaplib
 import email
 from email.header import decode_header
+from json import tool
 from typing import List
 import os
 import json
@@ -109,10 +110,12 @@ class GmailMain:
     --------
     tk: Frame
         Frame of main window
+    toolbarFrame: 
+        Toolbar frame
     gmailFrame: Frame
-        Frame for gmail labels
+        Frame for gmail labels 
     """
-    def __init__(self, tk:Frame, gmailFrame:Frame) -> None:
+    def __init__(self, tk:Frame, toolbarFrame:Frame, gmailFrame:Frame) -> None:
         gmail = Gmail()
         self.data = gmail.start() 
         self.prefix = os.getcwd()
@@ -121,6 +124,7 @@ class GmailMain:
         tk.configure(background="black")
 
         self.gmailFrame= gmailFrame
+        self.toolbarFrame = toolbarFrame
 
         self.preGmail = LabelFrame(self.gmailFrame, bg="gray", bd=1)
         self.preGmail_Label = Label(self.preGmail, font=("", 15),  bg="gray", fg="white")
@@ -144,8 +148,8 @@ class GmailMain:
         self.GmailLogo = Label(self.gmailLabelFrame, image=self.gmailLogo, fg='gray', bg='gray')
         self.GmailLogo.pack(side=LEFT)
 
-        self.gmailFrame.bind("<Button-1>", GmailMain.drag_start)
-        self.gmailFrame.bind("<B1-Motion>", GmailMain.drag_motion)
+        self.gmailFrame.bind("<Button-1>", self.drag_start_frame)
+        self.gmailFrame.bind("<B1-Motion>", self.drag_motion_frame)
         self.gmailFrame.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.GmailLogo.bind("<Button-1>", self.drag_start_frame)
@@ -313,45 +317,23 @@ class GmailMain:
         self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
 
     
-    @staticmethod
-    def drag_start(event):
-        widget = event.widget
-        widget.startX = event.x
-        widget.startY = event.y
-    
-    @staticmethod
-    def drag_motion(event):
-        widget = event.widget
-        x = widget.winfo_x() - widget.startX + event.x
-        y = widget.winfo_y() - widget.startY + event.y
-
-        tk_width = 1920
-        tk_height = 1080
-        frame_width = widget.winfo_width()
-        frame_height = widget.winfo_height()
-
-        max_x = tk_width - frame_width
-        max_y = tk_height - frame_height
-
-        if x > max_x:
-            x = max_x
-        elif x < 0:
-            x = 0
-
-        if y > max_y:
-            y = max_y
-        elif y < 0:
-            y = 0
-        
-        widget.place(x=x, y=y)
-
-        widget.stopX = x
-        widget.stopY = y
-
         
     def drag_start_frame(self, event):
         self.gmailFrame.startX = event.x
         self.gmailFrame.startY = event.y
+
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            toolbar_event = data["db"]["toolbar"]
+
+        if toolbar_event == "on":
+
+            from IntelligentMirror.toolbar.display_toolbar import Toolbar
+            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
+
+            self.gmailFrame.ToOn = True 
+        else:
+            self.gmailFrame.ToOn = False
     
     
     def drag_motion_frame(self, event):
@@ -391,3 +373,8 @@ class GmailMain:
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
+
+        if self.gmailFrame.ToOn == True: 
+       
+            from IntelligentMirror.toolbar.display_toolbar import Toolbar
+            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame)

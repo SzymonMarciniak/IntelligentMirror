@@ -10,12 +10,14 @@ db = f"{prefix_}/IntelligentMirror/DataBase.json"
 
 class CurrentWeather:
     """This class is responsible for correctly displaying the current weather"""
-    def __init__(self,tk:Frame, weatherFrame: Frame) -> None:
+    def __init__(self,tk:Frame, toolbarFrame:Frame, weatherFrame: Frame) -> None:
         """
         Parametrs
         ---------
         tk: Frame
             Main window frame 
+        toolbarFrame: 
+            Toolbar frame
         weatherFrame: Frame 
             Frame for all weather labels 
         """
@@ -23,14 +25,15 @@ class CurrentWeather:
         
         self.weatherFrame = weatherFrame
         self.tk = tk
+        self.toolbarFrame = toolbarFrame
 
         self.temp = Label(weatherFrame, font=("Arial", 50))
         self.pressure = Label(weatherFrame, font=("Arial", 35))
         self.humidity = Label(weatherFrame, font=("Arial", 25))
         self.image = Label(weatherFrame, font=("Arial", 40))
 
-        self.weatherFrame.bind("<Button-1>", CurrentWeather.drag_start)
-        self.weatherFrame.bind("<B1-Motion>", CurrentWeather.drag_motion)
+        self.weatherFrame.bind("<Button-1>", self.drag_start_frame)
+        self.weatherFrame.bind("<B1-Motion>", self.drag_motion_frame)
         self.weatherFrame.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.temp.bind("<Button-1>", self.drag_start_frame)
@@ -137,46 +140,23 @@ class CurrentWeather:
             y = data["db"]["accounts"][RFace]["positions"]["weather"]["y"]
         return x, y
 
-    
-    @staticmethod
-    def drag_start(event):
-        widget = event.widget
-        widget.startX = event.x
-        widget.startY = event.y
-    
-    @staticmethod
-    def drag_motion(event):
-        widget = event.widget
-        x = widget.winfo_x() - widget.startX + event.x
-        y = widget.winfo_y() - widget.startY + event.y
-
-        tk_width = 1920
-        tk_height = 1080
-        frame_width = widget.winfo_width()
-        frame_height = widget.winfo_height()
-
-        max_x = tk_width - frame_width
-        max_y = tk_height - frame_height
-
-        if x > max_x:
-            x = max_x
-        elif x < 0:
-            x = 0
-
-        if y > max_y:
-            y = max_y
-        elif y < 0:
-            y = 0
-        
-        widget.place(x=x, y=y)
-
-        widget.stopX = x
-        widget.stopY = y
-    
    
     def drag_start_frame(self, event):
         self.weatherFrame.startX = event.x
         self.weatherFrame.startY = event.y
+
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            toolbar_event = data["db"]["toolbar"]
+        
+        if toolbar_event == "on":
+
+            from IntelligentMirror.toolbar.display_toolbar import Toolbar
+            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
+
+            self.weatherFrame.ToOn = True 
+        else:
+            self.weatherFrame.ToOn = False
     
     
     def drag_motion_frame(self, event):
@@ -216,4 +196,9 @@ class CurrentWeather:
             data["db"]["accounts"][RFace]["positions"]["weather"]["y"] = self.weatherFrame.stopY 
 
         with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+            json.dump(data, f, ensure_ascii=False, indent=4) 
+        
+        if self.weatherFrame.ToOn == True: 
+       
+            from IntelligentMirror.toolbar.display_toolbar import Toolbar
+            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame)

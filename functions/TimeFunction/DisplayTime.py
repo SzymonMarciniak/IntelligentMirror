@@ -33,8 +33,8 @@ class CurrentTime:
         self.clockLabel = Label(timeFrame, font=("Arial", 60), bg="black", fg="white")
         self.dateLabel = Label(timeFrame, font=("Arial", 30), bg="black", fg="white")
 
-        self.timeFrame.bind("<Button-1>", CurrentTime.drag_start)
-        self.timeFrame.bind("<B1-Motion>", CurrentTime.drag_motion)
+        self.timeFrame.bind("<Button-1>", self.drag_start_frame)
+        self.timeFrame.bind("<B1-Motion>", self.drag_motion_frame)
         self.timeFrame.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.clockLabel.bind("<Button-1>", self.drag_start_frame)
@@ -97,52 +97,24 @@ class CurrentTime:
             y = data["db"]["accounts"][RFace]["positions"]["time"]["y"]
         return x, y
 
-
-
-    @staticmethod
-    def drag_start(event):
-        widget = event.widget
-        widget.startX = event.x
-        widget.startY = event.y
-    
-    @staticmethod
-    def drag_motion(event):
-        widget = event.widget
-        x = widget.winfo_x() - widget.startX + event.x
-        y = widget.winfo_y() - widget.startY + event.y
-        
-        tk_width = 1920
-        tk_height = 1080
-        frame_width = widget.winfo_width()
-        frame_height = widget.winfo_height()
-
-        max_x = tk_width - frame_width
-        max_y = tk_height - frame_height
-
-        if x > max_x:
-            x = max_x
-        elif x < 0:
-            x = 0
-
-        if y > max_y:
-            y = max_y
-        elif y < 0:
-            y = 0
-        
-        widget.place(x=x, y=y)
-
-        widget.stopX = x
-        widget.stopY = y
-
-
     
     def drag_start_frame(self, event):
         self.timeFrame.startX = event.x
         self.timeFrame.startY = event.y
 
-        from IntelligentMirror.toolbar.display_toolbar import Toolbar
-        Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
-    
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            toolbar_event = data["db"]["toolbar"]
+        
+        if toolbar_event == "on":
+
+            from IntelligentMirror.toolbar.display_toolbar import Toolbar
+            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
+
+            self.timeFrame.ToOn = True 
+        else:
+            self.timeFrame.ToOn = False
+        
     
     def drag_motion_frame(self, event):
         x = self.timeFrame.winfo_x() - self.timeFrame.startX + event.x
@@ -182,7 +154,14 @@ class CurrentTime:
             data["db"]["accounts"][RFace]["positions"]["time"]["x"] = self.timeFrame.stopX 
             data["db"]["accounts"][RFace]["positions"]["time"]["y"] = self.timeFrame.stopY 
 
+            
+
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
+
+        if self.timeFrame.ToOn == True: 
+       
+            from IntelligentMirror.toolbar.display_toolbar import Toolbar
+            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame)
 
 

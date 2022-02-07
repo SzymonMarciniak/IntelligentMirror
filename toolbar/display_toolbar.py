@@ -56,7 +56,14 @@ class Toolbar:
         self.homeIcon = homeIcon
         self.contactsIcon = contactsIcon
         self.settingsIcon = settingsIcon
-    
+
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            data["db"]["toolbar"] = "off"
+
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
 
         self.functions_activate = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
 
@@ -95,12 +102,14 @@ class Toolbar:
         if data["db"]["toolbar"] != "on":
             data["db"]["toolbar"] = "on"
 
+            with open(db, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+
             for x_pos in range(-200,1,10):
                 self.toolbarFrame.place(x=x_pos, y=0)
                 self.toolbarFrame.update()
         
-            with open(db, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
+    
             
         
     
@@ -118,12 +127,14 @@ class Toolbar:
         if data["db"]["toolbar"] != "on":
             data["db"]["toolbar"] = "on"
 
+            with open(db, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+
             for x_pos in range(-200,1,10):
                 toolbarFrame.place(x=x_pos, y=0)
                 toolbarFrame.update()
         
-            with open(db, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
+            
            
     
     def HideToolbarAnimation(self) -> None:
@@ -136,12 +147,14 @@ class Toolbar:
         if data["db"]["toolbar"] != "off":
             data["db"]["toolbar"] = "off"
 
+            with open(db, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+
             for x_pos in range(1,-211,-1):
                 self.toolbarFrame.place(x=x_pos, y=0)
                 self.toolbarFrame.update()
         
-            with open(db, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
+            
 
 
 
@@ -160,12 +173,14 @@ class Toolbar:
         if data["db"]["toolbar"] != "off":
             data["db"]["toolbar"] = "off"
 
+            with open(db, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+
             for x_pos in range(1,-211,-3):
                 toolbarFrame.place(x=x_pos, y=0)
                 toolbarFrame.update()
             
-            with open(db, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
+            
 
 
     
