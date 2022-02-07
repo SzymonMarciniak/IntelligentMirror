@@ -6,6 +6,8 @@ import json
 import os
 
 
+
+
 prefix = os.getcwd()
 db = f"{prefix}/IntelligentMirror/DataBase.json"
       
@@ -14,17 +16,20 @@ class CurrentTime:
     """
     This class is responsible for the display and correct operation of the clock 
     """
-    def __init__(self, tk: Frame, timeFrame:Frame) -> None:
+    def __init__(self, tk: Frame, toolbarFrame:Frame ,timeFrame:Frame) -> None:
         """
         Parametrs
         ---------
         tk: Frame
             Main window frame
+        toolbarFrame: Frame
+            Toolbar frame     
         timeFrame: Frame
             Frame for clock label and date label
         """
 
         self.timeFrame = timeFrame
+        self.toolbarFrame = toolbarFrame
         self.clockLabel = Label(timeFrame, font=("Arial", 60), bg="black", fg="white")
         self.dateLabel = Label(timeFrame, font=("Arial", 30), bg="black", fg="white")
 
@@ -87,8 +92,9 @@ class CurrentTime:
     
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            x = data["db"]["functions"]["positions"]["time"]["x"]
-            y = data["db"]["functions"]["positions"]["time"]["y"]
+            RFace = data["db"]["camera"]["actuall_user"]
+            x = data["db"]["accounts"][RFace]["positions"]["time"]["x"]
+            y = data["db"]["accounts"][RFace]["positions"]["time"]["y"]
         return x, y
 
 
@@ -133,6 +139,9 @@ class CurrentTime:
     def drag_start_frame(self, event):
         self.timeFrame.startX = event.x
         self.timeFrame.startY = event.y
+
+        from IntelligentMirror.toolbar.display_toolbar import Toolbar
+        Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
     
     
     def drag_motion_frame(self, event):
@@ -169,8 +178,9 @@ class CurrentTime:
 
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            data["db"]["functions"]["positions"]["time"]["x"] = self.timeFrame.stopX 
-            data["db"]["functions"]["positions"]["time"]["y"] = self.timeFrame.stopY 
+            RFace = data["db"]["camera"]["actuall_user"]
+            data["db"]["accounts"][RFace]["positions"]["time"]["x"] = self.timeFrame.stopX 
+            data["db"]["accounts"][RFace]["positions"]["time"]["y"] = self.timeFrame.stopY 
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)

@@ -276,8 +276,8 @@ class Camera:
                             #save mouse coordinates
                             with open(self.db, "r", encoding="utf-8") as file0:
                                 data = json.load(file0)
-                                data["db"]["functions"]["positions"]["mouse"]["x"] = x
-                                data["db"]["functions"]["positions"]["mouse"]["y"] = Y
+                                data["db"]["camera"]["mouse_event"]["x"] = x
+                                data["db"]["camera"]["mouse_event"]["y"] = Y
 
                             with open(self.db, "w", encoding="utf-8") as file: 
                                 json.dump(data, file, ensure_ascii=False, indent=4)
@@ -308,8 +308,8 @@ class Camera:
 
                         with open(self.db, "r", encoding="utf-8") as file0:
                             data = json.load(file0)
-                            data["db"]["functions"]["positions"]["mouse"]["x"] = x
-                            data["db"]["functions"]["positions"]["mouse"]["y"] = Y
+                            data["db"]["camera"]["mouse_event"]["x"] = x
+                            data["db"]["camera"]["mouse_event"]["y"] = Y
 
                         with open(self.db, "w", encoding="utf-8") as file: 
                             json.dump(data, file, ensure_ascii=False, indent=4)

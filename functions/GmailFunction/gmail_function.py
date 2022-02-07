@@ -48,8 +48,8 @@ class Gmail:
             
 
             if Rface != "unknown":
-                username = gmail["db"]["functions"]["gmail"]["accounts"][Rface]["login"]
-                password = gmail["db"]["functions"]["gmail"]["accounts"][Rface]["haslo"]
+                username = gmail["db"]["accounts"][Rface]["positions"]["gmail"]["login"]
+                password = gmail["db"]["accounts"][Rface]["positions"]["gmail"]["haslo"]
 
 
                 From = " "
@@ -306,8 +306,9 @@ class GmailMain:
 
         with open(self.db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            x_pos = data["db"]["functions"]["positions"]["gmail"]["x"]
-            y_pos = data["db"]["functions"]["positions"]["gmail"]["y"]
+            RFace = data["db"]["camera"]["actuall_user"]
+            x_pos = data["db"]["accounts"][RFace]["positions"]["gmail"]["x"]
+            y_pos = data["db"]["accounts"][RFace]["positions"]["gmail"]["y"]
 
         self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
 
@@ -384,8 +385,9 @@ class GmailMain:
 
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            data["db"]["functions"]["positions"]["gmail"]["x"] = self.gmailFrame.stopX 
-            data["db"]["functions"]["positions"]["gmail"]["y"] = self.gmailFrame.stopY 
+            RFace = data["db"]["camera"]["actuall_user"]
+            data["db"]["accounts"][RFace]["positions"]["gmail"]["x"] = self.gmailFrame.stopX 
+            data["db"]["accounts"][RFace]["positions"]["gmail"]["y"] = self.gmailFrame.stopY 
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)

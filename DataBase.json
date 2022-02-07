@@ -1,41 +1,54 @@
 {
     "db": {
+        "toolbar": "off",
         "camera": {
-            "actuall_user": "None",
+            "actuall_user": "szymon_marciniak",
             "mouse_event": {
                 "event": "False",
-                "frame": "gmail"
+                "frame": "weather",
+                "x": 1481,
+                "y": 100
             }
         },
-        "functions": {
-            "gmail": {
-                "accounts": {
-                    "szymon_marciniak": {
-                        "login": "szymonmarciniak24@gmail.com",
-                        "haslo": "haslo123"
+        "accounts": {
+            "szymon_marciniak": {
+                "login": "Marcin",
+                "haslo": "123",
+                "positions": {
+                    "time": {
+                        "x": 1580,
+                        "y": 19
                     },
-                    "agata_marciniak": {
-                        "login": "agatka@gmail.com",
+                    "weather": {
+                        "x": 1553,
+                        "y": 166
+                    },
+                    "gmail": {
+                        "x": 1305,
+                        "y": 0,
+                        "login": "szymonmarciniak24@gmail.com",
                         "haslo": "haslo123"
                     }
                 }
             },
-            "positions": {
-                "mouse": {
-                    "x": 1597,
-                    "y": 506
-                },
-                "time": {
-                    "x": 634,
-                    "y": 224
-                },
-                "weather": {
-                    "x": 694,
-                    "y": 502
-                },
-                "gmail": {
-                    "x": 1293,
-                    "y": 85
+            "agata_marciniak": {
+                "login": "Agatka",
+                "haslo": "321",
+                "positions": {
+                    "time": {
+                        "x": 1445,
+                        "y": 280
+                    },
+                    "weather": {
+                        "x": 1405,
+                        "y": 231
+                    },
+                    "gmail": {
+                        "x": 1414,
+                        "y": 148,
+                        "login": "agatka@gmail.com",
+                        "haslo": "haslo123"
+                    }
                 }
             }
         }

@@ -132,8 +132,9 @@ class CurrentWeather:
 
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            x = data["db"]["functions"]["positions"]["weather"]["x"]
-            y = data["db"]["functions"]["positions"]["weather"]["y"]
+            RFace = data["db"]["camera"]["actuall_user"]
+            x = data["db"]["accounts"][RFace]["positions"]["weather"]["x"]
+            y = data["db"]["accounts"][RFace]["positions"]["weather"]["y"]
         return x, y
 
     
@@ -210,8 +211,9 @@ class CurrentWeather:
 
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            data["db"]["functions"]["positions"]["weather"]["x"] = self.weatherFrame.stopX 
-            data["db"]["functions"]["positions"]["weather"]["y"] = self.weatherFrame.stopY 
+            RFace = data["db"]["camera"]["actuall_user"]
+            data["db"]["accounts"][RFace]["positions"]["weather"]["x"] = self.weatherFrame.stopX 
+            data["db"]["accounts"][RFace]["positions"]["weather"]["y"] = self.weatherFrame.stopY 
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)

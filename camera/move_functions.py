@@ -32,13 +32,14 @@ class MoveFunction:
                 data1 = json.loads(file1.read())
                 activate = data1["db"]["camera"]["mouse_event"]["event"]
                 widget = data1["db"]["camera"]["mouse_event"]["frame"]
+                RFace = data1["db"]["camera"]["actuall_user"]
             file1.close()
 
 
             with open(self.db, "r", encoding="utf-8") as file:
                 data = json.load(file)
-                x_pos = data["db"]["functions"]["positions"][widget]["x"]
-                y_pos = data["db"]["functions"]["positions"][widget]["y"]
+                x_pos = data["db"]["accounts"][RFace]["positions"][widget]["x"]
+                y_pos = data["db"]["accounts"][RFace]["positions"][widget]["y"]
 
             tk_width = 1920
             tk_height = 1080
@@ -58,7 +59,6 @@ class MoveFunction:
             elif y_pos < 0:
                 y_pos = 0
             
-        
             self.frame.place(x=x_pos, y=y_pos)
             self.frame.update()
        

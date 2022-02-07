@@ -16,7 +16,6 @@ tk.attributes("-fullscreen", True)
 tk.config(cursor="fleur")
 tk.bind("<Escape>", exit)
 
-
 toolbarFrame = Frame(tk)
 
 timeFrame = LabelFrame(tk, bg="black", bd=0)
@@ -31,7 +30,7 @@ contactsIcon = PhotoImage(file=f"{icon_prefix}contacts_black.png")
 settingsIcon = PhotoImage(file=f"{icon_prefix}settings_black.png") 
 
 
-function_activate = FunctionsActivateClass(tk, timeFrame, weatherFrame, gmailFrame)
+function_activate = FunctionsActivateClass(tk, toolbarFrame ,timeFrame, weatherFrame, gmailFrame)
 
 toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon)
                 
@@ -56,8 +55,8 @@ if __name__ == "__main__":
     toolbar.OpenToolbar()
 
 
-# MouseThread = threading.Thread(target=camera.FaceRecognition)
-# MouseThread.start() 
+MouseThread = threading.Thread(target=camera.FaceRecognition)
+MouseThread.start() 
 
 
 tk.mainloop()

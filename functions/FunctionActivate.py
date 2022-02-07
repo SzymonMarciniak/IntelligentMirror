@@ -12,6 +12,7 @@ class FunctionsActivateClass:
 
     def __init__(self,
                 tk: Frame,
+                toolbarFrame: Frame,
                 timeFrame: Frame,
                 weatherFrame: Frame,
                 gmailFrame: Frame) -> None:
@@ -21,6 +22,8 @@ class FunctionsActivateClass:
         ---------
         tk: Tk()
             Name of main window
+        toolbarFrame: Frame
+            Toolbar frame
         timeFrame: Frame
             Frame for clock label and date label
         weatherFrame: Frame 
@@ -35,7 +38,7 @@ class FunctionsActivateClass:
         self.gmailFrame = gmailFrame
 
 
-        self.time = CurrentTime(self.tk, self.timeFrame)
+        self.time = CurrentTime(self.tk, toolbarFrame, self.timeFrame)
         self.weather = CurrentWeather(self.tk, self.weatherFrame)
         self.gmail = GmailMain(self.tk, self.gmailFrame)
 

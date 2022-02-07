@@ -1,8 +1,11 @@
 from tkinter import *
+import json
+import os
 
 from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
 
-
+prefix_ = os.getcwd()
+db = f"{prefix_}/IntelligentMirror/DataBase.json"
 class Toolbar:
 
     def __init__(self,
@@ -55,7 +58,7 @@ class Toolbar:
         self.settingsIcon = settingsIcon
     
 
-        self.functions_activate = FunctionsActivateClass(self.tk, self.timeFrame, self.weatherFrame, self.gmailFrame)
+        self.functions_activate = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
 
 
     def OpenToolbar(self) -> None:
@@ -85,10 +88,20 @@ class Toolbar:
     def OpenToolbarAnimation(self) -> None:
         """
         Show toolbar 
-        """
-        for x_pos in range(-200,1,10):
-            self.toolbarFrame.place(x=x_pos, y=0)
-            self.toolbarFrame.update()
+        """        
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            
+        if data["db"]["toolbar"] != "on":
+            data["db"]["toolbar"] = "on"
+
+            for x_pos in range(-200,1,10):
+                self.toolbarFrame.place(x=x_pos, y=0)
+                self.toolbarFrame.update()
+        
+            with open(db, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+            
         
     
     def OpenToolbarAnimation_DF(toolbarFrame: Frame) -> None:
@@ -98,19 +111,40 @@ class Toolbar:
         --------
         toolbarFrame: Frame
             Frame for toolbar
-        """
-        for x_pos in range(-200,1,10):
-            toolbarFrame.place(x=x_pos, y=0)
-            toolbarFrame.update()
+        """        
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+        
+        if data["db"]["toolbar"] != "on":
+            data["db"]["toolbar"] = "on"
+
+            for x_pos in range(-200,1,10):
+                toolbarFrame.place(x=x_pos, y=0)
+                toolbarFrame.update()
+        
+            with open(db, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
            
     
     def HideToolbarAnimation(self) -> None:
         """
         Hide toolbar
-        """
-        for x_pos in range(1,-211,-1):
-            self.toolbarFrame.place(x=x_pos, y=0)
-            self.toolbarFrame.update()
+        """        
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+        
+        if data["db"]["toolbar"] != "off":
+            data["db"]["toolbar"] = "off"
+
+            for x_pos in range(1,-211,-1):
+                self.toolbarFrame.place(x=x_pos, y=0)
+                self.toolbarFrame.update()
+        
+            with open(db, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+
+
+
     
     def HideToolbarAnimation_DF(toolbarFrame: Frame) -> None:
         """
@@ -120,9 +154,18 @@ class Toolbar:
         toolbarFrame: Frame
             Frame for toolbar
         """
-        for x_pos in range(1,-211,-3):
-            toolbarFrame.place(x=x_pos, y=0)
-            toolbarFrame.update()
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        if data["db"]["toolbar"] != "off":
+            data["db"]["toolbar"] = "off"
+
+            for x_pos in range(1,-211,-3):
+                toolbarFrame.place(x=x_pos, y=0)
+                toolbarFrame.update()
+            
+            with open(db, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
 
 
     
