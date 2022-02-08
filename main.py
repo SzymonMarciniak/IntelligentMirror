@@ -16,7 +16,7 @@ tk.attributes("-fullscreen", True)
 tk.config(cursor="fleur")
 tk.bind("<Escape>", exit)
 
-toolbarFrame = Frame(tk)
+toolbarFrame = Frame(tk, bg="black")
 
 timeFrame = LabelFrame(tk, bg="black", bd=0)
 weatherFrame = LabelFrame(tk, bg="black", bd=0)
@@ -28,11 +28,14 @@ sunIcon = PhotoImage(file=f"{icon_prefix}sun_black.png")
 homeIcon = PhotoImage(file=f"{icon_prefix}home_black.png") 
 contactsIcon = PhotoImage(file=f"{icon_prefix}contacts_black.png") 
 settingsIcon = PhotoImage(file=f"{icon_prefix}settings_black.png") 
+left_arrow = PhotoImage(file=f"{icon_prefix}left-arrow_black.png")
+right_arrow = PhotoImage(file=f"{icon_prefix}right-arrow_black.png")
+
 
 
 function_activate = FunctionsActivateClass(tk, toolbarFrame ,timeFrame, weatherFrame, gmailFrame)
 
-toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon)
+toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon, left_arrow, right_arrow)
                 
 camera = Camera(tk, toolbarFrame)
 
@@ -55,8 +58,8 @@ if __name__ == "__main__":
     toolbar.OpenToolbar()
 
 
-MouseThread = threading.Thread(target=camera.FaceRecognition)
-MouseThread.start() 
+# MouseThread = threading.Thread(target=camera.FaceRecognition)
+# MouseThread.start() 
 
 
 tk.mainloop()
