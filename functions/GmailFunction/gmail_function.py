@@ -308,15 +308,23 @@ class GmailMain:
         self.gm2.place(x=1, y=b*2+c+d,width=220, height=82)
         self.gm3.place(x=1, y=b*3+c+d,width=220, height=82)
 
-        with open(self.db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            x_pos = data["db"]["accounts"][RFace]["positions"]["gmail"]["x"]
-            y_pos = data["db"]["accounts"][RFace]["positions"]["gmail"]["y"]
+        x_pos, y_pos = self.check_position()
 
         self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
 
+    def check_position(self, RFace = None):
+        with open(self.db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            if RFace == None:
+                 RFace = data["db"]["camera"]["actuall_user"]
+            x_pos = data["db"]["accounts"][RFace]["positions"]["gmail"]["x"]
+            y_pos = data["db"]["accounts"][RFace]["positions"]["gmail"]["y"]
+        return x_pos,y_pos
     
+    def gmail_refresh(self, RFace):
+        x,y = self.check_position(RFace)
+        self.gmailFrame.place(x=x, y=y)
+
         
     def drag_start_frame(self, event):
         self.gmailFrame.startX = event.x

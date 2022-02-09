@@ -1,3 +1,5 @@
+from ast import In
+from re import I
 import cv2
 import face_recognition
 import numpy as np 
@@ -8,17 +10,24 @@ from tkinter import *
 import json
 
 from IntelligentMirror.camera.modules.HandTrackingModule import *
-from IntelligentMirror.toolbar.display_toolbar import Toolbar
+from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
+from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
+from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 
 detector = HandDetector(detectionCon=0.65, maxHands=1)
 
 class Camera:
-    def __init__(self, tk, toolbarFrame) -> None:
+    def __init__(self, tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame) -> None:
         self.cap = cv2.VideoCapture(0)
         self.toolbarFrame = toolbarFrame
         self.tk = tk
-        
+        self.timeFrame = timeFrame
+        self.weatherFrame = weatherFrame
+        self.gmailFrame = gmailFrame
 
+        self.Time = CurrentTime(self.tk, self.toolbarFrame, self.timeFrame)
+        self.Weather = CurrentWeather(self.tk, self.toolbarFrame, self.weatherFrame)
+        self.Gmail = GmailMain(self.tk, self.toolbarFrame, self.gmailFrame)
 
         prefix = os.getcwd()
         self.db = f"{prefix}/IntelligentMirror/DataBase.json"
@@ -48,6 +57,11 @@ class Camera:
 
         self.nick = Label(self.tk, font=("Arial", 30), bg="black", fg="white", text=self.RFace)
         self.nick.pack(side=BOTTOM,anchor=SE)
+    
+    def refresh_methods(self):
+        self.Time.time_refresh(self.RFace) 
+        self.Weather.weather_refresh(self.RFace)
+        self.Gmail.gmail_refresh(self.RFace)
     
 
     def FaceRecognition(self):
@@ -106,8 +120,12 @@ class Camera:
                                     
                                     if self.RFace == "Unnown" or self.RFace == "None":
                                         self.RFace = name
-                                        self.nick.config(text=self.RFace)
+                                        with open(self.db, "r", encoding="utf-8") as file:
+                                            data = json.load(file)
+                                            my_nick = data["db"]["accounts"][self.RFace]["login"]
+                                        self.nick.config(text=my_nick)
                                         self.no_face = 0
+                                        self.refresh_methods()
                             else:
                                 if self.RFace == "Unnown" or self.RFace == "None":
                                     self.RFace = "Unknown"
@@ -115,6 +133,7 @@ class Camera:
                                     self.no_face = self.no_face + 1
                                     if self.no_face > 20:
                                         self.RFace = "None"
+                                        self.refresh_methods()
 
                             face_names.append(name)
                     else:
@@ -124,6 +143,7 @@ class Camera:
                         if self.no_face == 40:
                             self.RFace = "None"
                             self.nick.config(text=self.RFace)
+                            self.refresh_methods()
                     
 
                     with open(self.db, "r", encoding="utf-8") as file:
@@ -277,7 +297,7 @@ class Camera:
                             with open(self.db, "r", encoding="utf-8") as file0:
                                 data = json.load(file0)
                                 data["db"]["camera"]["mouse_event"]["x"] = x
-                                data["db"]["camera"]["mouse_event"]["y"] = Y
+                                data["db"]["camera"]["mouse_event"]["y"] = y
 
                             with open(self.db, "w", encoding="utf-8") as file: 
                                 json.dump(data, file, ensure_ascii=False, indent=4)
@@ -294,7 +314,7 @@ class Camera:
                         with open(self.db, "r", encoding="utf-8") as file0:
                             data = json.load(file0)
                             data["db"]["camera"]["mouse_event"]["x"] = x
-                            data["db"]["camera"]["mouse_event"]["y"] = Y
+                            data["db"]["camera"]["mouse_event"]["y"] = y
 
                         with open(self.db, "w", encoding="utf-8") as file: 
                             json.dump(data, file, ensure_ascii=False, indent=4)

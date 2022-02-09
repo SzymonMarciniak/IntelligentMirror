@@ -122,7 +122,7 @@ class CurrentWeather:
         
         weather_loading()
     
-    def check_position(self) -> int:
+    def check_position(self, RFace=None) -> int:
         """
         This function is responsible for checking actual weather position
         Returns
@@ -135,10 +135,15 @@ class CurrentWeather:
 
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
+            if RFace == None: 
+                 RFace = data["db"]["camera"]["actuall_user"]
             x = data["db"]["accounts"][RFace]["positions"]["weather"]["x"]
             y = data["db"]["accounts"][RFace]["positions"]["weather"]["y"]
         return x, y
+    
+    def weather_refresh(self, RFace):
+        x,y = self.check_position(RFace)
+        self.weatherFrame.place(x=x, y=y)
 
    
     def drag_start_frame(self, event):

@@ -2,29 +2,49 @@
     "db": {
         "toolbar": "off",
         "camera": {
-            "actuall_user": "szymon_marciniak",
+            "actuall_user": "None",
             "mouse_event": {
                 "event": "False",
-                "frame": "weather",
-                "x": 1481,
-                "y": 100
+                "frame": "gmail",
+                "x": 1790,
+                "y": "y"
             }
         },
         "accounts": {
+            "None": {
+                "login": "None",
+                "haslo": "123",
+                "positions": {
+                    "time": {
+                        "x": 903,
+                        "y": 157
+                    },
+                    "weather": {
+                        "x": 905,
+                        "y": 266
+                    },
+                    "gmail": {
+                        "x": 960,
+                        "y": 473,
+                        "login": "none",
+                        "haslo": "none"
+                    }
+                }
+            },
             "szymon_marciniak": {
                 "login": "Marcin",
                 "haslo": "123",
                 "positions": {
                     "time": {
-                        "x": 1580,
-                        "y": 19
+                        "x": 1564,
+                        "y": 36
                     },
                     "weather": {
-                        "x": 1553,
-                        "y": 166
+                        "x": 1543,
+                        "y": 193
                     },
                     "gmail": {
-                        "x": 1305,
+                        "x": 1320,
                         "y": 0,
                         "login": "szymonmarciniak24@gmail.com",
                         "haslo": "haslo123"
