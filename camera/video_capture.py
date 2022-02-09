@@ -32,7 +32,7 @@ class Camera:
         for person_img in persons:
 
             name =  person_img[:-4]
-            name = name+"_nazwisko"
+            name = name
 
             someone = face_recognition.load_image_file(f"{self.prefix}/data/{person_img}") 
             someone_face_encoding = face_recognition.face_encodings(someone)[0]
@@ -282,21 +282,6 @@ class Camera:
                             with open(self.db, "w", encoding="utf-8") as file: 
                                 json.dump(data, file, ensure_ascii=False, indent=4)
                             file.close()
-
-                            #Show/Hide toolbar 
-                            if x <=205:
-                                if toolbar_animation:
-                                    pass
-                                else: 
-                                    toolbar_animation = True
-                                    Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame)
-                            else: 
-                                if toolbar_animation:
-                                    toolbar_animation = False
-                                    Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
-                                else:
-                                    pass
-
                             
                     # Clicking Mode
                     else:
@@ -323,11 +308,6 @@ class Camera:
 
                         if activate == "False":
                             click(x, y)
-                            toolbar_animation = False
-                            if x <= 200:
-                                for x_pos in range(1,-200,-3):
-                                    self.toolbarFrame.place(x=x_pos, y=0)
-                                    self.toolbarFrame.update()
                         else:
                             pyautogui.mouseDown(button="left")
                             pyautogui.moveTo(x, y)
