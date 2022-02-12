@@ -37,14 +37,12 @@ class Camera:
 
         self.known_face_encodings = []
         self.known_face_names = []
-
         for person_img in persons:
 
-            name =  person_img[:-4]
-            name = name
-
+            name =  person_img[:-5]
+            name = name 
             someone = face_recognition.load_image_file(f"{self.prefix}/data/{person_img}") 
-            someone_face_encoding = face_recognition.face_encodings(someone)[0]
+            someone_face_encoding = face_recognition.face_encodings(someone, num_jitters=5, model="large")[0]
 
             self.known_face_encodings.append(someone_face_encoding)
             self.known_face_names.append(name)
@@ -57,6 +55,10 @@ class Camera:
 
         self.nick = Label(self.tk, font=("Arial", 30), bg="black", fg="white", text=self.RFace)
         self.nick.pack(side=BOTTOM,anchor=SE)
+
+        self.rgb_small_frame = None
+
+        
     
     def refresh_methods(self):
         self.Time.time_refresh(self.RFace) 
@@ -87,66 +89,48 @@ class Camera:
                     small_frame = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
 
                     rgb_small_frame = small_frame[:, :, ::-1]
+                    self.rgb_small_frame = rgb_small_frame  # Preparation image
 
-                    face_locations = face_recognition.face_locations(rgb_small_frame)
-                    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+                    face_locations = face_recognition.face_locations(rgb_small_frame, number_of_times_to_upsample=3)
+                    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large") #Finding face on camera
 
-
-                    if self.process_this_frame:
+                    for face_encoding in face_encodings:
                                 
-                        face_locations = face_recognition.face_locations(rgb_small_frame)
-                        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+                        matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding, tolerance=0.4)
+                        face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
+                        best_match_index = np.argmin(face_distances) #Whitch face matches those in the database
 
-                        face_names = []
-                        for face_encoding in face_encodings:
-                                    
-                            matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
-                            name = "None"
-                            if name == "None":
-                                self.no_face = self.no_face + 1
-                                #print(self.no_face)
-                                if self.no_face == 1:
+
+                        if matches[best_match_index]:
+                            name = self.known_face_names[best_match_index] #finding name
+                    
+                            if name == self.RFace: #if name now and then are the same 
+                                self.no_face = 0
+
+                            else:                           #if name now and then are not the same 
+                                if  self.RFace == "None":
                                     self.RFace = name
-                                            
-                                    
-                            face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
-                            best_match_index = np.argmin(face_distances)
-                            if matches[best_match_index]:
-                                name = self.known_face_names[best_match_index]
-                        
-                                if name == self.RFace:
+                                    with open(self.db, "r", encoding="utf-8") as file:
+                                        data = json.load(file)
+                                        my_nick = data["db"]["accounts"][self.RFace]["login"]
+                                    self.nick.config(text=my_nick)
                                     self.no_face = 0
-                                else:
-                                    
-                                    if self.RFace == "Unnown" or self.RFace == "None":
-                                        self.RFace = name
-                                        with open(self.db, "r", encoding="utf-8") as file:
-                                            data = json.load(file)
-                                            my_nick = data["db"]["accounts"][self.RFace]["login"]
-                                        self.nick.config(text=my_nick)
-                                        self.no_face = 0
-                                        self.refresh_methods()
-                            else:
-                                if self.RFace == "Unnown" or self.RFace == "None":
-                                    self.RFace = "Unknown"
-                                    self.nick.config(text=self.RFace)
-                                    self.no_face = self.no_face + 1
-                                    if self.no_face > 20:
-                                        self.RFace = "None"
-                                        self.refresh_methods()
+                                    self.refresh_methods()
 
-                            face_names.append(name)
-                    else:
+                    
+                    name = "None"               #Counting how many times dont recognition any face 
+                    if name == "None":
                         self.no_face = self.no_face + 1
-                        #print(self.no_face)
-                                
-                        if self.no_face == 40:
-                            self.RFace = "None"
+                        print(f"{self.no_face} No name")
+                        if self.no_face == 60:
+                            self.RFace = name
                             self.nick.config(text=self.RFace)
+                            self.no_face = 0
                             self.refresh_methods()
                     
+                    
 
-                    with open(self.db, "r", encoding="utf-8") as file:
+                    with open(self.db, "r", encoding="utf-8") as file:  #Save data
                         data = json.load(file)
                         data["db"]["camera"]["actuall_user"] = self.RFace
                     
@@ -157,14 +141,11 @@ class Camera:
 
                     print(self.RFace)
                     time.sleep(0.25)
-                                
-                    self.process_this_frame = not self.process_this_frame
-
 
                 except:
                     print("Face Recognition error")
             
-            if hands:
+            if hands:       #Detection gest
                 isgesture = gesture(hands)
                 if isgesture:
                     Camera.Mouse(self)
@@ -174,11 +155,9 @@ class Camera:
             else:
                 self.no_hand = 0
                 face_recognition_module()
-                    
+        
 
-            
-
-            #cv2.imshow("Image", img)
+            #cv2.imshow("Image", self.rgb_small_frame)
             cv2.waitKey(1)
     
     def Mouse(self):
