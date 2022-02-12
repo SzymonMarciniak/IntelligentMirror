@@ -311,6 +311,9 @@ class GmailMain:
         x_pos, y_pos = self.check_position()
 
         self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
+    
+    def destroy_gmail(self):
+        self.gmailFrame.place_forget()
 
     def check_position(self, RFace = None):
         with open(self.db, "r", encoding="utf-8") as file:
@@ -335,11 +338,10 @@ class GmailMain:
             toolbar_event = data["db"]["toolbar"]
 
         if toolbar_event == "on":
-
+            self.gmailFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
 
-            self.gmailFrame.ToOn = True 
         else:
             self.gmailFrame.ToOn = False
     

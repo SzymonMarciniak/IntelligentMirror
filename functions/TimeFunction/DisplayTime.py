@@ -78,6 +78,9 @@ class CurrentTime:
 
         tick()
     
+    def destroy_time(self):
+        self.timeFrame.place_forget() 
+    
     def check_position(self, RFace=None) -> int:
         """
         This function is responsible for checking actual time position
@@ -113,11 +116,10 @@ class CurrentTime:
             toolbar_event = data["db"]["toolbar"]
         
         if toolbar_event == "on":
-
+            self.timeFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
 
-            self.timeFrame.ToOn = True 
         else:
             self.timeFrame.ToOn = False
         

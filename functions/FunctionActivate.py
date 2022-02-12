@@ -1,11 +1,10 @@
 from tkinter import *
-import json 
 import os 
 
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
 from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
 from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
-from IntelligentMirror.camera.move_functions import MoveFunction
+
 
 class FunctionsActivateClass:
     """This class is responsible for activating the functions"""
@@ -49,52 +48,26 @@ class FunctionsActivateClass:
 
 
 
-    def time_function(self) -> None:
+    def time_function(self, on=True) -> None:
         """Activates time function"""
-        self.move_function = MoveFunction(self.timeFrame)
+        print(on)
+        if on == True:
+            self.time.clock_date()
+        else:
+            self.time.destroy_time()
 
-        with open(self.db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            data["db"]["camera"]["mouse_event"]["event"] = "False"
-            data["db"]["camera"]["mouse_event"]["frame"] = "time"
-
-        with open(self.db, "w", encoding="utf-8") as file:
-            json.dump(data, file, ensure_ascii=False, indent=4)
-        file.close()
-
-        self.time.clock_date()
-        self.move_function.move()
-
-    def weather_function(self) -> None:
+    def weather_function(self, on=True) -> None:
         """Activates weather function"""
-        self.move_function = MoveFunction(self.weatherFrame)
-
-        with open(self.db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            data["db"]["camera"]["mouse_event"]["event"] = "False"
-            data["db"]["camera"]["mouse_event"]["frame"] = "weather"
-
-        with open(self.db, "w", encoding="utf-8") as file:
-            json.dump(data, file, ensure_ascii=False, indent=4)
-        file.close()
-
-        self.weather.weather()
-        self.move_function.move()
-    
-    def gmail_function(self) -> None:
+        if on == True:
+            self.weather.weather()
+        else:
+            self.weather.destroy_weather() 
+        
+    def gmail_function(self, on=True) -> None:
         """Activates gmail function"""
-        self.move_function = MoveFunction(self.gmailFrame)
-
-        with open(self.db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            data["db"]["camera"]["mouse_event"]["event"] = "False"
-            data["db"]["camera"]["mouse_event"]["frame"] = "gmail"
-
-        with open(self.db, "w", encoding="utf-8") as file:
-            json.dump(data, file, ensure_ascii=False, indent=4)
-        file.close()
-
-        self.gmail.main()
-        self.move_function.move()
+        if on == True:
+            self.gmail.main()
+        else:
+            self.gmail.destroy_gmail()
     
     

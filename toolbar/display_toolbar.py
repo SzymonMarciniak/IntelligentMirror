@@ -63,6 +63,10 @@ class Toolbar:
         self.leftArrow = leftArrow
         self.rightArrow = rightArrow
 
+        self.time_on = False
+        self.weather_on = False
+        self.gmail_on = False
+
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
             data["db"]["toolbar"] = "off"
@@ -84,28 +88,29 @@ class Toolbar:
         
         self.toolbar = toolbar
 
-        clock_button = Button(self.toolbarFrame, image=self.clockIcon, highlightbackground='black', bg='black', command=toolbar.time_function)
-        weather_button = Button(self.toolbarFrame, image=self.sunIcon, highlightbackground='black', bg='black', command=toolbar.weather_function)      
-        home_button = Button(self.toolbarFrame, image=self.homeIcon, highlightbackground='black', bg='black', command=toolbar.gmail_function)         #to change
-        contact_button = Button(self.toolbarFrame, image=self.contactsIcon, highlightbackground='black', bg='black', command=toolbar.OpenToolbarAnimation)  #
-        settings_button = Button(self.toolbarFrame, image=self.settingsIcon, highlightbackground='black', bg='black', command=toolbar.OpenToolbarAnimation) #
+        self.clock_button = Button(self.toolbarFrame, image=self.clockIcon, highlightthickness=2, highlightbackground='black', bg='black', command=self.time_function)
+        self.weather_button = Button(self.toolbarFrame, image=self.sunIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.weather_function)      
+        self.home_button = Button(self.toolbarFrame, image=self.homeIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.gmail_function)         #to change
+        self.contact_button = Button(self.toolbarFrame, image=self.contactsIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.OpenToolbarAnimation)  #
+        self.settings_button = Button(self.toolbarFrame, image=self.settingsIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.OpenToolbarAnimation) #
         
 
-        clock_button.pack(anchor=NW)
-        weather_button.pack(anchor=NW)
-        home_button.pack(anchor=NW)
-        contact_button.pack(anchor=NW)
-        settings_button.pack(anchor=NW)
+        self.clock_button.pack(anchor=NW)
+        self.weather_button.pack(anchor=NW)
+        self.home_button.pack(anchor=NW)
+        self.contact_button.pack(anchor=NW)
+        self.settings_button.pack(anchor=NW)
 
         self.arrowFrame = LabelFrame(self.toolbarFrame, bg="black", bd=0)
-        self.arrow_button = Button(self.arrowFrame, image=self.rightArrow, highlightbackground='black', bg='black', command=toolbar.OpenToolbarAnimation)
+        self.arrow_button = Button(self.arrowFrame, image=self.rightArrow, highlightbackground='black', bg='black', command=self.OpenToolbarAnimation)
         self.arrow_button.pack(side=RIGHT)
         self.arrowFrame.place(x=203, y=399)
 
         
         self.toolbarFrame.place(x=-201,y=0, width=420)
 
-        
+        self.OpenToolbarAnimation()
+        self.HideToolbarAnimation()
 
 
     def OpenToolbarAnimation(self) -> None:
@@ -209,13 +214,32 @@ class Toolbar:
     
     def time_function(self) -> None:
         """It is a bridge into a function activate"""
-        self.functions_activate.time_function()
+        if self.time_on == False:
+            self.time_on = True
+            self.clock_button.config(highlightbackground="blue")
+        else:
+            self.time_on = False
+            self.clock_button.config(highlightbackground="black")
+        self.functions_activate.time_function(self.time_on)
+            
     
     def weather_function(self) -> None:
         """It is a bridge into a function activate"""
-        self.functions_activate.weather_function()
+        if self.weather_on == False:
+            self.weather_on = True
+            self.weather_button.config(highlightbackground="blue")
+        else:
+            self.weather_on = False
+            self.weather_button.config(highlightbackground="black")
+        self.functions_activate.weather_function(self.weather_on)
 
     def gmail_function(self) -> None:
         """It is a bridge into a function activate"""
-        self.functions_activate.gmail_function()
+        if self.gmail_on == False:
+            self.gmail_on = True
+            self.home_button.config(highlightbackground="blue")
+        else:
+            self.gmail_on = False
+            self.home_button.config(highlightbackground="black")
+        self.functions_activate.gmail_function(self.gmail_on)
     

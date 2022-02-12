@@ -122,6 +122,9 @@ class CurrentWeather:
         
         weather_loading()
     
+    def destroy_weather(self):
+        self.weatherFrame.place_forget()
+    
     def check_position(self, RFace=None) -> int:
         """
         This function is responsible for checking actual weather position
@@ -155,11 +158,10 @@ class CurrentWeather:
             toolbar_event = data["db"]["toolbar"]
         
         if toolbar_event == "on":
-
+            self.weatherFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
 
-            self.weatherFrame.ToOn = True 
         else:
             self.weatherFrame.ToOn = False
     
