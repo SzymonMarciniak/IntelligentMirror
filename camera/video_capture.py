@@ -9,7 +9,7 @@ import pyautogui
 from tkinter import * 
 import json
 
-from IntelligentMirror.camera.modules.HandTrackingModule import *
+from IntelligentMirror.camera.modules.HandTrackingModule import HandDetector
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
 from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
 from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
@@ -161,75 +161,50 @@ class Camera:
             cv2.waitKey(1)
     
     def Mouse(self):
-
-        
         """
         This function is responsible for control mouse (moveing and clicking). You control mouse with your hand.
         """
          
         wCam, hCam = 640, 480
-        frameR = 100 # Frame Reduction
+        frameR = 0 # Frame Reduction
         smoothening = 6
 
-       
         plocX, plocY = 0, 0
         clocX, clocY = 0, 0
 
-        detector = HandDetector(maxHands=1)
         wScr, hScr = 1920, 1080
 
-        toolbar_animation = False 
-
         no_fingers = 0 
-
-            
+        
+        self.activate = False
+        #pTime = 0 
+ 
         while self.no_hand < 50:
                 
-                
             try:
-              
-                _, img = self.cap.read()
-               
 
                 def click(x: int,y: int) -> None:
                     pyautogui.moveTo(x, y)
                     pyautogui.click(x=x, y=y)
-                        
+                
+                    self.activate = True
 
-                    with open(self.db, "r", encoding="utf-8") as file0:
-                        data = json.load(file0)
-                        data["db"]["camera"]["mouse_event"]["event"] = "True"
-
-                    with open(self.db, "w", encoding="utf-8") as file:
-                        json.dump(data, file, ensure_ascii=False, indent=4)
-                   
-
-                # Find hand Landmarks    
+                _, img = self.cap.read()
                 hands, img = detector.find_hands(img, draw=False)
 
                 if not hands:
                     self.no_hand += 1
+                    lmList = []
                 else:
                     self.no_hand = 0
-
-                lmList, bbox = detector.find_position(img, draw=False)
+                    hand = hands[0]
+                    lmList = hand["lmList"]
                
 
-                    # Get the tip of the finger up
+                    # Get the tip of the finger 
                 if len(lmList) != 0:
-                    fingers, _ = detector.fingers_up(hands[0])
-                    if fingers[1] == 1:
-                        x1, y1 = lmList[8][1:]
-                    elif fingers[2] == 1:
-                        x1, y1 = lmList[12][1:]
-                    elif fingers[3] == 1:
-                        x1, y1 = lmList[16][1:]
-                    elif fingers[0] == 1:
-                        x1, y1 = lmList[4][1:]
-                    else:
-                        x1, y1 = lmList[20][1:] 
-                        
-                    
+                    x1, y1 = lmList[8]
+                   
                     # Check how many fingers are up
                     _, total_fingers = detector.fingers_up(hands[0])
 
@@ -253,34 +228,13 @@ class Camera:
                         no_fingers += 1
                         if no_fingers >= 10:
                           
-
                             pyautogui.mouseUp(button="left")
 
-                                
-                            #Save mouse mode
-                            with open(self.db, "r", encoding="utf-8") as file0:
-                                data = json.load(file0)
-                                data["db"]["camera"]["mouse_event"]["event"] = "False"
-                            file0.close()
+                            self.activate = False
 
-
-                            with open(self.db, "w", encoding="utf-8") as file:
-                                json.dump(data, file, ensure_ascii=False, indent=4)
-                            file.close()
-
-                                
                             pyautogui.moveTo(x, y)
                             plocX, plocY = clocX, clocY
 
-                            #save mouse coordinates
-                            with open(self.db, "r", encoding="utf-8") as file0:
-                                data = json.load(file0)
-                                data["db"]["camera"]["mouse_event"]["x"] = x
-                                data["db"]["camera"]["mouse_event"]["y"] = y
-
-                            with open(self.db, "w", encoding="utf-8") as file: 
-                                json.dump(data, file, ensure_ascii=False, indent=4)
-                            file.close()
                             
                     # Clicking Mode
                     else:
@@ -290,47 +244,28 @@ class Camera:
 
                         no_fingers = 0
 
-                        with open(self.db, "r", encoding="utf-8") as file0:
-                            data = json.load(file0)
-                            data["db"]["camera"]["mouse_event"]["x"] = x
-                            data["db"]["camera"]["mouse_event"]["y"] = y
-
-                        with open(self.db, "w", encoding="utf-8") as file: 
-                            json.dump(data, file, ensure_ascii=False, indent=4)
-                        file.close()
-
-                        with open(self.db, "r", encoding="utf-8") as file:
-                            data = json.load(file)
-                            activate = data["db"]["camera"]["mouse_event"]["event"]
-                        file.close()
-                            
-
-                        if activate == "False":
+                        if self.activate == False:
                             click(x, y)
                         else:
                             pyautogui.mouseDown(button="left")
                             pyautogui.moveTo(x, y)
                             plocX, plocY = clocX, clocY
                             
-                        with open(self.db, "r", encoding="utf-8") as file0:
-                            data = json.load(file0)
-                            data["db"]["camera"]["mouse_event"]["event"] = "True"
-                        file0.close()
-
-
-
-                   
+                        self.activate = True
 
                     # Display
-                    #cv2.imshow("Image", img)
-                cv2.waitKey(1)
-            except ValueError:
-                print("Value Error")
-            except FileNotFoundError as Error:
-                raise Error
+
+                    # cTime = time.time()
+                    # fps = 1 / (cTime - pTime)
+                    # pTime = cTime
+                    # print(f"FPS: {fps}")
+                    # #cv2.imshow("Image", img)
+                    # cv2.waitKey(1)
+          
+            except:
+                print("ERROR")
         
 
 
 if __name__ == "__main__":
-    ObjectFace = Camera()
-    ObjectFace.FaceRecognition()
+   pass 
