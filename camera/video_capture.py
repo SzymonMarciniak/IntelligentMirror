@@ -173,85 +173,60 @@ class Camera:
         clocX, clocY = 0, 0
 
         wScr, hScr = 1920, 1080
-
-        no_fingers = 0 
         
         self.activate = False
+        isDown = False
         #pTime = 0 
  
         while self.no_hand < 50:
-                
             try:
-
-                def click(x: int,y: int) -> None:
-                    pyautogui.moveTo(x, y)
-                    pyautogui.click(x=x, y=y)
-                
-                    self.activate = True
-
                 _, img = self.cap.read()
                 hands, img = detector.find_hands(img, draw=False)
 
-                if not hands:
-                    self.no_hand += 1
-                    lmList = []
-                else:
+                if hands:
+                   
                     self.no_hand = 0
                     hand = hands[0]
                     lmList = hand["lmList"]
                
 
                     # Get the tip of the finger 
-                if len(lmList) != 0:
-                    x1, y1 = lmList[8]
-                   
-                    # Check how many fingers are up
-                    _, total_fingers = detector.fingers_up(hands[0])
-
-                    # Convert Coordinates
-                    x3 = np.interp(x1, (frameR, wCam - frameR), (0, wScr))
-                    y3 = np.interp(y1, (frameR, hCam - frameR), (0, hScr))
-
-                    # Smoothen Values
-                    clocX = plocX + (x3 - plocX) / smoothening
-                    clocY = plocY + (y3 - plocY) / smoothening
-                            
-                    # Move Mouse
-                    x = wScr - clocX
-                    x = int(x)
-                    y = int(clocY)
+                    if len(lmList) != 0:
+                        x1, y1 = lmList[8]
                     
-                    # Moving Mode
-                   
-                    if total_fingers >=3:
-                        
-                        no_fingers += 1
-                        if no_fingers >= 10:
-                          
-                            pyautogui.mouseUp(button="left")
+                        # Check how many fingers are up
+                        _, total_fingers = detector.fingers_up(hands[0])
 
-                            self.activate = False
+                        # Convert Coordinates
+                        x3 = np.interp(x1, (frameR, wCam - frameR), (0, wScr))
+                        y3 = np.interp(y1, (frameR, hCam - frameR), (0, hScr))
 
-                            pyautogui.moveTo(x, y)
-                            plocX, plocY = clocX, clocY
-
-                            
-                    # Clicking Mode
-                    else:
+                        # Smoothen Values
+                        clocX = plocX + (x3 - plocX) / smoothening
+                        clocY = plocY + (y3 - plocY) / smoothening
+                                
+                        # Move Mouse
                         x = wScr - clocX
                         x = int(x)
                         y = int(clocY)
+                        
+                        # Moving Mode
+                        if total_fingers >=3:
+                            if isDown:
+                                pyautogui.mouseUp(button="left")
+                                isDown = False
 
-                        no_fingers = 0
-
-                        if self.activate == False:
-                            click(x, y)
+                            self.activate = False
+                                  
+                        # Clicking Mode
                         else:
-                            pyautogui.mouseDown(button="left")
-                            pyautogui.moveTo(x, y)
-                            plocX, plocY = clocX, clocY
-                            
-                        self.activate = True
+                            if self.activate == False:
+                                pyautogui.mouseDown(button="left")
+                                isDown = True
+                            self.activate = True
+
+                        plocX, plocY = clocX, clocY
+                        pyautogui.moveTo(x, y)
 
                     # Display
 
@@ -259,13 +234,8 @@ class Camera:
                     # fps = 1 / (cTime - pTime)
                     # pTime = cTime
                     # print(f"FPS: {fps}")
-                    # #cv2.imshow("Image", img)
+                    # cv2.imshow("Image", img)
                     # cv2.waitKey(1)
           
             except:
                 print("ERROR")
-        
-
-
-if __name__ == "__main__":
-   pass 
