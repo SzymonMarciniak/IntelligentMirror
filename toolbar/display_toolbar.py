@@ -1,4 +1,3 @@
-from math import radians
 from tkinter import *
 import json
 import os

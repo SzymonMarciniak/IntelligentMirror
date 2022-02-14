@@ -2,12 +2,12 @@
     "db": {
         "toolbar": "off",
         "camera": {
-            "actuall_user": "None",
+            "actuall_user": "szymon_marciniak",
             "mouse_event": {
                 "event": "False",
-                "frame": "gmail",
-                "x": 1790,
-                "y": "y"
+                "frame": "weather",
+                "x": 1250,
+                "y": 667
             }
         },
         "accounts": {
@@ -16,16 +16,19 @@
                 "haslo": "123",
                 "positions": {
                     "time": {
-                        "x": 903,
-                        "y": 157
+                        "event": "True",
+                        "x": 296,
+                        "y": 796
                     },
                     "weather": {
-                        "x": 905,
-                        "y": 266
+                        "event": "True",
+                        "x": 275,
+                        "y": 413
                     },
                     "gmail": {
-                        "x": 960,
-                        "y": 473,
+                        "event": "False",
+                        "x": 325,
+                        "y": 39,
                         "login": "none",
                         "haslo": "none"
                     }
@@ -36,15 +39,18 @@
                 "haslo": "123",
                 "positions": {
                     "time": {
-                        "x": 1564,
-                        "y": 36
+                        "event": "True",
+                        "x": 1591,
+                        "y": 26
                     },
                     "weather": {
-                        "x": 1543,
-                        "y": 193
+                        "event": "True",
+                        "x": 1553,
+                        "y": 165
                     },
                     "gmail": {
-                        "x": 1320,
+                        "event": "True",
+                        "x": 1307,
                         "y": 0,
                         "login": "szymonmarciniak24@gmail.com",
                         "haslo": "haslo123"
@@ -56,14 +62,17 @@
                 "haslo": "321",
                 "positions": {
                     "time": {
+                        "event": "True",
                         "x": 1445,
                         "y": 280
                     },
                     "weather": {
+                        "event": "True",
                         "x": 1405,
                         "y": 231
                     },
                     "gmail": {
+                        "event": "False",
                         "x": 1414,
                         "y": 148,
                         "login": "agatka@gmail.com",

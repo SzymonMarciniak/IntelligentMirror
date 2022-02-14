@@ -61,9 +61,11 @@ class Camera:
         
     
     def refresh_methods(self):
-        self.Time.time_refresh(self.RFace) 
-        self.Weather.weather_refresh(self.RFace)
-        self.Gmail.gmail_refresh(self.RFace)
+
+        from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
+        refresh = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame,self.gmailFrame)
+
+        refresh.functions_position_refresh(self.RFace)
     
 
     def FaceRecognition(self):
@@ -85,7 +87,7 @@ class Camera:
             
 
             def face_recognition_module():
-                try:
+                #try:
                     small_frame = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
 
                     rgb_small_frame = small_frame[:, :, ::-1]
@@ -123,10 +125,11 @@ class Camera:
                         self.no_face = self.no_face + 1
                         print(f"{self.no_face} No name")
                         if self.no_face == 60:
-                            self.RFace = name
-                            self.nick.config(text=self.RFace)
+                            if self.RFace != "None":
+                                self.RFace = name
+                                self.nick.config(text=self.RFace)
+                                self.refresh_methods()
                             self.no_face = 0
-                            self.refresh_methods()
                     
                     
 
@@ -142,8 +145,8 @@ class Camera:
                     print(self.RFace)
                     time.sleep(0.25)
 
-                except:
-                    print("Face Recognition error")
+                # except:
+                #     print("Face Recognition error")
             
             if hands:       #Detection gest
                 isgesture = gesture(hands)
