@@ -85,6 +85,14 @@ class FunctionsActivateClass:
         self.function_refreshing(RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh)
     
     def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh):
+
+        with open(self.db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            PtimeOn = data["db"]["accounts"]["None"]["positions"]["time"]["event"]
+            PweatherOn = data["db"]["accounts"]["None"]["positions"]["weather"]["event"]
+            PgmailOn = data["db"]["accounts"]["None"]["positions"]["gmail"]["event"]
+        
+        
         
         smoothening = 35
 
@@ -92,6 +100,8 @@ class FunctionsActivateClass:
         plocX_time, plocY_time = 0,0
         if TimeToRefresh:
             clocX_time, clocY_time = 1,1
+            if PtimeOn == "False":
+                self.time_function()
         else:
             clocX_time, clocY_time = 0,0
         
@@ -100,6 +110,8 @@ class FunctionsActivateClass:
         plocX_weather, plocY_weather = 0,0
         if WeatherToRefresh:
             clocX_weather, clocY_weather = 1,1
+            if PweatherOn == "False":
+                self.weather_function()
         else:
             clocX_weather, clocY_weather = 0,0
         
@@ -108,6 +120,8 @@ class FunctionsActivateClass:
         plocX_gmail, plocY_gmail = 0,0
         if GmailToRefresh:
             clocX_gmail, clocY_gmail = 1,1
+            if PgmailOn == "False":
+                self.gmail_function()
         else:
             clocX_gmail, clocY_gmail = 0,0
         

@@ -57,6 +57,7 @@ class Camera:
         self.nick.pack(side=BOTTOM,anchor=SE)
 
         self.rgb_small_frame = None
+        pyautogui.moveTo(960, 1090)
 
         
     
@@ -152,16 +153,12 @@ class Camera:
                 isgesture = gesture(hands)
                 if isgesture:
                     Camera.Mouse(self)
-                else:
-                    self.no_hand = 0
-                    face_recognition_module()
             else:
-                self.no_hand = 0
                 face_recognition_module()
         
-
             #cv2.imshow("Image", self.rgb_small_frame)
             cv2.waitKey(1)
+        
     
     def Mouse(self):
         """
@@ -179,7 +176,6 @@ class Camera:
         
         self.activate = False
         isDown = False
-        #pTime = 0 
  
         while self.no_hand < 50:
             try:
@@ -231,14 +227,10 @@ class Camera:
                         plocX, plocY = clocX, clocY
                         pyautogui.moveTo(x, y)
 
-                    # Display
-
-                    # cTime = time.time()
-                    # fps = 1 / (cTime - pTime)
-                    # pTime = cTime
-                    # print(f"FPS: {fps}")
-                    # cv2.imshow("Image", img)
-                    # cv2.waitKey(1)
+                else:
+                    self.no_hand +=1
           
             except:
                 print("ERROR")
+        
+        pyautogui.moveTo(0,0)

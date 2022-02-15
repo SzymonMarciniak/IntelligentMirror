@@ -101,9 +101,10 @@ class Toolbar:
         self.settings_button.pack(anchor=NW)
 
         self.arrowFrame = LabelFrame(self.toolbarFrame, bg="black", bd=0)
-        self.arrow_button = Button(self.arrowFrame, image=self.rightArrow, highlightbackground='black', bg='black', command=self.OpenToolbarAnimation)
+        self.arrow_button = Button(self.arrowFrame, image=self.rightArrow, bd=0, highlightbackground='black',borderwidth=0, bg='black', \
+             highlightthickness=0, command=self.OpenToolbarAnimation)
         self.arrow_button.pack(side=RIGHT)
-        self.arrowFrame.place(x=203, y=399)
+        self.arrowFrame.place(x=209, y=420)
 
         
         self.toolbarFrame.place(x=-201,y=0, width=420)
@@ -111,6 +112,19 @@ class Toolbar:
         self.OpenToolbarAnimation()
         self.HideToolbarAnimation()
 
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            timeOn = data["db"]["accounts"]["None"]["positions"]["time"]["event"]
+            weatherOn = data["db"]["accounts"]["None"]["positions"]["weather"]["event"]
+            gmailOn = data["db"]["accounts"]["None"]["positions"]["gmail"]["event"]
+        
+        if timeOn == "True":
+            self.time_function()
+        if weatherOn == "True":
+            self.weather_function()
+        if gmailOn == "True":
+            self.gmail_function()
+        
 
     def OpenToolbarAnimation(self) -> None:
         """
