@@ -66,6 +66,13 @@ class Camera:
         from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
         refresh = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame,self.gmailFrame)
 
+        with open(self.db, "r", encoding="utf-8") as file: 
+            data = json.load(file)
+            data["db"]["camera"]["actuall_user"] = self.RFace
+        
+        with open(self.db, "w", encoding="utf-8") as user_file:
+            json.dump(data, user_file, ensure_ascii=False, indent=4)
+
         refresh.functions_position_refresh(self.RFace)
     
 
@@ -96,22 +103,21 @@ class Camera:
 
                     face_locations = face_recognition.face_locations(rgb_small_frame, number_of_times_to_upsample=3)
                     face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large") #Finding face on camera
-
                     for face_encoding in face_encodings:
-                                
+
                         matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding, tolerance=0.4)
                         face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
                         best_match_index = np.argmin(face_distances) #Whitch face matches those in the database
 
-
                         if matches[best_match_index]:
                             name = self.known_face_names[best_match_index] #finding name
-                    
+                        
                             if name == self.RFace: #if name now and then are the same 
                                 self.no_face = 0
 
                             else:                           #if name now and then are not the same 
                                 if  self.RFace == "None":
+
                                     self.RFace = name
                                     with open(self.db, "r", encoding="utf-8") as file:
                                         data = json.load(file)
@@ -120,9 +126,9 @@ class Camera:
                                     self.no_face = 0
                                     self.refresh_methods()
 
-                    
                     name = "None"               #Counting how many times dont recognition any face 
                     if name == "None":
+ 
                         self.no_face = self.no_face + 1
                         print(f"{self.no_face} No name")
                         if self.no_face == 60:
@@ -153,6 +159,8 @@ class Camera:
                 isgesture = gesture(hands)
                 if isgesture:
                     Camera.Mouse(self)
+                else:
+                    face_recognition_module()
             else:
                 face_recognition_module()
         

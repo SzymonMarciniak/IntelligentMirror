@@ -120,6 +120,8 @@ class FunctionsActivateClass:
         plocX_gmail, plocY_gmail = 0,0
         if GmailToRefresh:
             clocX_gmail, clocY_gmail = 1,1
+            self.gmail_function(on=False)
+            self.gmail_function()
             if PgmailOn == "False":
                 self.gmail_function()
         else:
@@ -182,7 +184,6 @@ class FunctionsActivateClass:
 
     def time_function(self, on=True) -> None:
         """Activates time function"""
-        print(on)
         if on == True:
             self.time.clock_date()
         else:

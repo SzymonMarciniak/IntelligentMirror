@@ -41,67 +41,68 @@ class Gmail:
         From_list = []
         From_list_2 = []
 
-        Rface = "szymon_marciniak"
+        
                         
 
         with open(self.db, "r", encoding="utf-8") as gmail_f:
-            gmail = json.load(gmail_f)
+            data = json.load(gmail_f)
+            Rface = data["db"]["camera"]["actuall_user"]
             
-
-            if Rface != "unknown":
-                username = gmail["db"]["accounts"][Rface]["positions"]["gmail"]["login"]
-                password = gmail["db"]["accounts"][Rface]["positions"]["gmail"]["haslo"]
-
-
-                From = " "
-                encoding = " "
-                response = " "
-                subject = " "
-                msg = " "
-                i = " "
-            
-                N = 4
-
-                imap = imaplib.IMAP4_SSL("imap.gmail.com")
-                imap.login(username, password)
+            try: 
+                if Rface != "unknown":
+                    username = data["db"]["accounts"][Rface]["positions"]["gmail"]["login"]
+                    password = data["db"]["accounts"][Rface]["positions"]["gmail"]["haslo"]
 
 
-                status, messages = imap.select("INBOX")
+                    From = " "
+                    encoding = " "
+                    response = " "
+                    subject = " "
+                    msg = " "
+                    i = " "
+                
+                    N = 4
 
-                messages = int(messages[0])
-
-                for i in range(messages, messages-N, -1):
-                    res, msg = imap.fetch(str(i), "(RFC822)")
-                    for response in msg:
-                        if isinstance(response, tuple):
-                            msg = email.message_from_bytes(response[1])
-                            subject, encoding = decode_header(msg["Subject"])[0]
-                            if isinstance(subject, bytes):
-                                if encoding == None:
-                                    encoding = str("utf-8")
-                                subject = subject.decode(encoding)
-                            From, encoding = decode_header(msg.get("From"))[0]
-                            if isinstance(From, bytes):
-                                if encoding == None:
-                                    encoding = str("utf-8")
-                                From = From.decode(encoding)
-
-                            From_list_2 = From.split()
-                            From_list_2.pop()
-                            From_list_2 = " ".join(From_list_2)
-                            # print("Subject:", subject)
-                            # print("From:", From_list_2)
-                            Subject_list.append(subject)
-                            From_list.append(From_list_2)
-                            From_list_2 = []
-                # print(From_list)
-                # print(Subject_list)
-                imap.close()
-                imap.logout()
-
-                return Subject_list, From_list 
+                    imap = imaplib.IMAP4_SSL("imap.gmail.com")
+                    imap.login(username, password)
 
 
+                    status, messages = imap.select("INBOX")
+
+                    messages = int(messages[0])
+
+                    for i in range(messages, messages-N, -1):
+                        res, msg = imap.fetch(str(i), "(RFC822)")
+                        for response in msg:
+                            if isinstance(response, tuple):
+                                msg = email.message_from_bytes(response[1])
+                                subject, encoding = decode_header(msg["Subject"])[0]
+                                if isinstance(subject, bytes):
+                                    if encoding == None:
+                                        encoding = str("utf-8")
+                                    subject = subject.decode(encoding)
+                                From, encoding = decode_header(msg.get("From"))[0]
+                                if isinstance(From, bytes):
+                                    if encoding == None:
+                                        encoding = str("utf-8")
+                                    From = From.decode(encoding)
+
+                                From_list_2 = From.split()
+                                From_list_2.pop()
+                                From_list_2 = " ".join(From_list_2)
+                                # print("Subject:", subject)
+                                # print("From:", From_list_2)
+                                Subject_list.append(subject)
+                                From_list.append(From_list_2)
+                                From_list_2 = []
+                    # print(From_list)
+                    # print(Subject_list)
+                    imap.close()
+                    imap.logout()
+
+                    return Subject_list, From_list 
+            except:
+                return False, False 
 class GmailMain:
     """
     Display gmail frame
@@ -117,6 +118,7 @@ class GmailMain:
     """
     def __init__(self, tk:Frame, toolbarFrame:Frame, gmailFrame:Frame) -> None:
         gmail = Gmail()
+        self.gmail = gmail 
         self.data = gmail.start() 
         self.prefix = os.getcwd()
         self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
@@ -147,6 +149,8 @@ class GmailMain:
         self.gmailLogo = PhotoImage(file=f"{self.prefix}/IntelligentMirror/functions/GmailFunction/gmail_logo.png")
         self.GmailLogo = Label(self.gmailLabelFrame, image=self.gmailLogo, fg='gray', bg='gray')
         self.GmailLogo.pack(side=LEFT)
+
+        self.faild_label = Label(self.gmailFrame, bg="black", fg="white", bd=1, text="Connection\n Faild", font=("", 20))
 
         self.gmailFrame.bind("<Button-1>", self.drag_start_frame)
         self.gmailFrame.bind("<B1-Motion>", self.drag_motion_frame)
@@ -216,7 +220,10 @@ class GmailMain:
         self.gmailLabelFrame.bind("<B1-Motion>", self.drag_motion_frame)
         self.gmailLabelFrame.bind("<ButtonRelease-1>", self.drag_stop)
 
-    
+        self.faild_label.bind("<Button-1>", self.drag_start_frame)
+        self.faild_label.bind("<B1-Motion>", self.drag_motion_frame)
+        self.faild_label.bind("<ButtonRelease-1>", self.drag_stop)
+
     def set_from_gamil_headers(self) -> List:
         """
         Return 'from' from gmails
@@ -266,51 +273,81 @@ class GmailMain:
 
     def main(self) -> None:
         """Function responsible for displaying gmail frame"""
-                
-        Froms = GmailMain.set_from_gamil_headers(self)
-
-        self.from_label_0.configure(text = Froms[0])
-        self.from_label_1.configure(text = Froms[1])
-        self.from_label_2.configure(text = Froms[2])
-        self.from_label_3.configure(text = Froms[3])
-
-        self.from_label_0.pack(side=TOP)
-        self.from_label_1.pack(side=TOP)
-        self.from_label_2.pack(side=TOP)
-        self.from_label_3.pack(side=TOP)
-
-
-        Subjects = GmailMain.set_subject_gmail_headers(self)
-
-        self.subject_label_0.configure(text=Subjects[0])
-        self.subject_label_1.configure(text=Subjects[1])
-        self.subject_label_2.configure(text=Subjects[2])
-        self.subject_label_3.configure(text=Subjects[3])
-
-        self.subject_label_0.pack(side= BOTTOM, pady=10)
-        self.subject_label_1.pack(side= TOP)
-        self.subject_label_2.pack(side= TOP)
-        self.subject_label_3.pack(side= TOP)
-
-
-        b = int(82)
-        c = int(1)
-        d = int(43)
-        user = "Szymon_Marciniak".split("_")
-        self.preGmail_Label.configure(text=f"{user[0].title()} \n {user[1].title()} ")
-        self.preGmail_Label.pack(side=LEFT, padx=23)
+        self.data = self.gmail.start() 
+        print(self.data)
+        if self.data[0] and self.data[1]:
+            with open(self.db, "r", encoding="utf-8") as gmail_f:
+                data2 = json.load(gmail_f)
+                Rface = data2["db"]["camera"]["actuall_user"]
                     
+            Froms = GmailMain.set_from_gamil_headers(self)
 
-        self.preGmail.place(x=1, y=c, width=220, height=d+c)
-        self.gmailLabelFrame.pack(side=RIGHT, padx=8)
-        self.gm0.place(x=1, y=c+d,    width=220, height=82)
-        self.gm1.place(x=1, y=b*1+c+d,width=220, height=82)
-        self.gm2.place(x=1, y=b*2+c+d,width=220, height=82)
-        self.gm3.place(x=1, y=b*3+c+d,width=220, height=82)
+            self.from_label_0.configure(text = Froms[0])
+            self.from_label_1.configure(text = Froms[1])
+            self.from_label_2.configure(text = Froms[2])
+            self.from_label_3.configure(text = Froms[3])
 
-        x_pos, y_pos = self.check_position()
+            self.from_label_0.pack(side=TOP)
+            self.from_label_1.pack(side=TOP)
+            self.from_label_2.pack(side=TOP)
+            self.from_label_3.pack(side=TOP)
 
-        self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
+
+            Subjects = GmailMain.set_subject_gmail_headers(self)
+
+            self.subject_label_0.configure(text=Subjects[0])
+            self.subject_label_1.configure(text=Subjects[1])
+            self.subject_label_2.configure(text=Subjects[2])
+            self.subject_label_3.configure(text=Subjects[3])
+
+            self.subject_label_0.pack(side= BOTTOM, pady=10)
+            self.subject_label_1.pack(side= TOP)
+            self.subject_label_2.pack(side= TOP)
+            self.subject_label_3.pack(side= TOP)
+
+
+            b = int(82)
+            c = int(1)
+            d = int(43)
+            user = Rface.split("_")
+    
+            self.preGmail_Label.configure(text=f"{user[0].title()} \n {user[1].title()} ")
+            self.preGmail_Label.pack(side=LEFT, padx=23)
+                        
+
+            self.preGmail.place(x=1, y=c, width=220, height=d+c)
+            self.gmailLabelFrame.pack(side=RIGHT, padx=8)
+            self.gm0.place(x=1, y=c+d,    width=220, height=82)
+            self.gm1.place(x=1, y=b*1+c+d,width=220, height=82)
+            self.gm2.place(x=1, y=b*2+c+d,width=220, height=82)
+            self.gm3.place(x=1, y=b*3+c+d,width=220, height=82)
+
+            x_pos, y_pos = self.check_position()
+
+            self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
+        
+        else:
+            with open(self.db, "r", encoding="utf-8") as gmail_f:
+                data2 = json.load(gmail_f)
+                Rface = data2["db"]["camera"]["actuall_user"]
+            
+            try:
+                user = Rface.split("_")
+                self.preGmail_Label.configure(text=f"{user[0].title()} \n {user[1].title()} ")
+            except:
+                self.preGmail_Label.configure(text=f"    None")
+
+            x_pos, y_pos = self.check_position()
+            self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=126)
+            self.gmailLabelFrame.pack(side=RIGHT, padx=8)
+
+            self.preGmail_Label.pack(side=LEFT, padx=30)
+                        
+            self.preGmail.place(x=1, y=1, width=220, height=44)
+            self.faild_label.place(x=1, y=44,width=216, height=80)
+
+            
+
     
     def destroy_gmail(self):
         self.gmailFrame.place_forget()
