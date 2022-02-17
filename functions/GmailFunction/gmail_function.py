@@ -125,6 +125,7 @@ class GmailMain:
 
         tk.configure(background="black")
 
+
         self.gmailFrame= gmailFrame
         self.toolbarFrame = toolbarFrame
 
@@ -273,8 +274,16 @@ class GmailMain:
 
     def main(self) -> None:
         """Function responsible for displaying gmail frame"""
+
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            RFace = data["db"]["camera"]["actuall_user"]
+            data["db"]["accounts"][RFace]["positions"]["gmail"]["event"] = "True"
+        
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
         self.data = self.gmail.start() 
-        print(self.data)
         if self.data[0] and self.data[1]:
             with open(self.db, "r", encoding="utf-8") as gmail_f:
                 data2 = json.load(gmail_f)
@@ -322,8 +331,10 @@ class GmailMain:
             self.gm2.place(x=1, y=b*2+c+d,width=220, height=82)
             self.gm3.place(x=1, y=b*3+c+d,width=220, height=82)
 
-            x_pos, y_pos = self.check_position()
+            try: self.faild_label.place_forget()
+            except: pass 
 
+            x_pos, y_pos = self.check_position()
             self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
         
         else:
@@ -331,10 +342,10 @@ class GmailMain:
                 data2 = json.load(gmail_f)
                 Rface = data2["db"]["camera"]["actuall_user"]
             
-            try:
+            if "_" in Rface:
                 user = Rface.split("_")
                 self.preGmail_Label.configure(text=f"{user[0].title()} \n {user[1].title()} ")
-            except:
+            else:
                 self.preGmail_Label.configure(text=f"    None")
 
             x_pos, y_pos = self.check_position()
@@ -347,9 +358,16 @@ class GmailMain:
             self.faild_label.place(x=1, y=44,width=216, height=80)
 
             
-
-    
     def destroy_gmail(self):
+       
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            RFace = data["db"]["camera"]["actuall_user"]
+            data["db"]["accounts"][RFace]["positions"]["gmail"]["event"] = "False"
+        
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
         self.gmailFrame.place_forget()
 
     def check_position(self, RFace = None):

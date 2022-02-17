@@ -115,18 +115,6 @@ class FunctionsActivateClass:
         else:
             clocX_weather, clocY_weather = 0,0
         
-
-        endX_gmail, endY_gmail = self.check_functions_position("gmail", RFace)
-        plocX_gmail, plocY_gmail = 0,0
-        if GmailToRefresh:
-            clocX_gmail, clocY_gmail = 1,1
-            self.gmail_function(on=False)
-            self.gmail_function()
-            if PgmailOn == "False":
-                self.gmail_function()
-        else:
-            clocX_gmail, clocY_gmail = 0,0
-        
        
         while (int(plocX_time) != int(clocX_time) and int(plocY_time) != int(clocY_time)):
             
@@ -155,19 +143,7 @@ class FunctionsActivateClass:
 
                 self.weatherFrame.place_configure(x=x_weather,y=y_weather)
                 self.weatherFrame.update()
-            
-            if GmailToRefresh:
-                plocX_gmail = self.gmailFrame.winfo_x()
-                plocY_gmail = self.gmailFrame.winfo_y()
-
-                clocX_gmail = plocX_gmail + (endX_gmail - plocX_gmail) / smoothening
-                clocY_gmail = plocY_gmail + (endY_gmail - plocY_gmail) / smoothening
-
-                x_gmail = int(clocX_gmail)
-                y_gmail = int(clocY_gmail)
-
-                self.gmailFrame.place_configure(x=x_gmail,y=y_gmail)
-                self.gmailFrame.update()
+        
         
         if TimeToRefresh:
             self.timeFrame.place_configure(x=endX_time,y=endY_time)
@@ -178,8 +154,11 @@ class FunctionsActivateClass:
             self.weatherFrame.update()
         
         if GmailToRefresh:
-            self.gmailFrame.place_configure(x=endX_gmail,y=endY_gmail)
-            self.gmailFrame.update()
+            clocX_gmail, clocY_gmail = 1,1
+            self.gmail_function(on=False)
+            self.gmail_function()
+            if PgmailOn == "False":
+                self.gmail_function()
 
 
     def time_function(self, on=True) -> None:

@@ -27,10 +27,9 @@ class CurrentWeather:
         self.tk = tk
         self.toolbarFrame = toolbarFrame
 
-        self.temp = Label(weatherFrame, font=("Arial", 50))
-        self.pressure = Label(weatherFrame, font=("Arial", 35))
-        self.humidity = Label(weatherFrame, font=("Arial", 25))
-        self.image = Label(weatherFrame, font=("Arial", 40))
+        self.temp = Label(self.weatherFrame, font=("Arial", 50))
+        self.humidity = Label(self.weatherFrame, font=("Arial", 25))
+        self.image = Label(self.weatherFrame, font=("Arial", 40))
 
         self.weatherFrame.bind("<Button-1>", self.drag_start_frame)
         self.weatherFrame.bind("<B1-Motion>", self.drag_motion_frame)
@@ -39,10 +38,6 @@ class CurrentWeather:
         self.temp.bind("<Button-1>", self.drag_start_frame)
         self.temp.bind("<B1-Motion>", self.drag_motion_frame)
         self.temp.bind("<ButtonRelease-1>", self.drag_stop)
-
-        self.pressure.bind("<Button-1>", self.drag_start_frame)
-        self.pressure.bind("<B1-Motion>", self.drag_motion_frame)
-        self.pressure.bind("<ButtonRelease-1>", self.drag_stop)
 
         self.humidity.bind("<Button-1>", self.drag_start_frame)
         self.humidity.bind("<B1-Motion>", self.drag_motion_frame)
@@ -55,7 +50,6 @@ class CurrentWeather:
         
         self.prefix = f"{prefix_}/IntelligentMirror/functions/WeatherFunction/"
 
-
     def get_image(self):
         weather_icon_old = Image.open(f"{self.prefix}weather_img.png")
         weather_icon_new = weather_icon_old.resize((140,140))
@@ -63,6 +57,15 @@ class CurrentWeather:
 
     def weather(self) -> None:
         """Enables the weather display function"""
+
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            RFace = data["db"]["camera"]["actuall_user"]
+            data["db"]["accounts"][RFace]["positions"]["weather"]["event"] = "True"
+        
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
        
         x,y = CurrentWeather.check_position(self)
         self.weatherFrame.place(x=x, y=y, width=350, height=179)
@@ -75,6 +78,8 @@ class CurrentWeather:
             complete_url = base_url + "appid=" + api_key + "&q=" + city_name
             response = requests.get(complete_url)
             w = response.json()
+
+            
             if w["cod"] != "404":
 
                 q = w["main"]
@@ -94,16 +99,18 @@ class CurrentWeather:
                 if response_i.status_code == 200:
                     with open(f"{self.prefix}weather_img.png", "wb") as img:
                         shutil.copyfileobj(response_i.raw, img)
+                
+                try:
+                    self.image.place_forget()
+                    self.temp.place_forget()
+                    self.humidity.pack_forget()
+                except: pass 
                             
 
                 current_temperature = int(current_temperature) - 273
                 self.temp.config(text=str(current_temperature) + "°C")
                 self.temp.configure(bg="black", fg="white")
                 self.temp.after(900000, weather_loading)
-
-                self.pressure.config(text=str(current_pressure) + " hPa")
-                self.pressure.configure(bg="black", fg="white")
-                self.pressure.after(900000, weather_loading)
 
                 self.humidity.config(text="HUM " + str(current_humidity) + " %  |  " + str(current_pressure) + " hPa")
                 self.humidity.configure(bg="black", fg="white")
@@ -123,6 +130,14 @@ class CurrentWeather:
         weather_loading()
     
     def destroy_weather(self):
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            RFace = data["db"]["camera"]["actuall_user"]
+            data["db"]["accounts"][RFace]["positions"]["weather"]["event"] = "False"
+
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        self.humidity.pack_forget()
         self.weatherFrame.place_forget()
     
     def check_position(self, RFace=None) -> int:
@@ -146,7 +161,8 @@ class CurrentWeather:
     
     def weather_refresh(self, RFace):
         x,y = self.check_position(RFace)
-        self.weatherFrame.place(x=x, y=y)
+        self.weatherFrame.place_configure(x=x, y=y, width=350, height=179)
+        self.weatherFrame.update()
 
    
     def drag_start_frame(self, event):
@@ -188,7 +204,7 @@ class CurrentWeather:
         elif y < 0:
             y = 0
 
-        self.weatherFrame.place(x=x, y=y)
+        self.weatherFrame.place(x=x, y=y, width=350, height=179)
 
         self.weatherFrame.stopX = x
         self.weatherFrame.stopY = y

@@ -14,13 +14,13 @@ class Toolbar:
                 timeFrame: Frame,
                 weatherFrame: Frame,
                 gmailFrame: Frame,
-                clockIcon: PhotoImage,
-                sunIcon: PhotoImage,
-                homeIcon: PhotoImage,
-                contactsIcon: PhotoImage,
-                settingsIcon: PhotoImage,
-                leftArrow: PhotoImage,
-                rightArrow: PhotoImage) -> None:
+                clockIcon: PhotoImage = None,
+                sunIcon: PhotoImage = None,
+                homeIcon: PhotoImage = None,
+                contactsIcon: PhotoImage = None,
+                settingsIcon: PhotoImage = None,
+                leftArrow: PhotoImage = None,
+                rightArrow: PhotoImage = None) -> None:
         """
         Parametrs
         ---------
@@ -254,5 +254,5 @@ class Toolbar:
         else:
             self.gmail_on = False
             self.home_button.config(highlightbackground="black")
-        self.functions_activate.gmail_function(self.gmail_on)
+        self.functions_activate.gmail_function(self.gmail_on) 
     

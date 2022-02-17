@@ -9,6 +9,8 @@ import pyautogui
 from tkinter import * 
 import json
 
+from soupsieve import match
+
 from IntelligentMirror.camera.modules.HandTrackingModule import HandDetector
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
 from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
@@ -103,14 +105,17 @@ class Camera:
 
                     face_locations = face_recognition.face_locations(rgb_small_frame, number_of_times_to_upsample=3)
                     face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large") #Finding face on camera
+                    if face_encodings:
+                        print("ENCODINGGGG")
                     for face_encoding in face_encodings:
 
-                        matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding, tolerance=0.4)
+                        matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding, tolerance=0.5)
                         face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
                         best_match_index = np.argmin(face_distances) #Whitch face matches those in the database
-
+                        print(f"DO {matches} \n best: {best_match_index}")
                         if matches[best_match_index]:
                             name = self.known_face_names[best_match_index] #finding name
+                            print(f"Name: {name}")
                         
                             if name == self.RFace: #if name now and then are the same 
                                 self.no_face = 0
@@ -177,7 +182,7 @@ class Camera:
         frameR = 0 # Frame Reduction
         smoothening = 6
 
-        plocX, plocY = 0, 0
+        plocX, plocY = 300, 300
         clocX, clocY = 0, 0
 
         wScr, hScr = 1920, 1080

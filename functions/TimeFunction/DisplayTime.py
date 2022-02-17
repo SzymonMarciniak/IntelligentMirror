@@ -1,5 +1,6 @@
 from tkinter import *
 from datetime import date
+import numpy as np
 import calendar
 import time
 import json 
@@ -28,6 +29,7 @@ class CurrentTime:
             Frame for clock label and date label
         """
 
+        self.tk = tk
         self.timeFrame = timeFrame
         self.toolbarFrame = toolbarFrame
         self.clockLabel = Label(timeFrame, font=("Arial", 60), bg="black", fg="white")
@@ -51,6 +53,14 @@ class CurrentTime:
         Clock displaying
         """
         
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            RFace = data["db"]["camera"]["actuall_user"]
+            data["db"]["accounts"][RFace]["positions"]["time"]["event"] = "True"
+        
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
         x,y = CurrentTime.check_position(self)
         self.timeFrame.place(x=x,y=y)
 
@@ -79,6 +89,14 @@ class CurrentTime:
         tick()
     
     def destroy_time(self):
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            RFace = data["db"]["camera"]["actuall_user"]
+            data["db"]["accounts"][RFace]["positions"]["time"]["event"] = "False"
+        
+        with open(db, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
         self.timeFrame.place_forget() 
     
     def check_position(self, RFace=None) -> int:

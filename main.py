@@ -45,9 +45,7 @@ toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, clockIco
                 
 camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame)
 
-with open(db, "r", encoding="utf-8") as file: 
-    data = json.load(file)
-    data["db"]["camera"]["actuall_user"] = "None"
+
 
 def open_toolbar(x) -> None:
     """
@@ -65,6 +63,13 @@ tk.bind("<Right>", open_toolbar)
 tk.bind("<Left>", close_toolbar)
 
 if __name__ == "__main__":
+    with open(db, "r", encoding="utf-8") as file: 
+        data = json.load(file)
+        data["db"]["camera"]["actuall_user"] = "None"
+    
+    with open(db, "w", encoding="utf-8") as user_file:
+        json.dump(data, user_file, ensure_ascii=False, indent=4)
+
     toolbar.OpenToolbar()
 
 
