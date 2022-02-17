@@ -17,7 +17,7 @@ class CurrentTime:
     """
     This class is responsible for the display and correct operation of the clock 
     """
-    def __init__(self, tk: Frame, toolbarFrame:Frame ,timeFrame:Frame) -> None:
+    def __init__(self, tk: Frame, toolbarFrame:Frame ,timeFrame:Frame, weatherFrame:Frame = None, gmailFrame: Frame = None) -> None:
         """
         Parametrs
         ---------
@@ -31,6 +31,8 @@ class CurrentTime:
 
         self.tk = tk
         self.timeFrame = timeFrame
+        self.weatherFrame = weatherFrame
+        self.gmailFrame = gmailFrame
         self.toolbarFrame = toolbarFrame
         self.clockLabel = Label(timeFrame, font=("Arial", 60), bg="black", fg="white")
         self.dateLabel = Label(timeFrame, font=("Arial", 30), bg="black", fg="white")
@@ -136,7 +138,7 @@ class CurrentTime:
         if toolbar_event == "on":
             self.timeFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
+            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, NoMove="time")
 
         else:
             self.timeFrame.ToOn = False
@@ -188,6 +190,6 @@ class CurrentTime:
         if self.timeFrame.ToOn == True: 
        
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame)
+            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
 
 

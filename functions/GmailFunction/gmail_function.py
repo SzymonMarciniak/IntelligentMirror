@@ -116,7 +116,7 @@ class GmailMain:
     gmailFrame: Frame
         Frame for gmail labels 
     """
-    def __init__(self, tk:Frame, toolbarFrame:Frame, gmailFrame:Frame) -> None:
+    def __init__(self, tk:Frame, toolbarFrame:Frame, gmailFrame:Frame, timeFrame:Frame = None, weatherFrame: Frame=None) -> None:
         gmail = Gmail()
         self.gmail = gmail 
         self.data = gmail.start() 
@@ -127,6 +127,8 @@ class GmailMain:
 
 
         self.gmailFrame= gmailFrame
+        self.timeFrame = timeFrame
+        self.weatherFrame = weatherFrame
         self.toolbarFrame = toolbarFrame
 
         self.preGmail = LabelFrame(self.gmailFrame, bg="gray", bd=1)
@@ -395,7 +397,7 @@ class GmailMain:
         if toolbar_event == "on":
             self.gmailFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame)
+            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, NoMove="gmail")
 
         else:
             self.gmailFrame.ToOn = False
@@ -442,4 +444,4 @@ class GmailMain:
         if self.gmailFrame.ToOn == True: 
        
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame)
+            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)

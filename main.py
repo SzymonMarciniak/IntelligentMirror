@@ -46,22 +46,6 @@ toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, clockIco
 camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame)
 
 
-
-def open_toolbar(x) -> None:
-    """
-    Open toolbar 
-    """
-    toolbar.OpenToolbarAnimation()
-
-def close_toolbar(x) -> None:
-    """
-    Close toolbar
-    """
-    toolbar.HideToolbarAnimation()
-
-tk.bind("<Right>", open_toolbar)
-tk.bind("<Left>", close_toolbar)
-
 if __name__ == "__main__":
     with open(db, "r", encoding="utf-8") as file: 
         data = json.load(file)

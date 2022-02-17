@@ -38,9 +38,9 @@ class FunctionsActivateClass:
         self.gmailFrame = gmailFrame
 
 
-        self.time = CurrentTime(self.tk, toolbarFrame, self.timeFrame)
-        self.weather = CurrentWeather(self.tk, toolbarFrame, self.weatherFrame)
-        self.gmail = GmailMain(self.tk, toolbarFrame, self.gmailFrame)
+        self.time = CurrentTime(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
+        self.weather = CurrentWeather(self.tk, toolbarFrame,  self.weatherFrame, self.timeFrame, self.gmailFrame)
+        self.gmail = GmailMain(self.tk, toolbarFrame, self.gmailFrame ,self.timeFrame, self.weatherFrame)
 
         self.prefix = os.getcwd()
         self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"

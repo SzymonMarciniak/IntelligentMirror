@@ -139,18 +139,33 @@ class Toolbar:
             with open(db, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
 
+            time, weather, gmail = self.displacement_function()
             for x_pos in range(-200,1,10):
                 self.toolbarFrame.place(x=x_pos, y=0)
-                self.toolbarFrame.update()
 
-            
+                if time:
+                    Tcx = self.timeFrame.winfo_x()
+                    if Tcx < 210:
+                        self.timeFrame.place(x=x_pos+Tcx+200)
+                
+                if weather:
+                    Wcx = self.weatherFrame.winfo_x()
+                    if Wcx < 210:
+                        self.weatherFrame.place(x=x_pos+Wcx+200)
+                    
+                if gmail:
+                    Gcx = self.gmailFrame.winfo_x()
+                    if Gcx < 210:
+                        self.gmailFrame.place(x=x_pos+Gcx+200)
+
+                self.toolbarFrame.update()
             self.arrow_button.config(image=self.leftArrow, command=self.HideToolbarAnimation)
         
     
             
         
     
-    def OpenToolbarAnimation_DF(toolbarFrame: Frame) -> None:
+    def OpenToolbarAnimation_DF(toolbarFrame: Frame, timeFrame: Frame = None, weatherFrame: Frame = None, gmailFrame: Frame = None) -> None:
         """
         Show toolbar from diffrent file
         Paramets
@@ -167,8 +182,26 @@ class Toolbar:
             with open(db, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
 
+            time, weather, gmail = Toolbar.displacement_function()
             for x_pos in range(-200,1,10):
                 toolbarFrame.place(x=x_pos, y=0)
+
+                if timeFrame:
+                    if time:
+                        Tcx = timeFrame.winfo_x()
+                        if Tcx < 210:
+                            timeFrame.place(x=x_pos+Tcx+200)
+                    
+                    if weather:
+                        Wcx = weatherFrame.winfo_x()
+                        if Wcx < 210:
+                            weatherFrame.place(x=x_pos+Wcx+200)
+                        
+                    if gmail:
+                        Gcx = gmailFrame.winfo_x()
+                        if Gcx < 210:
+                            gmailFrame.place(x=x_pos+Gcx+200)
+
                 toolbarFrame.update()
             
         
@@ -188,8 +221,22 @@ class Toolbar:
             with open(db, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
 
+            time,timeX, weather,weatherX, gmail,gmailX = self.displacement_function(val=True)
             for x_pos in range(1,-211,-1):
                 self.toolbarFrame.place(x=x_pos, y=0)
+
+                if time:
+                    if timeX < 210:
+                        self.timeFrame.place(x=x_pos+timeX+211)
+                
+                if weather:
+                    if weatherX < 210:
+                        self.weatherFrame.place(x=x_pos+weatherX+211)
+                    
+                if gmail:
+                    if gmailX < 210:
+                        self.gmailFrame.place(x=x_pos+gmailX+211)
+
                 self.toolbarFrame.update()
 
             
@@ -200,7 +247,7 @@ class Toolbar:
 
 
     
-    def HideToolbarAnimation_DF(toolbarFrame: Frame) -> None:
+    def HideToolbarAnimation_DF(toolbarFrame: Frame, timeFrame: Frame = None, weatherFrame: Frame = None, gmailFrame: Frame = None, NoMove = None) -> None:
         """
         Hide toolbar from diffrent file
         Paramets
@@ -219,6 +266,24 @@ class Toolbar:
 
             for x_pos in range(1,-211,-3):
                 toolbarFrame.place(x=x_pos, y=0)
+
+                time,timeX, weather,weatherX, gmail,gmailX = Toolbar.displacement_function(val=True)
+                if timeFrame:
+                    if not NoMove == "time":
+                        if time:
+                            if timeX < 210:
+                                timeFrame.place(x=x_pos+timeX+211)
+
+                    if not NoMove == "weather":
+                        if weather:
+                            if weatherX < 210:
+                                weatherFrame.place(x=x_pos+weatherX+211)
+                    
+                    if not NoMove == "gmail":
+                        if gmail:
+                            if gmailX < 210:
+                                gmailFrame.place(x=x_pos+gmailX+211)
+
                 toolbarFrame.update()
             
             
@@ -256,3 +321,24 @@ class Toolbar:
             self.home_button.config(highlightbackground="black")
         self.functions_activate.gmail_function(self.gmail_on) 
     
+    @staticmethod
+    def displacement_function(val=False,*args):
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            RFace = data["db"]["camera"]["actuall_user"]
+            timeX = data["db"]["accounts"][RFace]["positions"]["time"]["x"]
+            weatherX = data["db"]["accounts"][RFace]["positions"]["weather"]["x"]
+            gmailX = data["db"]["accounts"][RFace]["positions"]["gmail"]["x"]
+
+        Dtime, Dweather, Dgmail = False, False, False
+        if timeX <= 200:
+            Dtime = True 
+        if weatherX <=200:
+            Dweather = True
+        if gmailX <=200:
+            Dgmail = True 
+        
+        if val: return Dtime,timeX, Dweather,weatherX, Dgmail,gmailX
+        else: return Dtime, Dweather, Dgmail
+        
+        
