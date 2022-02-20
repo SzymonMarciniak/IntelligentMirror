@@ -22,7 +22,6 @@ class CurrentWeather:
             Frame for all weather labels 
         """
 
-        
         self.weatherFrame = weatherFrame
         self.tk = tk
         self.toolbarFrame = toolbarFrame
@@ -59,7 +58,6 @@ class CurrentWeather:
 
     def weather(self) -> None:
         """Enables the weather display function"""
-
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
             RFace = data["db"]["camera"]["actuall_user"]
@@ -72,7 +70,7 @@ class CurrentWeather:
         x,y = CurrentWeather.check_position(self)
         self.weatherFrame.place(x=x, y=y, width=350, height=179)
             
-        def weather_loading():
+        def weather_loading(ToOn = False):
             """Checking the current weather"""
             api_key = "2e45239b1a0c0bd073f2c968d78cc172"
             base_url = "http://api.openweathermap.org/data/2.5/weather?"
@@ -122,14 +120,16 @@ class CurrentWeather:
                 self.image.config(image=self.weather_icon, bg="black")
                 self.image.after(900000, weather_loading)
 
-                self.image.place(x=1,y=1)
-                self.temp.place(x=160, y=35)
-                self.humidity.pack(side=BOTTOM)
+                if ToOn:
+                    ToOn = False 
+                    self.image.place(x=1,y=1)
+                    self.temp.place(x=160, y=35)
+                    self.humidity.pack(side=BOTTOM)
 
             else:
                 print("Weather not found")
         
-        weather_loading()
+        weather_loading(True)
     
     def destroy_weather(self):
         with open(db, "r", encoding="utf-8") as file:
@@ -139,7 +139,10 @@ class CurrentWeather:
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
-        self.humidity.pack_forget()
+        
+        for pack in self.weatherFrame.pack_slaves():
+            pack.pack_forget()
+      
         self.weatherFrame.place_forget()
     
     def check_position(self, RFace=None) -> int:

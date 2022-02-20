@@ -34,6 +34,7 @@ class CurrentTime:
         self.weatherFrame = weatherFrame
         self.gmailFrame = gmailFrame
         self.toolbarFrame = toolbarFrame
+       
         self.clockLabel = Label(timeFrame, font=("Arial", 60), bg="black", fg="white")
         self.dateLabel = Label(timeFrame, font=("Arial", 30), bg="black", fg="white")
 
@@ -66,7 +67,9 @@ class CurrentTime:
         x,y = CurrentTime.check_position(self)
         self.timeFrame.place(x=x,y=y)
 
-        def tick():
+        print("TIMEEEE")
+        ToOn = True 
+        def tick(ToOn = False):
             """
             Clock operation
             """
@@ -74,7 +77,7 @@ class CurrentTime:
             timeString = time.strftime(" %H:%M ")
 
             self.clockLabel.config(text=timeString)
-            self.clockLabel.after(100, tick)  
+            self.clockLabel.after(5000, tick)  
 
             my_date = date.today()
             x = calendar.day_name[my_date.weekday()] 
@@ -84,13 +87,16 @@ class CurrentTime:
 
             self.dateLabel.config(text=dateString)
             self.dateLabel.after(900000, tick)
+            
+            if ToOn:
+                ToOn = False 
+                self.dateLabel.pack(side=TOP)  
+                self.clockLabel.pack(side=BOTTOM)
 
-            self.dateLabel.pack(side=TOP)  
-            self.clockLabel.pack(side=BOTTOM)
-
-        tick()
+        tick(ToOn)
     
     def destroy_time(self):
+    
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
             RFace = data["db"]["camera"]["actuall_user"]
@@ -98,6 +104,12 @@ class CurrentTime:
         
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
+
+        print("DESTROYYY")
+
+        for pack in self.timeFrame.pack_slaves():
+            print(pack)
+            pack.pack_forget()
 
         self.timeFrame.place_forget() 
     

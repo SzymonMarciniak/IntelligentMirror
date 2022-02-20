@@ -3,6 +3,8 @@ import json
 import os
 
 from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
+from IntelligentMirror.camera.video_capture import Camera
+
 
 prefix_ = os.getcwd()
 db = f"{prefix_}/IntelligentMirror/DataBase.json"
@@ -66,6 +68,16 @@ class Toolbar:
         self.weather_on = False
         self.gmail_on = False
 
+        self.clock_button = Button(self.toolbarFrame, image=self.clockIcon, highlightthickness=2, highlightbackground='black', bg='black', command=self.time_function)
+        self.weather_button = Button(self.toolbarFrame, image=self.sunIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.weather_function)      
+        self.home_button = Button(self.toolbarFrame, image=self.homeIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.gmail_function)         #to change
+        self.contact_button = Button(self.toolbarFrame, image=self.contactsIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.OpenToolbarAnimation)  #
+        self.settings_button = Button(self.toolbarFrame, image=self.settingsIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.OpenToolbarAnimation) #
+        
+        self.arrowFrame = LabelFrame(self.toolbarFrame, bg="black", bd=0)
+        self.arrow_button = Button(self.arrowFrame, image=self.rightArrow, bd=0, highlightbackground='black',borderwidth=0, bg='black', \
+            highlightthickness=0, command=self.OpenToolbarAnimation)
+
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
             data["db"]["toolbar"] = "off"
@@ -75,34 +87,21 @@ class Toolbar:
 
 
         self.functions_activate = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
-
+        self.check_buttons()
 
     def OpenToolbar(self) -> None:
         """ 
         Display toolbar main buttons
         
         """
-        toolbar = Toolbar(self.tk,self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.clockIcon, self.sunIcon, \
-             self.homeIcon, self.contactsIcon, self.settingsIcon, self.leftArrow, self.rightArrow)
-        
-        self.toolbar = toolbar
-
-        self.clock_button = Button(self.toolbarFrame, image=self.clockIcon, highlightthickness=2, highlightbackground='black', bg='black', command=self.time_function)
-        self.weather_button = Button(self.toolbarFrame, image=self.sunIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.weather_function)      
-        self.home_button = Button(self.toolbarFrame, image=self.homeIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.gmail_function)         #to change
-        self.contact_button = Button(self.toolbarFrame, image=self.contactsIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.OpenToolbarAnimation)  #
-        self.settings_button = Button(self.toolbarFrame, image=self.settingsIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.OpenToolbarAnimation) #
-        
-
+      
         self.clock_button.pack(anchor=NW)
         self.weather_button.pack(anchor=NW)
         self.home_button.pack(anchor=NW)
         self.contact_button.pack(anchor=NW)
         self.settings_button.pack(anchor=NW)
 
-        self.arrowFrame = LabelFrame(self.toolbarFrame, bg="black", bd=0)
-        self.arrow_button = Button(self.arrowFrame, image=self.rightArrow, bd=0, highlightbackground='black',borderwidth=0, bg='black', \
-             highlightthickness=0, command=self.OpenToolbarAnimation)
+        
         self.arrow_button.pack(side=RIGHT)
         self.arrowFrame.place(x=209, y=420)
 
@@ -111,6 +110,7 @@ class Toolbar:
 
         self.OpenToolbarAnimation()
         self.HideToolbarAnimation()
+
 
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
@@ -321,6 +321,43 @@ class Toolbar:
             self.home_button.config(highlightbackground="black")
         self.functions_activate.gmail_function(self.gmail_on) 
     
+    def check_buttons(self):
+        with open(db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            RFace = data["db"]["camera"]["actuall_user"]
+            time = data["db"]["accounts"][RFace]["positions"]["time"]["event"]
+            weather = data["db"]["accounts"][RFace]["positions"]["weather"]["event"]
+            gmail = data["db"]["accounts"][RFace]["positions"]["gmail"]["event"]
+            toolbar = data["db"]["toolbar"]
+        
+        if time == "True":
+            self.clock_button.config(highlightbackground="blue")
+            self.time_on = True
+        else:
+            self.clock_button.config(highlightbackground="black")
+            self.time_on = False 
+        
+        if weather == "True":
+            self.weather_button.config(highlightbackground="blue")
+            self.weather_on = True
+        else:
+            self.weather_button.config(highlightbackground="black")
+            self.weather_on = False 
+        
+        if gmail == "True":
+            self.home_button.config(highlightbackground="blue")
+            self.gmail_on = True
+        else:
+            self.home_button.config(highlightbackground="black")
+            self.gmail_on = False 
+
+        if toolbar == "on":
+            self.arrow_button.config(image=self.leftArrow, command=self.HideToolbarAnimation)
+        else:
+            self.arrow_button.config(image=self.rightArrow, command=self.OpenToolbarAnimation)
+        
+
+        self.tk.after(2000, self.check_buttons)
     @staticmethod
     def displacement_function(val=False,*args):
         with open(db, "r", encoding="utf-8") as file:

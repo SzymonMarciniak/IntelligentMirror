@@ -1,3 +1,4 @@
+from json import tool
 from tkinter import *
 import json
 import os 
@@ -32,11 +33,10 @@ class FunctionsActivateClass:
             Frame for all gmail labels
         """
         self.tk = tk
-
+        self.toolbarFrame = toolbarFrame
         self.timeFrame = timeFrame
         self.weatherFrame = weatherFrame
         self.gmailFrame = gmailFrame
-
 
         self.time = CurrentTime(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
         self.weather = CurrentWeather(self.tk, toolbarFrame,  self.weatherFrame, self.timeFrame, self.gmailFrame)
@@ -154,11 +154,11 @@ class FunctionsActivateClass:
             self.weatherFrame.update()
         
         if GmailToRefresh:
-            clocX_gmail, clocY_gmail = 1,1
             self.gmail_function(on=False)
             self.gmail_function()
             if PgmailOn == "False":
                 self.gmail_function()
+        
 
 
     def time_function(self, on=True) -> None:
@@ -183,3 +183,5 @@ class FunctionsActivateClass:
             self.gmail.destroy_gmail()
     
     
+        
+
