@@ -4,9 +4,8 @@ from time import *
 import json 
 import threading
 import os
-
+ 
 from IntelligentMirror.toolbar.display_toolbar import Toolbar
-from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
 from IntelligentMirror.camera.video_capture import Camera
 
 prefix = os.getcwd()
@@ -39,11 +38,13 @@ right_arrow = PIL.Image.open(f"{icon_prefix}right-arrow_black.png")
 right_arrow = right_arrow.resize((150,150))
 right_arrow = PIL.ImageTk.PhotoImage(right_arrow)
 
-function_activate = FunctionsActivateClass(tk, toolbarFrame ,timeFrame, weatherFrame, gmailFrame)
+no_move_icon = PIL.Image.open(f"{icon_prefix}finger.png")
+no_move_icon = no_move_icon.resize((120,120))
+no_move_icon = PIL.ImageTk.PhotoImage(no_move_icon)
 
 toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon, left_arrow, right_arrow)
                 
-camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame)
+camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, no_move_icon)
 
 
 if __name__ == "__main__":

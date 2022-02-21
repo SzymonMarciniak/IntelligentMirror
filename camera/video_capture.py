@@ -1,5 +1,3 @@
-from ast import In
-from re import I
 import cv2
 import face_recognition
 import numpy as np 
@@ -9,7 +7,6 @@ import pyautogui
 from tkinter import * 
 import json
 
-from soupsieve import match
 
 from IntelligentMirror.camera.modules.HandTrackingModule import HandDetector
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
@@ -19,13 +16,18 @@ from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 detector = HandDetector(detectionCon=0.65, maxHands=1)
 
 class Camera:
-    def __init__(self, tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame) -> None:
+    def __init__(self, tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, no_finge_icon=None) -> None:
         self.cap = cv2.VideoCapture(0)
         self.toolbarFrame = toolbarFrame
         self.tk = tk
         self.timeFrame = timeFrame
         self.weatherFrame = weatherFrame
         self.gmailFrame = gmailFrame
+        self.no_finger_icon = no_finge_icon
+
+        if self.no_finger_icon:
+            self.no_finger_button = Button(self.tk, image=self.no_finger_icon, highlightthickness=0, bd=0,highlightbackground='black',borderwidth=0,\
+                 bg='black',activebackground="black" ,command=self.mouse_off)
 
         self.Time = CurrentTime(self.tk, self.toolbarFrame, self.timeFrame)
         self.Weather = CurrentWeather(self.tk, self.toolbarFrame, self.weatherFrame)
@@ -60,13 +62,12 @@ class Camera:
 
         self.rgb_small_frame = None
         pyautogui.moveTo(960, 1090)
+    
+    def mouse_off(self):
+        self.no_hand = 60
 
         
-    
     def refresh_methods(self):
-
-        from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
-        refresh = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame,self.gmailFrame)
 
         with open(self.db, "r", encoding="utf-8") as file: 
             data = json.load(file)
@@ -75,8 +76,12 @@ class Camera:
         with open(self.db, "w", encoding="utf-8") as user_file:
             json.dump(data, user_file, ensure_ascii=False, indent=4)
 
-        refresh.functions_position_refresh(self.RFace)
+        from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
     
+        refresh = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame,self.gmailFrame)
+
+        refresh.functions_position_refresh(self.RFace)
+       
 
     def FaceRecognition(self):
 
@@ -85,6 +90,7 @@ class Camera:
             fingers_up= detector.fingers_up(hand)
 
             if fingers_up[0] == [1,0,0,0,1]:
+                self.no_hand = 0
                 return True 
             else: 
                 return False 
@@ -105,17 +111,15 @@ class Camera:
 
                     face_locations = face_recognition.face_locations(rgb_small_frame, number_of_times_to_upsample=3)
                     face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=5, model="large") #Finding face on camera
-                    if face_encodings:
-                        print("ENCODINGGGG")
+
                     for face_encoding in face_encodings:
 
                         matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding, tolerance=0.5)
                         face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
                         best_match_index = np.argmin(face_distances) #Whitch face matches those in the database
-                        print(f"DO {matches} \n best: {best_match_index}")
+
                         if matches[best_match_index]:
                             name = self.known_face_names[best_match_index] #finding name
-                            print(f"Name: {name}")
                         
                             if name == self.RFace: #if name now and then are the same 
                                 self.no_face = 0
@@ -189,6 +193,8 @@ class Camera:
         
         self.activate = False
         isDown = False
+
+        self.no_finger_button.place(relx=.48, rely=.2)
  
         while self.no_hand < 50:
             try:
@@ -246,4 +252,5 @@ class Camera:
             except:
                 print("ERROR")
         
-        pyautogui.moveTo(0,0)
+        pyautogui.moveTo(1,1)
+        self.no_finger_button.place_forget()
