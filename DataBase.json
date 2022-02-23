@@ -1,8 +1,8 @@
 {
     "db": {
-        "toolbar": "off",
+        "toolbar": "on",
         "camera": {
-            "actuall_user": "szymon_marciniak",
+            "actuall_user": "None",
             "mouse_event": {
                 "event": "False",
                 "frame": "weather",
@@ -16,21 +16,26 @@
                 "haslo": "123",
                 "positions": {
                     "time": {
-                        "event": "True",
-                        "x": 296,
-                        "y": 796
+                        "event": "False",
+                        "x": 320,
+                        "y": 687
                     },
                     "weather": {
-                        "event": "True",
-                        "x": 275,
-                        "y": 413
+                        "event": "False",
+                        "x": 205,
+                        "y": 30
                     },
                     "gmail": {
                         "event": "False",
-                        "x": 325,
-                        "y": 39,
+                        "x": 245,
+                        "y": 841,
                         "login": "none",
                         "haslo": "none"
+                    },
+                    "quote": {
+                        "event": "True",
+                        "x": 429,
+                        "y": 910
                     }
                 }
             },
@@ -40,20 +45,25 @@
                 "positions": {
                     "time": {
                         "event": "True",
-                        "x": 1591,
+                        "x": 1597,
                         "y": 26
                     },
                     "weather": {
                         "event": "True",
-                        "x": 1553,
-                        "y": 165
+                        "x": 1570,
+                        "y": 164
                     },
                     "gmail": {
                         "event": "True",
-                        "x": 1307,
+                        "x": 1321,
                         "y": 0,
                         "login": "szymonmarciniak24@gmail.com",
                         "haslo": "haslo123"
+                    },
+                    "quote": {
+                        "event": "True",
+                        "x": 515,
+                        "y": 959
                     }
                 }
             },

@@ -23,6 +23,7 @@ toolbarFrame = Frame(tk, bg="black")
 timeFrame = LabelFrame(tk, bg="black", bd=0)
 weatherFrame = LabelFrame(tk, bg="black", bd=0)
 gmailFrame = LabelFrame(tk, bg="black", bd=0)
+quoteFrame = LabelFrame(tk, bg="black", bd=0)
 
 
 clockIcon = PhotoImage(file=f"{icon_prefix}clock_black.png") 
@@ -42,9 +43,9 @@ no_move_icon = PIL.Image.open(f"{icon_prefix}finger.png")
 no_move_icon = no_move_icon.resize((120,120))
 no_move_icon = PIL.ImageTk.PhotoImage(no_move_icon)
 
-toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon, left_arrow, right_arrow)
+toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame, clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon, left_arrow, right_arrow)
                 
-camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, no_move_icon)
+camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame ,no_move_icon)
 
 
 if __name__ == "__main__":

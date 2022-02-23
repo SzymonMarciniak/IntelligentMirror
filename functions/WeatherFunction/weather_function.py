@@ -10,7 +10,8 @@ db = f"{prefix_}/IntelligentMirror/DataBase.json"
 
 class CurrentWeather:
     """This class is responsible for correctly displaying the current weather"""
-    def __init__(self,tk:Frame, toolbarFrame:Frame, weatherFrame: Frame, timeFrame: Frame = None, gmailFrame: Frame = None) -> None:
+    def __init__(self,tk:Frame, toolbarFrame:Frame, weatherFrame: Frame, timeFrame: Frame = None,\
+         gmailFrame: Frame = None, quoteFrame:Frame = None) -> None:
         """
         Parametrs
         ---------
@@ -27,6 +28,7 @@ class CurrentWeather:
         self.toolbarFrame = toolbarFrame
         self.timeFrame = timeFrame
         self.gmailFrame = gmailFrame
+        self.quoteFrame = quoteFrame
 
         self.temp = Label(self.weatherFrame, font=("Arial", 50))
         self.humidity = Label(self.weatherFrame, font=("Arial", 25))
@@ -181,7 +183,8 @@ class CurrentWeather:
         if toolbar_event == "on":
             self.weatherFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, NoMove="weather")
+            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
+                 self.gmailFrame, self.quoteFrame, NoMove="weather")
 
         else:
             self.weatherFrame.ToOn = False
@@ -229,4 +232,5 @@ class CurrentWeather:
         if self.weatherFrame.ToOn == True: 
        
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
+            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
+                 self.gmailFrame, self.quoteFrame)

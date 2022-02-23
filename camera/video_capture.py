@@ -16,13 +16,15 @@ from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 detector = HandDetector(detectionCon=0.65, maxHands=1)
 
 class Camera:
-    def __init__(self, tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, no_finge_icon=None) -> None:
+    def __init__(self, tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame ,no_finge_icon=None) -> None:
+
         self.cap = cv2.VideoCapture(0)
         self.toolbarFrame = toolbarFrame
         self.tk = tk
         self.timeFrame = timeFrame
         self.weatherFrame = weatherFrame
         self.gmailFrame = gmailFrame
+        self.quoteFrame = quoteFrame
         self.no_finger_icon = no_finge_icon
 
         if self.no_finger_icon:
@@ -78,7 +80,8 @@ class Camera:
 
         from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
     
-        refresh = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame,self.gmailFrame)
+        refresh = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, \
+            self.gmailFrame, self.quoteFrame)
 
         refresh.functions_position_refresh(self.RFace)
        

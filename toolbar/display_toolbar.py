@@ -3,7 +3,6 @@ import json
 import os
 
 from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
-from IntelligentMirror.camera.video_capture import Camera
 
 
 prefix_ = os.getcwd()
@@ -16,6 +15,7 @@ class Toolbar:
                 timeFrame: Frame,
                 weatherFrame: Frame,
                 gmailFrame: Frame,
+                quoteFrame: Frame,
                 clockIcon: PhotoImage = None,
                 sunIcon: PhotoImage = None,
                 homeIcon: PhotoImage = None,
@@ -54,6 +54,7 @@ class Toolbar:
         self.timeFrame = timeFrame
         self.weatherFrame = weatherFrame
         self.gmailFrame = gmailFrame
+        self.quoteFrame = quoteFrame
 
         self.clockIcon = clockIcon
         self.sunIcon = sunIcon
@@ -67,11 +68,12 @@ class Toolbar:
         self.time_on = False
         self.weather_on = False
         self.gmail_on = False
+        self.quote_on = False
 
         self.clock_button = Button(self.toolbarFrame, image=self.clockIcon, highlightthickness=2, highlightbackground='black', bg='black', command=self.time_function)
         self.weather_button = Button(self.toolbarFrame, image=self.sunIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.weather_function)      
         self.home_button = Button(self.toolbarFrame, image=self.homeIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.gmail_function)         #to change
-        self.contact_button = Button(self.toolbarFrame, image=self.contactsIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.OpenToolbarAnimation)  #
+        self.contact_button = Button(self.toolbarFrame, image=self.contactsIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.quote_function)  #
         self.settings_button = Button(self.toolbarFrame, image=self.settingsIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.OpenToolbarAnimation) #
         
         self.arrowFrame = LabelFrame(self.toolbarFrame, bg="black", bd=0)
@@ -86,7 +88,9 @@ class Toolbar:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
 
-        self.functions_activate = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
+        self.functions_activate = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, \
+            self.gmailFrame, self.quoteFrame)
+
         self.check_buttons()
 
     def OpenToolbar(self) -> None:
@@ -117,6 +121,7 @@ class Toolbar:
             timeOn = data["db"]["accounts"]["None"]["positions"]["time"]["event"]
             weatherOn = data["db"]["accounts"]["None"]["positions"]["weather"]["event"]
             gmailOn = data["db"]["accounts"]["None"]["positions"]["gmail"]["event"]
+            quoteOn = data["db"]["accounts"]["None"]["positions"]["quote"]["event"]
         
         if timeOn == "True":
             self.time_function()
@@ -124,6 +129,8 @@ class Toolbar:
             self.weather_function()
         if gmailOn == "True":
             self.gmail_function()
+        if quoteOn == "True":
+            self.quote_function()
         
 
     def OpenToolbarAnimation(self) -> None:
@@ -139,7 +146,7 @@ class Toolbar:
             with open(db, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
 
-            time, weather, gmail = self.displacement_function()
+            time, weather, gmail, quote = self.displacement_function()
             for x_pos in range(-200,1,10):
                 self.toolbarFrame.place(x=x_pos, y=0)
 
@@ -157,6 +164,11 @@ class Toolbar:
                     Gcx = self.gmailFrame.winfo_x()
                     if Gcx < 210:
                         self.gmailFrame.place(x=x_pos+Gcx+200)
+                
+                if quote:
+                    Gcx = self.quoteFrame.winfo_x()
+                    if Gcx < 210:
+                        self.quoteFrame.place(x=x_pos+Gcx+200)
 
                 self.toolbarFrame.update()
             self.arrow_button.config(image=self.leftArrow, command=self.HideToolbarAnimation)
@@ -165,7 +177,8 @@ class Toolbar:
             
         
     
-    def OpenToolbarAnimation_DF(toolbarFrame: Frame, timeFrame: Frame = None, weatherFrame: Frame = None, gmailFrame: Frame = None) -> None:
+    def OpenToolbarAnimation_DF(toolbarFrame: Frame, timeFrame: Frame = None, weatherFrame: Frame = None, \
+        gmailFrame: Frame = None, quoteFrame: Frame = None) -> None:
         """
         Show toolbar from diffrent file
         Paramets
@@ -182,7 +195,7 @@ class Toolbar:
             with open(db, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
 
-            time, weather, gmail = Toolbar.displacement_function()
+            time, weather, gmail, quote = Toolbar.displacement_function()
             for x_pos in range(-200,1,10):
                 toolbarFrame.place(x=x_pos, y=0)
 
@@ -201,6 +214,10 @@ class Toolbar:
                         Gcx = gmailFrame.winfo_x()
                         if Gcx < 210:
                             gmailFrame.place(x=x_pos+Gcx+200)
+                    if quote:
+                        Qcx = quoteFrame.winfo_x()
+                        if Qcx < 210:
+                            quoteFrame.place(x=x_pos+Qcx+200)
 
                 toolbarFrame.update()
             
@@ -221,7 +238,7 @@ class Toolbar:
             with open(db, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
 
-            time,timeX, weather,weatherX, gmail,gmailX = self.displacement_function(val=True)
+            time,timeX, weather,weatherX, gmail,gmailX, quote, quoteX = self.displacement_function(val=True)
             for x_pos in range(1,-211,-1):
                 self.toolbarFrame.place(x=x_pos, y=0)
 
@@ -236,6 +253,10 @@ class Toolbar:
                 if gmail:
                     if gmailX < 210:
                         self.gmailFrame.place(x=x_pos+gmailX+211)
+                
+                if quote:
+                        if quoteX < 210:
+                            self.quoteFrame.place(x=x_pos+quoteX+211)
 
                 self.toolbarFrame.update()
 
@@ -247,7 +268,8 @@ class Toolbar:
 
 
     
-    def HideToolbarAnimation_DF(toolbarFrame: Frame, timeFrame: Frame = None, weatherFrame: Frame = None, gmailFrame: Frame = None, NoMove = None) -> None:
+    def HideToolbarAnimation_DF(toolbarFrame: Frame, timeFrame: Frame = None, weatherFrame: Frame = None, \
+        gmailFrame: Frame = None,quoteFrame: Frame = None, NoMove = None) -> None:
         """
         Hide toolbar from diffrent file
         Paramets
@@ -267,7 +289,7 @@ class Toolbar:
             for x_pos in range(1,-211,-3):
                 toolbarFrame.place(x=x_pos, y=0)
 
-                time,timeX, weather,weatherX, gmail,gmailX = Toolbar.displacement_function(val=True)
+                time,timeX, weather,weatherX, gmail,gmailX, quote, quoteX = Toolbar.displacement_function(val=True)
                 if timeFrame:
                     if not NoMove == "time":
                         if time:
@@ -283,6 +305,11 @@ class Toolbar:
                         if gmail:
                             if gmailX < 210:
                                 gmailFrame.place(x=x_pos+gmailX+211)
+                    
+                    if not NoMove == "quote":
+                        if quote:
+                            if quoteX < 210:
+                                quoteFrame.place(x=x_pos+gmailX+211)
 
                 toolbarFrame.update()
             
@@ -321,6 +348,15 @@ class Toolbar:
             self.home_button.config(highlightbackground="black")
         self.functions_activate.gmail_function(self.gmail_on) 
     
+    def quote_function(self) -> None:
+        if self.quote_on == False:
+            self.quote_on = True
+            self.contact_button.config(highlightbackground="blue")
+        else:
+            self.quote_on = False 
+            self.contact_button.config(highlightbackground="black")
+        self.functions_activate.quote_function(self.quote_on)
+    
     def check_buttons(self):
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
@@ -328,6 +364,7 @@ class Toolbar:
             time = data["db"]["accounts"][RFace]["positions"]["time"]["event"]
             weather = data["db"]["accounts"][RFace]["positions"]["weather"]["event"]
             gmail = data["db"]["accounts"][RFace]["positions"]["gmail"]["event"]
+            quote = data["db"]["accounts"][RFace]["positions"]["quote"]["event"]
             toolbar = data["db"]["toolbar"]
         
         if time == "True":
@@ -350,14 +387,21 @@ class Toolbar:
         else:
             self.home_button.config(highlightbackground="black")
             self.gmail_on = False 
+        
+        if quote == "True":
+            self.contact_button.config(highlightbackground="blue")
+            self.quote_on = True
+        else:
+            self.contact_button.config(highlightbackground="black")
+            self.quote_on = False 
 
         if toolbar == "on":
             self.arrow_button.config(image=self.leftArrow, command=self.HideToolbarAnimation)
         else:
             self.arrow_button.config(image=self.rightArrow, command=self.OpenToolbarAnimation)
         
-
         self.tk.after(2000, self.check_buttons)
+
     @staticmethod
     def displacement_function(val=False,*args):
         with open(db, "r", encoding="utf-8") as file:
@@ -366,16 +410,19 @@ class Toolbar:
             timeX = data["db"]["accounts"][RFace]["positions"]["time"]["x"]
             weatherX = data["db"]["accounts"][RFace]["positions"]["weather"]["x"]
             gmailX = data["db"]["accounts"][RFace]["positions"]["gmail"]["x"]
+            quoteX = data["db"]["accounts"][RFace]["positions"]["quote"]["x"]
 
-        Dtime, Dweather, Dgmail = False, False, False
+        Dtime, Dweather, Dgmail, Dquote = False, False, False, False
         if timeX <= 200:
             Dtime = True 
         if weatherX <=200:
             Dweather = True
         if gmailX <=200:
             Dgmail = True 
+        if quoteX <= 200:
+            Dquote = True
         
-        if val: return Dtime,timeX, Dweather,weatherX, Dgmail,gmailX
-        else: return Dtime, Dweather, Dgmail
+        if val: return Dtime,timeX, Dweather,weatherX, Dgmail,gmailX, Dquote,quoteX
+        else: return Dtime, Dweather, Dgmail, Dquote
         
         

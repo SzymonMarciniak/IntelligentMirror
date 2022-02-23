@@ -116,20 +116,19 @@ class GmailMain:
     gmailFrame: Frame
         Frame for gmail labels 
     """
-    def __init__(self, tk:Frame, toolbarFrame:Frame, gmailFrame:Frame, timeFrame:Frame = None, weatherFrame: Frame=None) -> None:
+    def __init__(self, tk:Frame, toolbarFrame:Frame, gmailFrame:Frame, timeFrame:Frame = None, \
+        weatherFrame: Frame=None, quoteFrame: Frame = None) -> None:
         gmail = Gmail()
         self.gmail = gmail 
         self.data = gmail.start() 
         self.prefix = os.getcwd()
         self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
-
-        tk.configure(background="black")
-
-
+      
         self.gmailFrame= gmailFrame
         self.timeFrame = timeFrame
         self.weatherFrame = weatherFrame
         self.toolbarFrame = toolbarFrame
+        self.quoteFrame = quoteFrame
 
         self.preGmail = LabelFrame(self.gmailFrame, bg="gray", bd=1)
         self.preGmail_Label = Label(self.preGmail, font=("", 15),  bg="gray", fg="white")
@@ -267,7 +266,7 @@ class GmailMain:
             length = 0
             subject_words = ""
             for x in range(max_len):
-                length += len(sub[x])
+                length += len(sub[x]) + 1
                 if length <19:
                     subject_words += sub[x] + " "
                
@@ -276,7 +275,7 @@ class GmailMain:
 
     def main(self) -> None:
         """Function responsible for displaying gmail frame"""
-
+        
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
             RFace = data["db"]["camera"]["actuall_user"]
@@ -361,7 +360,7 @@ class GmailMain:
 
             
     def destroy_gmail(self):
-       
+    
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
             RFace = data["db"]["camera"]["actuall_user"]
@@ -397,7 +396,8 @@ class GmailMain:
         if toolbar_event == "on":
             self.gmailFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, NoMove="gmail")
+            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, \
+                self.gmailFrame, self.quoteFrame, NoMove="gmail")
 
         else:
             self.gmailFrame.ToOn = False
@@ -444,4 +444,5 @@ class GmailMain:
         if self.gmailFrame.ToOn == True: 
        
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
+            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, \
+                self.gmailFrame, self.quoteFrame)

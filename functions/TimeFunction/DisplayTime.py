@@ -17,7 +17,8 @@ class CurrentTime:
     """
     This class is responsible for the display and correct operation of the clock 
     """
-    def __init__(self, tk: Frame, toolbarFrame:Frame ,timeFrame:Frame, weatherFrame:Frame = None, gmailFrame: Frame = None) -> None:
+    def __init__(self, tk: Frame, toolbarFrame:Frame ,timeFrame:Frame, weatherFrame:Frame = None,\
+         gmailFrame: Frame = None, quoteFrame: Frame = None) -> None:
         """
         Parametrs
         ---------
@@ -34,6 +35,7 @@ class CurrentTime:
         self.weatherFrame = weatherFrame
         self.gmailFrame = gmailFrame
         self.toolbarFrame = toolbarFrame
+        self.quoteFrame = quoteFrame
        
         self.clockLabel = Label(timeFrame, font=("Arial", 60), bg="black", fg="white")
         self.dateLabel = Label(timeFrame, font=("Arial", 30), bg="black", fg="white")
@@ -67,8 +69,6 @@ class CurrentTime:
         x,y = CurrentTime.check_position(self)
         self.timeFrame.place(x=x,y=y)
 
-        print("TIMEEEE")
-        ToOn = True 
         def tick(ToOn = False):
             """
             Clock operation
@@ -93,7 +93,7 @@ class CurrentTime:
                 self.dateLabel.pack(side=TOP)  
                 self.clockLabel.pack(side=BOTTOM)
 
-        tick(ToOn)
+        tick(True)
     
     def destroy_time(self):
     
@@ -105,10 +105,8 @@ class CurrentTime:
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
-        print("DESTROYYY")
 
         for pack in self.timeFrame.pack_slaves():
-            print(pack)
             pack.pack_forget()
 
         self.timeFrame.place_forget() 
@@ -133,10 +131,6 @@ class CurrentTime:
             x = data["db"]["accounts"][RFace]["positions"]["time"]["x"]
             y = data["db"]["accounts"][RFace]["positions"]["time"]["y"]
         return x, y
-    
-    def time_refresh(self, RFace):
-        x,y = self.check_position(RFace)
-        self.timeFrame.place(x=x, y=y)
 
     
     def drag_start_frame(self, event):
@@ -150,7 +144,8 @@ class CurrentTime:
         if toolbar_event == "on":
             self.timeFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, NoMove="time")
+            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, \
+                self.gmailFrame, self.quoteFrame, NoMove="time")
 
         else:
             self.timeFrame.ToOn = False
@@ -202,6 +197,7 @@ class CurrentTime:
         if self.timeFrame.ToOn == True: 
        
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
+            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
+                 self.gmailFrame, self.quoteFrame)
 
 
