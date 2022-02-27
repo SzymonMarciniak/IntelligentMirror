@@ -1,6 +1,5 @@
 from tkinter import *
 from datetime import date
-import numpy as np
 import calendar
 import time
 import json 
@@ -18,7 +17,7 @@ class CurrentTime:
     This class is responsible for the display and correct operation of the clock 
     """
     def __init__(self, tk: Frame, toolbarFrame:Frame ,timeFrame:Frame, weatherFrame:Frame = None,\
-         gmailFrame: Frame = None, quoteFrame: Frame = None) -> None:
+         gmailFrame: Frame = None, quoteFrame: Frame = None, calendarFrame:Frame = None) -> None:
         """
         Parametrs
         ---------
@@ -36,6 +35,7 @@ class CurrentTime:
         self.gmailFrame = gmailFrame
         self.toolbarFrame = toolbarFrame
         self.quoteFrame = quoteFrame
+        self.calendarFrame = calendarFrame
        
         self.clockLabel = Label(timeFrame, font=("Arial", 60), bg="black", fg="white")
         self.dateLabel = Label(timeFrame, font=("Arial", 30), bg="black", fg="white")
@@ -145,7 +145,7 @@ class CurrentTime:
             self.timeFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, \
-                self.gmailFrame, self.quoteFrame, NoMove="time")
+                self.gmailFrame, self.quoteFrame,self.calendarFrame, NoMove="time")
 
         else:
             self.timeFrame.ToOn = False
@@ -198,6 +198,6 @@ class CurrentTime:
        
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
-                 self.gmailFrame, self.quoteFrame)
+                 self.gmailFrame, self.quoteFrame, self.calendarFrame)
 
 

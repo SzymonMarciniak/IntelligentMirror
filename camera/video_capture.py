@@ -12,11 +12,12 @@ from IntelligentMirror.camera.modules.HandTrackingModule import HandDetector
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
 from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
 from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
+from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
 
 detector = HandDetector(detectionCon=0.65, maxHands=1)
 
 class Camera:
-    def __init__(self, tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame ,no_finge_icon=None) -> None:
+    def __init__(self, tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame,calendarFrame ,no_finge_icon=None) -> None:
 
         self.cap = cv2.VideoCapture(0)
         self.toolbarFrame = toolbarFrame
@@ -25,15 +26,17 @@ class Camera:
         self.weatherFrame = weatherFrame
         self.gmailFrame = gmailFrame
         self.quoteFrame = quoteFrame
+        self.calendarFrame = calendarFrame
         self.no_finger_icon = no_finge_icon
 
         if self.no_finger_icon:
             self.no_finger_button = Button(self.tk, image=self.no_finger_icon, highlightthickness=0, bd=0,highlightbackground='black',borderwidth=0,\
                  bg='black',activebackground="black" ,command=self.mouse_off)
 
-        self.Time = CurrentTime(self.tk, self.toolbarFrame, self.timeFrame)
+        self.Time = CurrentTime(self.tk, self.toolbarFrame, self.timeFrame)    #???
         self.Weather = CurrentWeather(self.tk, self.toolbarFrame, self.weatherFrame)
         self.Gmail = GmailMain(self.tk, self.toolbarFrame, self.gmailFrame)
+        self.Calendar = Calendar(self.tk, self.toolbarFrame, self.calendarFrame) #???
 
         prefix = os.getcwd()
         self.db = f"{prefix}/IntelligentMirror/DataBase.json"
@@ -81,7 +84,7 @@ class Camera:
         from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
     
         refresh = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, \
-            self.gmailFrame, self.quoteFrame)
+            self.gmailFrame, self.quoteFrame, self.calendarFrame)
 
         refresh.functions_position_refresh(self.RFace)
        

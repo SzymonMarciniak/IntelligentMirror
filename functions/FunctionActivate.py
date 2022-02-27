@@ -6,6 +6,7 @@ from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
 from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
 from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 from IntelligentMirror.functions.QuoteFunction.quote_function import QuoteMain
+from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
 
 
 class FunctionsActivateClass:
@@ -17,7 +18,8 @@ class FunctionsActivateClass:
                 timeFrame: Frame,
                 weatherFrame: Frame,
                 gmailFrame: Frame,
-                quoteFrame: Frame) -> None:
+                quoteFrame: Frame,
+                calendarFrame: Frame) -> None:
 
         """
         Parametrs
@@ -39,11 +41,13 @@ class FunctionsActivateClass:
         self.weatherFrame = weatherFrame
         self.gmailFrame = gmailFrame
         self.quoteFrame = quoteFrame
+        self.calendarFrame = calendarFrame
 
-        self.time = CurrentTime(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame)
-        self.weather = CurrentWeather(self.tk, toolbarFrame, self.weatherFrame, self.timeFrame, self.gmailFrame, self.quoteFrame)
-        self.gmail = GmailMain(self.tk, toolbarFrame, self.gmailFrame ,self.timeFrame, self.weatherFrame, self.quoteFrame)
-        self.quote = QuoteMain(self.tk, toolbarFrame, self.quoteFrame, self.timeFrame, self.weatherFrame, self.gmailFrame)
+        self.time = CurrentTime(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame)
+        self.weather = CurrentWeather(self.tk, toolbarFrame, self.weatherFrame, self.timeFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame)
+        self.gmail = GmailMain(self.tk, toolbarFrame, self.gmailFrame ,self.timeFrame, self.weatherFrame, self.quoteFrame, self.calendarFrame)
+        self.quote = QuoteMain(self.tk, toolbarFrame, self.quoteFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.calendarFrame)
+        self.calendar = Calendar(self.tk, self.toolbarFrame, self.calendarFrame,self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame )
 
         self.prefix = os.getcwd()
         self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
@@ -67,6 +71,7 @@ class FunctionsActivateClass:
             weatherOn = data["db"]["accounts"][RFace]["positions"]["weather"]["event"]
             gmailOn = data["db"]["accounts"][RFace]["positions"]["gmail"]["event"]
             quoteOn = data["db"]["accounts"][RFace]["positions"]["quote"]["event"]
+            calendarOn = data["db"]["accounts"][RFace]["positions"]["calendar"]["event"]
         
         if timeOn == "True":
             TimeToRefresh = True
@@ -90,11 +95,17 @@ class FunctionsActivateClass:
             QuoteToRefresh = True
         else:
             QuoteToRefresh = False 
-            self.quote.destroy_gmail() 
+            self.quote.destroy_quote() 
         
-        self.function_refreshing(RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh)
+        if calendarOn == "True":
+            CalendarToRefresh = True
+        else:
+            CalendarToRefresh = False 
+            self.calendar.destroy_calendar() 
+        
+        self.function_refreshing(RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh,CalendarToRefresh)
     
-    def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh):
+    def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh, CalendarToRefresh):
 
         with open(self.db, "r", encoding="utf-8") as file:
             data = json.load(file)
@@ -102,8 +113,7 @@ class FunctionsActivateClass:
             PweatherOn = data["db"]["accounts"]["None"]["positions"]["weather"]["event"]
             PgmailOn = data["db"]["accounts"]["None"]["positions"]["gmail"]["event"]
             PquoteOn = data["db"]["accounts"]["None"]["positions"]["quote"]["event"]
-        
-        
+            PcalendarOn = data["db"]["accounts"]["None"]["positions"]["calendar"]["event"]        
         
         smoothening = 35
 
@@ -135,10 +145,20 @@ class FunctionsActivateClass:
         else:
             clocX_quote, clocY_quote = 0,0
         
+        endX_calendar, endY_calendar = self.check_functions_position("calendar", RFace)
+        plocX_calendar, plocY_calendar = 0,0
+        if CalendarToRefresh:
+            clocX_calendar, clocY_calendar = 1,1
+            if PcalendarOn == "False":
+                self.calendar_function()
+        else:
+            clocX_calendar, clocY_calendar = 0,0
+        
        
         while ((int(plocX_time) != int(clocX_time) and int(plocY_time) != int(clocY_time)) or \
-               (int(plocX_weather) != int(clocX_weather) and int(plocY_weather) != int(clocY_weather)) or 
-                  (int(plocX_quote) != int(clocX_quote) and int(plocY_quote) != int(clocY_quote))):
+               (int(plocX_weather) != int(clocX_weather) and int(plocY_weather) != int(clocY_weather)) or \
+                  (int(plocX_quote) != int(clocX_quote) and int(plocY_quote) != int(clocY_quote)) or \
+                  (int(plocX_calendar) != int(clocX_calendar) and int(plocY_calendar) != int(clocY_calendar))):
             
             if TimeToRefresh:
                 plocX_time = self.timeFrame.winfo_x()
@@ -178,6 +198,19 @@ class FunctionsActivateClass:
 
                 self.quoteFrame.place_configure(x=x_quote,y=y_quote)
                 self.quoteFrame.update()
+            
+            if CalendarToRefresh:
+                plocX_calendar = self.calendarFrame.winfo_x()
+                plocY_calendar = self.calendarFrame.winfo_y()
+
+                clocX_calendar = plocX_calendar + (endX_calendar - plocX_calendar) / smoothening
+                clocY_calendar = plocY_calendar + (endY_calendar - plocY_calendar) / smoothening
+
+                x_calendar = int(clocX_calendar)
+                y_calendar = int(clocY_calendar)
+
+                self.calendarFrame.place_configure(x=x_calendar,y=y_calendar)
+                self.calendarFrame.update()
         
         
         if TimeToRefresh:
@@ -197,6 +230,10 @@ class FunctionsActivateClass:
         if QuoteToRefresh:
             self.quoteFrame.place_configure(x=endX_quote,y=endY_quote)
             self.quoteFrame.update()
+        
+        if CalendarToRefresh:
+            self.calendarFrame.place_configure(x=endX_calendar,y=endY_calendar)
+            self.calendarFrame.update()
         
 
 
@@ -227,6 +264,13 @@ class FunctionsActivateClass:
             self.quote.main()
         else:
             self.quote.destroy_quote()
+        
+    def calendar_function(self, on=True) -> None:
+        """Activates calendar function"""
+        if on:
+            self.calendar.calendarMain()
+        else:
+            self.calendar.destroy_calendar()
     
     
         
