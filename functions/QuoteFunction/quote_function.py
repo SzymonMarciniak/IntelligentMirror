@@ -91,6 +91,9 @@ class QuoteMain:
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
+        for pack in self.quoteFrame.pack_slaves():
+            pack.pack_forget()
+
         self.quoteFrame.place_forget() 
     
     def check_position(self, RFace=None) -> int:

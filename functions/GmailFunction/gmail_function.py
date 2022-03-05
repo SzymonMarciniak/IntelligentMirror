@@ -153,7 +153,7 @@ class GmailMain:
         self.GmailLogo = Label(self.gmailLabelFrame, image=self.gmailLogo, fg='gray', bg='gray')
         self.GmailLogo.pack(side=LEFT)
 
-        self.faild_label = Label(self.gmailFrame, bg="black", fg="white", bd=1, text="Connection\n Faild", font=("", 20))
+        self.failed_label = Label(self.gmailFrame, bg="black", fg="white", bd=1, text="Connection\n failed", font=("", 20))
 
         self.gmailFrame.bind("<Button-1>", self.drag_start_frame)
         self.gmailFrame.bind("<B1-Motion>", self.drag_motion_frame)
@@ -223,9 +223,9 @@ class GmailMain:
         self.gmailLabelFrame.bind("<B1-Motion>", self.drag_motion_frame)
         self.gmailLabelFrame.bind("<ButtonRelease-1>", self.drag_stop)
 
-        self.faild_label.bind("<Button-1>", self.drag_start_frame)
-        self.faild_label.bind("<B1-Motion>", self.drag_motion_frame)
-        self.faild_label.bind("<ButtonRelease-1>", self.drag_stop)
+        self.failed_label.bind("<Button-1>", self.drag_start_frame)
+        self.failed_label.bind("<B1-Motion>", self.drag_motion_frame)
+        self.failed_label.bind("<ButtonRelease-1>", self.drag_stop)
 
     def set_from_gamil_headers(self) -> List:
         """
@@ -333,7 +333,7 @@ class GmailMain:
             self.gm2.place(x=1, y=b*2+c+d,width=220, height=82)
             self.gm3.place(x=1, y=b*3+c+d,width=220, height=82)
 
-            try: self.faild_label.place_forget()
+            try: self.failed_label.place_forget()
             except: pass 
 
             x_pos, y_pos = self.check_position()
@@ -357,7 +357,7 @@ class GmailMain:
             self.preGmail_Label.pack(side=LEFT, padx=30)
                         
             self.preGmail.place(x=1, y=1, width=220, height=44)
-            self.faild_label.place(x=1, y=44,width=216, height=80)
+            self.failed_label.place(x=1, y=44,width=216, height=80)
 
             
     def destroy_gmail(self):

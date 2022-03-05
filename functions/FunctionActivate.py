@@ -221,12 +221,6 @@ class FunctionsActivateClass:
             self.weatherFrame.place_configure(x=endX_weather,y=endY_weather)
             self.weatherFrame.update()
         
-        if GmailToRefresh:
-            self.gmail_function(on=False)
-            self.gmail_function()
-            if PgmailOn == "False":
-                self.gmail_function()
-        
         if QuoteToRefresh:
             self.quoteFrame.place_configure(x=endX_quote,y=endY_quote)
             self.quoteFrame.update()
@@ -234,6 +228,12 @@ class FunctionsActivateClass:
         if CalendarToRefresh:
             self.calendarFrame.place_configure(x=endX_calendar,y=endY_calendar)
             self.calendarFrame.update()
+        
+        if GmailToRefresh:
+            self.gmail_function(on=False)
+            self.gmail_function()
+            if PgmailOn == "False":
+                self.gmail_function()
         
 
 

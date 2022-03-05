@@ -30,8 +30,18 @@ calendarFrame = LabelFrame(tk, bg="black", bd=0)
 clockIcon = PhotoImage(file=f"{icon_prefix}clock_black.png") 
 sunIcon = PhotoImage(file=f"{icon_prefix}sun_black.png") 
 homeIcon = PhotoImage(file=f"{icon_prefix}home_black.png") 
-contactsIcon = PhotoImage(file=f"{icon_prefix}contacts_black.png") 
-settingsIcon = PhotoImage(file=f"{icon_prefix}settings_black.png") 
+calendarIcon = PhotoImage(file=f"{icon_prefix}calendar_black.png") 
+quoteIcon = PhotoImage(file=f"{icon_prefix}quote_black.png") 
+gmailIcon = PhotoImage(file=f"{icon_prefix}gmail_black.png")
+returnIcon = PhotoImage(file=f"{icon_prefix}return_black.png")
+test1Icon = PhotoImage(file=f"{icon_prefix}external_black.png")
+test2Icon = PhotoImage(file=f"{icon_prefix}briefcase_black.png")
+bulbOnIcon = PhotoImage(file=f"{icon_prefix}bulb.png")
+rollerShuttersUpIcon = PhotoImage(file=f"{icon_prefix}up.png")
+pauseIcon = PhotoImage(file=f"{icon_prefix}pause_black.png")
+rollerShuttersDownIcon = PhotoImage(file=f"{icon_prefix}down.png")
+instagramIcon = PhotoImage(file=f"{icon_prefix}instagram_black.png")
+spotifyIcon = PhotoImage(file=f"{icon_prefix}spotify_black.png")
 
 left_arrow = PIL.Image.open(f"{icon_prefix}left-arrow_black.png")
 left_arrow = left_arrow.resize((150,150))
@@ -45,7 +55,8 @@ no_move_icon = no_move_icon.resize((120,120))
 no_move_icon = PIL.ImageTk.PhotoImage(no_move_icon)
 
 toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame, calendarFrame, \
-    clockIcon, sunIcon, homeIcon, contactsIcon, settingsIcon, left_arrow, right_arrow)
+    clockIcon, sunIcon, homeIcon, calendarIcon, quoteIcon, left_arrow, right_arrow, gmailIcon,returnIcon, test1Icon, test2Icon, \
+        bulbOnIcon, rollerShuttersUpIcon, pauseIcon, rollerShuttersDownIcon, instagramIcon, spotifyIcon)
                 
 camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame ,calendarFrame,no_move_icon)
 
@@ -58,11 +69,11 @@ if __name__ == "__main__":
     with open(db, "w", encoding="utf-8") as user_file:
         json.dump(data, user_file, ensure_ascii=False, indent=4)
 
-    toolbar.OpenToolbar()
+    toolbar.OpenPreToolbar()
 
 
-MouseThread = threading.Thread(target=camera.FaceRecognition)
-MouseThread.start() 
+# MouseThread = threading.Thread(target=camera.FaceRecognition)
+# MouseThread.start() 
 
 
 tk.mainloop()

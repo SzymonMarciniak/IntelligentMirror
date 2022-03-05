@@ -66,7 +66,7 @@ class Camera:
         self.nick.pack(side=BOTTOM,anchor=SE)
 
         self.rgb_small_frame = None
-        pyautogui.moveTo(960, 1090)
+        pyautogui.moveTo(10, 10)
     
     def mouse_off(self):
         self.no_hand = 60
@@ -169,18 +169,27 @@ class Camera:
 
                 # except:
                 #     print("Face Recognition error")
+
+            with open(self.db, "r", encoding="utf-8") as file:
+                data = json.load(file)
+                toolbar = data["db"]["toolbar"]
+
+            if not toolbar == "on":
             
-            if hands:       #Detection gest
-                isgesture = gesture(hands)
-                if isgesture:
-                    Camera.Mouse(self)
+                if hands:       #Detection gest
+                    isgesture = gesture(hands)
+                    if isgesture:
+                        Camera.Mouse(self)
+                    else:
+                        face_recognition_module()
                 else:
                     face_recognition_module()
+            
+                #cv2.imshow("Image", self.rgb_small_frame)
+                cv2.waitKey(1)
+            
             else:
-                face_recognition_module()
-        
-            #cv2.imshow("Image", self.rgb_small_frame)
-            cv2.waitKey(1)
+                self.no_face = 0
         
     
     def Mouse(self):
