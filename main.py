@@ -42,6 +42,7 @@ pauseIcon = PhotoImage(file=f"{icon_prefix}pause_black.png")
 rollerShuttersDownIcon = PhotoImage(file=f"{icon_prefix}down.png")
 instagramIcon = PhotoImage(file=f"{icon_prefix}instagram_black.png")
 spotifyIcon = PhotoImage(file=f"{icon_prefix}spotify_black.png")
+cameraIcon = PhotoImage(file=f"{icon_prefix}camera.png")
 
 left_arrow = PIL.Image.open(f"{icon_prefix}left-arrow_black.png")
 left_arrow = left_arrow.resize((150,150))
@@ -54,12 +55,12 @@ no_move_icon = PIL.Image.open(f"{icon_prefix}finger.png")
 no_move_icon = no_move_icon.resize((120,120))
 no_move_icon = PIL.ImageTk.PhotoImage(no_move_icon)
 
-toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame, calendarFrame, \
-    clockIcon, sunIcon, homeIcon, calendarIcon, quoteIcon, left_arrow, right_arrow, gmailIcon,returnIcon, test1Icon, test2Icon, \
-        bulbOnIcon, rollerShuttersUpIcon, pauseIcon, rollerShuttersDownIcon, instagramIcon, spotifyIcon)
                 
 camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame ,calendarFrame,no_move_icon)
 
+toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame, calendarFrame, \
+    clockIcon, sunIcon, homeIcon, calendarIcon, quoteIcon, left_arrow, right_arrow, gmailIcon,returnIcon, test1Icon, test2Icon, \
+        bulbOnIcon, rollerShuttersUpIcon, pauseIcon, rollerShuttersDownIcon, instagramIcon, spotifyIcon, cameraIcon)
 
 if __name__ == "__main__":
     with open(db, "r", encoding="utf-8") as file: 
@@ -72,8 +73,8 @@ if __name__ == "__main__":
     toolbar.OpenPreToolbar()
 
 
-# MouseThread = threading.Thread(target=camera.FaceRecognition)
-# MouseThread.start() 
+MouseThread = threading.Thread(target=camera.FaceRecognition)
+MouseThread.start() 
 
 
 tk.mainloop()

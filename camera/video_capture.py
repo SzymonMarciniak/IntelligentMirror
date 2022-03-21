@@ -18,8 +18,13 @@ detector = HandDetector(detectionCon=0.65, maxHands=1)
 
 class Camera:
     def __init__(self, tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame,calendarFrame ,no_finge_icon=None) -> None:
-
-        self.cap = cv2.VideoCapture(0)
+        try:
+            print("Nooo CAPPP")
+            print(self.cap)
+        except:
+            print("CAPPP")
+            self.cap = cv2.VideoCapture(0)
+            print(self.cap)
         self.toolbarFrame = toolbarFrame
         self.tk = tk
         self.timeFrame = timeFrame
@@ -41,6 +46,7 @@ class Camera:
         prefix = os.getcwd()
         self.db = f"{prefix}/IntelligentMirror/DataBase.json"
         self.prefix = f"{prefix}/IntelligentMirror/camera"
+        self.photos_prefix = f"{prefix}/IntelligentMirror/functions/CameraFunction/photos/"
 
         persons = [person for person in os.listdir(f"{self.prefix}/data")]
 
@@ -66,7 +72,7 @@ class Camera:
         self.nick.pack(side=BOTTOM,anchor=SE)
 
         self.rgb_small_frame = None
-        pyautogui.moveTo(10, 10)
+        #pyautogui.moveTo(10, 10)
     
     def mouse_off(self):
         self.no_hand = 60
@@ -263,9 +269,27 @@ class Camera:
 
                 else:
                     self.no_hand +=1
+                
+                with open(self.db, "r", encoding="utf-8") as file:
+                    data = json.load(file)
+                    takephoto = data["db"]["camera"]["photo"]
+            
+                if takephoto == "true":
+                    print("11111")
+                    user = data["db"]["camera"]["actuall_user"]
+                    data["db"]["camera"]["photo"] = "false"
+
+                    photos = self.photos_prefix + user + ".jpg"
+                    print(photos)
+                    cv2.imwrite(photos, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+          
+                    with open(self.db, "w", encoding="utf-8") as user_file:
+                        json.dump(data, user_file, ensure_ascii=False, indent=4)
+                    
           
             except:
                 print("ERROR")
         
         pyautogui.moveTo(1,1)
         self.no_finger_button.place_forget()
+    

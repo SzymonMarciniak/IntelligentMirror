@@ -1,7 +1,6 @@
 from tkinter import *
 import json
 import os
-from turtle import width
 
 from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
 
@@ -34,7 +33,8 @@ class Toolbar:
                 pauseIcon: PhotoImage = None,
                 rollerShuttersDownIcon: PhotoImage = None,
                 instagramIcon: PhotoImage = None,
-                spotifyIcon: PhotoImage = None) -> None:
+                spotifyIcon: PhotoImage = None,
+                cameraIcon:PhotoImage = None) -> None:
         """
         Parametrs
         ---------
@@ -84,6 +84,7 @@ class Toolbar:
         self.rollerShuttersDownIcon = rollerShuttersDownIcon
         self.instagramIcon = instagramIcon
         self.spotifyIcon = spotifyIcon
+        self.cameraIcon = cameraIcon
 
         self.leftArrow = leftArrow
         self.rightArrow = rightArrow
@@ -117,7 +118,8 @@ class Toolbar:
         self.gmail_button = Button(self.toolbarFrame, image=self.gmailIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.gmail_function)    
         self.instagram_button = Button(self.toolbarFrame, image=self.instagramIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.instagram_function)
         self.spotify_button = Button(self.toolbarFrame, image=self.spotifyIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.spotify_function)
-       
+        self.camera_button = Button(self.toolbarFrame, image=self.cameraIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.camera_function)
+
         self.arrowFrame = LabelFrame(self.toolbarFrame, bg="black", bd=0)
         self.arrow_button = Button(self.arrowFrame, image=self.rightArrow, bd=0, highlightbackground='black',borderwidth=0, bg='black', \
             highlightthickness=0, command=self.OpenToolbarAnimation)
@@ -208,6 +210,7 @@ class Toolbar:
         self.gmail_button.pack_forget()
         self.instagram_button.pack_forget()
         self.spotify_button.pack_forget()
+        self.camera_button.pack_forget()
         self.return_button.pack_forget() 
 
     def OpenInternetToolbar(self):
@@ -215,8 +218,9 @@ class Toolbar:
         self.gmail_button.pack(anchor=NW)
         self.instagram_button.pack(anchor=NW)
         self.spotify_button.pack(anchor=NW)
+        self.camera_button.pack(anchor=NW)
         self.return_button.pack(anchor=NW)
-        self.toolbarFrame.place(y=130) 
+        self.toolbarFrame.place(y=20) 
         
 
     def OpenToolbarAnimation(self) -> None:
@@ -517,6 +521,10 @@ class Toolbar:
             self.spotify_on = False 
             self.spotify_button.config(highlightbackground="black")
         #self.functions_activate.spotify_function(self.spotify_on)
+    
+    def camera_function(self):
+        print("Taking picture")
+        self.functions_activate.camera_function()
       
     def check_buttons(self):
         with open(db, "r", encoding="utf-8") as file:

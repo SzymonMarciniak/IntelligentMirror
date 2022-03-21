@@ -2,7 +2,8 @@
     "db": {
         "toolbar": "on",
         "camera": {
-            "actuall_user": "szymon_marciniak",
+            "actuall_user": "None",
+            "photo": "false",
             "mouse_event": {
                 "event": "False",
                 "frame": "weather",
@@ -16,31 +17,31 @@
                 "haslo": "123",
                 "positions": {
                     "time": {
-                        "event": "True",
-                        "x": 312,
-                        "y": 72
+                        "event": "False",
+                        "x": 284,
+                        "y": 44
                     },
                     "weather": {
-                        "event": "True",
-                        "x": 276,
-                        "y": 197
+                        "event": "False",
+                        "x": 303,
+                        "y": 163
                     },
                     "gmail": {
-                        "event": "True",
-                        "x": 648,
-                        "y": 65,
+                        "event": "False",
+                        "x": 1681,
+                        "y": 0,
                         "login": "none",
                         "haslo": "none"
                     },
                     "quote": {
-                        "event": "True",
-                        "x": 429,
-                        "y": 965
+                        "event": "False",
+                        "x": 444,
+                        "y": 990
                     },
                     "calendar": {
-                        "event": "True",
-                        "x": 409,
-                        "y": 464
+                        "event": "False",
+                        "x": 1489,
+                        "y": 276
                     }
                 }
             },
@@ -50,30 +51,30 @@
                 "positions": {
                     "time": {
                         "event": "True",
-                        "x": 1591,
-                        "y": 31
+                        "x": 1,
+                        "y": 47
                     },
                     "weather": {
                         "event": "True",
                         "x": 1570,
-                        "y": 164
+                        "y": 170
                     },
                     "gmail": {
                         "event": "True",
-                        "x": 1313,
-                        "y": 4,
+                        "x": 1318,
+                        "y": 0,
                         "login": "szymonmarciniak24@gmail.com",
                         "haslo": "haslo123"
                     },
                     "quote": {
                         "event": "True",
-                        "x": 472,
-                        "y": 1002
+                        "x": 416,
+                        "y": 975
                     },
                     "calendar": {
                         "event": "True",
-                        "x": 1605,
-                        "y": 360
+                        "x": 1600,
+                        "y": 380
                     }
                 }
             },
@@ -82,31 +83,31 @@
                 "haslo": "321",
                 "positions": {
                     "time": {
-                        "event": "True",
-                        "x": 1445,
-                        "y": 280
+                        "event": "False",
+                        "x": 1497,
+                        "y": 339
                     },
                     "weather": {
-                        "event": "True",
-                        "x": 1405,
-                        "y": 231
+                        "event": "False",
+                        "x": 1485,
+                        "y": 38
                     },
                     "gmail": {
                         "event": "False",
-                        "x": 1414,
-                        "y": 148,
+                        "x": 1058,
+                        "y": 339,
                         "login": "agatka@gmail.com",
                         "haslo": "haslo123"
                     },
                     "quote": {
                         "event": "True",
-                        "x": 416,
-                        "y": 883
+                        "x": 434,
+                        "y": 265
                     },
                     "calendar": {
                         "event": "False",
-                        "x": 400,
-                        "y": 400
+                        "x": 1286,
+                        "y": 104
                     }
                 }
             }

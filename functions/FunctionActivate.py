@@ -7,6 +7,7 @@ from IntelligentMirror.functions.WeatherFunction.weather_function import Current
 from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 from IntelligentMirror.functions.QuoteFunction.quote_function import QuoteMain
 from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
+from IntelligentMirror.functions.CameraFunction.camera_function import Camera as Camera2
 
 
 class FunctionsActivateClass:
@@ -48,6 +49,7 @@ class FunctionsActivateClass:
         self.gmail = GmailMain(self.tk, toolbarFrame, self.gmailFrame ,self.timeFrame, self.weatherFrame, self.quoteFrame, self.calendarFrame)
         self.quote = QuoteMain(self.tk, toolbarFrame, self.quoteFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.calendarFrame)
         self.calendar = Calendar(self.tk, self.toolbarFrame, self.calendarFrame,self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame )
+        self.camera2 = Camera2()
 
         self.prefix = os.getcwd()
         self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
@@ -271,6 +273,9 @@ class FunctionsActivateClass:
             self.calendar.calendarMain()
         else:
             self.calendar.destroy_calendar()
+
+    def camera_function(self) -> None:
+        self.camera2.takePicture()
     
     
         
