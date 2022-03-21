@@ -281,6 +281,7 @@ class GmailMain:
             data = json.load(file)
             RFace = data["db"]["camera"]["actuall_user"]
             data["db"]["accounts"][RFace]["positions"]["gmail"]["event"] = "True"
+            toolbar_staus = data["db"]["toolbar"]
         
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
@@ -337,6 +338,9 @@ class GmailMain:
             except: pass 
 
             x_pos, y_pos = self.check_position()
+            if toolbar_staus == "on" and x_pos <= 210:
+                x_pos = 210
+
             self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
         
         else:
@@ -351,6 +355,9 @@ class GmailMain:
                 self.preGmail_Label.configure(text=f"    None")
 
             x_pos, y_pos = self.check_position()
+            if toolbar_staus == "on" and x_pos <= 210:
+                x_pos = 210
+
             self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=126)
             self.gmailLabelFrame.pack(side=RIGHT, padx=8)
 
@@ -402,8 +409,8 @@ class GmailMain:
 
         else:
             self.gmailFrame.ToOn = False
-    
-    
+   
+
     def drag_motion_frame(self, event):
         x = self.gmailFrame.winfo_x() - self.gmailFrame.startX + event.x
         y = self.gmailFrame.winfo_y() - self.gmailFrame.startY + event.y
@@ -443,7 +450,7 @@ class GmailMain:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
         if self.gmailFrame.ToOn == True: 
-       
+
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, \
                 self.gmailFrame, self.quoteFrame, self.calendarFrame)

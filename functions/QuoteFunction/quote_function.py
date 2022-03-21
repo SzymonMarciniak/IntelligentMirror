@@ -38,11 +38,16 @@ class QuoteMain:
             data = json.load(file)
             RFace = data["db"]["camera"]["actuall_user"]
             data["db"]["accounts"][RFace]["positions"]["quote"]["event"] = "True"
+            toolbar_staus = data["db"]["toolbar"]
         
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
         x,y = QuoteMain.check_position(self)
+
+        if toolbar_staus == "on" and x <= 210:
+            x = 210
+            
         self.quoteFrame.place(x=x,y=y)
 
 

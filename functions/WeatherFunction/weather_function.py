@@ -65,12 +65,16 @@ class CurrentWeather:
             data = json.load(file)
             RFace = data["db"]["camera"]["actuall_user"]
             data["db"]["accounts"][RFace]["positions"]["weather"]["event"] = "True"
+            toolbar_staus = data["db"]["toolbar"]
         
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
-       
         x,y = CurrentWeather.check_position(self)
+
+        if toolbar_staus == "on" and x <= 210:
+            x = 210
+
         self.weatherFrame.place(x=x, y=y, width=350, height=179)
             
         def weather_loading(ToOn = False):

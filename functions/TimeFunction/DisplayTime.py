@@ -62,11 +62,16 @@ class CurrentTime:
             data = json.load(file)
             RFace = data["db"]["camera"]["actuall_user"]
             data["db"]["accounts"][RFace]["positions"]["time"]["event"] = "True"
+            toolbar_staus = data["db"]["toolbar"]
         
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
         x,y = CurrentTime.check_position(self)
+
+        if toolbar_staus == "on" and x <= 210:
+            x = 210
+
         self.timeFrame.place(x=x,y=y)
 
         def tick(ToOn = False):
