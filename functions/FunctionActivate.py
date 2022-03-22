@@ -1,4 +1,6 @@
+import time 
 from tkinter import *
+import threading
 import json
 import os 
 
@@ -117,125 +119,149 @@ class FunctionsActivateClass:
             PquoteOn = data["db"]["accounts"]["None"]["positions"]["quote"]["event"]
             PcalendarOn = data["db"]["accounts"]["None"]["positions"]["calendar"]["event"]        
         
-        smoothening = 35
+        smoothening = 11
 
         endX_time, endY_time = self.check_functions_position("time", RFace)
-        plocX_time, plocY_time = 0,0
+        self.plocX_time, self.plocY_time = 0,0
         if TimeToRefresh:
-            clocX_time, clocY_time = 1,1
+            self.clocX_time, self.clocY_time = 1,1
             if PtimeOn == "False":
                 self.time_function()
         else:
-            clocX_time, clocY_time = 0,0
+            self.clocX_time, self.clocY_time = 0,0
         
 
         endX_weather, endY_weather = self.check_functions_position("weather", RFace)
-        plocX_weather, plocY_weather = 0,0
+        self.plocX_weather, self.plocY_weather = 0,0
         if WeatherToRefresh:
-            clocX_weather, clocY_weather = 1,1
+            self.clocX_weather, self.clocY_weather = 1,1
             if PweatherOn == "False":
                 self.weather_function()
         else:
-            clocX_weather, clocY_weather = 0,0
+            self.clocX_weather, self.clocY_weather = 0,0
         
         endX_quote, endY_quote = self.check_functions_position("quote", RFace)
-        plocX_quote, plocY_quote = 0,0
+        self.plocX_quote, self.plocY_quote = 0,0
         if QuoteToRefresh:
-            clocX_quote, clocY_quote = 1,1
+            self.clocX_quote, self.clocY_quote = 1,1
             if PquoteOn == "False":
                 self.quote_function()
         else:
-            clocX_quote, clocY_quote = 0,0
+            self.clocX_quote, self.clocY_quote = 0,0
         
         endX_calendar, endY_calendar = self.check_functions_position("calendar", RFace)
-        plocX_calendar, plocY_calendar = 0,0
+        self.plocX_calendar, self.plocY_calendar = 0,0
         if CalendarToRefresh:
-            clocX_calendar, clocY_calendar = 1,1
+            self.clocX_calendar, self.clocY_calendar = 1,1
             if PcalendarOn == "False":
                 self.calendar_function()
         else:
-            clocX_calendar, clocY_calendar = 0,0
+            self.clocX_calendar, self.clocY_calendar = 0,0
         
        
-        while ((int(plocX_time) != int(clocX_time) and int(plocY_time) != int(clocY_time)) or \
-               (int(plocX_weather) != int(clocX_weather) and int(plocY_weather) != int(clocY_weather)) or \
-                  (int(plocX_quote) != int(clocX_quote) and int(plocY_quote) != int(clocY_quote)) or \
-                  (int(plocX_calendar) != int(clocX_calendar) and int(plocY_calendar) != int(clocY_calendar))):
-            
-            if TimeToRefresh:
-                plocX_time = self.timeFrame.winfo_x()
-                plocY_time = self.timeFrame.winfo_y()
-
-                clocX_time = plocX_time + (endX_time - plocX_time) / smoothening
-                clocY_time = plocY_time + (endY_time - plocY_time) / smoothening
-
-                x_time = int(clocX_time)
-                y_time = int(clocY_time)
-
-                self.timeFrame.place_configure(x=x_time,y=y_time)
-                self.timeFrame.update()
-            
-            if WeatherToRefresh:
-                plocX_weather = self.weatherFrame.winfo_x()
-                plocY_weather = self.weatherFrame.winfo_y()
-
-                clocX_weather = plocX_weather + (endX_weather - plocX_weather) / smoothening
-                clocY_weather = plocY_weather + (endY_weather - plocY_weather) / smoothening
-
-                x_weather = int(clocX_weather)
-                y_weather = int(clocY_weather)
-
-                self.weatherFrame.place_configure(x=x_weather,y=y_weather)
-                self.weatherFrame.update()
-            
-            if QuoteToRefresh:
-                plocX_quote = self.quoteFrame.winfo_x()
-                plocY_quote = self.quoteFrame.winfo_y()
-
-                clocX_quote = plocX_quote + (endX_quote - plocX_quote) / smoothening
-                clocY_quote = plocY_quote + (endY_quote - plocY_quote) / smoothening
-
-                x_quote = int(clocX_quote)
-                y_quote = int(clocY_quote)
-
-                self.quoteFrame.place_configure(x=x_quote,y=y_quote)
-                self.quoteFrame.update()
-            
-            if CalendarToRefresh:
-                plocX_calendar = self.calendarFrame.winfo_x()
-                plocY_calendar = self.calendarFrame.winfo_y()
-
-                clocX_calendar = plocX_calendar + (endX_calendar - plocX_calendar) / smoothening
-                clocY_calendar = plocY_calendar + (endY_calendar - plocY_calendar) / smoothening
-
-                x_calendar = int(clocX_calendar)
-                y_calendar = int(clocY_calendar)
-
-                self.calendarFrame.place_configure(x=x_calendar,y=y_calendar)
-                self.calendarFrame.update()
-        
         
         if TimeToRefresh:
-            self.timeFrame.place_configure(x=endX_time,y=endY_time)
-            self.timeFrame.update()
-
+            TimeThread = threading.Thread(target=lambda: self.TimeRefreshing(smoothening, endX_time, endY_time))
+            TimeThread.start()
+            # self.TimeRefreshing(smoothening, endX_time, endY_time)
+        
         if WeatherToRefresh:
-            self.weatherFrame.place_configure(x=endX_weather,y=endY_weather)
-            self.weatherFrame.update()
+            WeatherThread = threading.Thread(target=lambda: self.WeatherRefreshing(smoothening, endX_weather, endY_weather))
+            WeatherThread.start()
         
         if QuoteToRefresh:
-            self.quoteFrame.place_configure(x=endX_quote,y=endY_quote)
-            self.quoteFrame.update()
+            QuoteThread = threading.Thread(target=lambda:self.QuoteRefreshing(smoothening, endX_quote, endY_quote))
+            QuoteThread.start()
         
         if CalendarToRefresh:
-            self.calendarFrame.place_configure(x=endX_calendar,y=endY_calendar)
-            self.calendarFrame.update()
+            CalendarThread = threading.Thread(target=lambda:self.CalendarRefreshing(smoothening, endX_calendar, endY_calendar))
+            CalendarThread.start()
         
         if GmailToRefresh:
-            self.gmail_function(on=False)
+            GmailThread = threading.Thread(target=lambda:self.GmailRefreshing(PgmailOn))
+            GmailThread.start()
+
+    def GmailRefreshing(self, PgmailOn):
+        self.gmail_function(on=False)
+        self.gmail_function()
+        if PgmailOn == "False":
             self.gmail_function()
-            if PgmailOn == "False":
-                self.gmail_function()
+
+    def CalendarRefreshing(self, smoothening, endX_calendar, endY_calendar):
+        while int(self.plocX_calendar) != int(self.clocX_calendar) and int(self.plocY_calendar) != int(self.clocY_calendar):
+            self.plocX_calendar = self.calendarFrame.winfo_x()
+            self.plocY_calendar = self.calendarFrame.winfo_y()
+
+            self.clocX_calendar = self.plocX_calendar + (endX_calendar - self.plocX_calendar) / smoothening
+            self.clocY_calendar = self.plocY_calendar + (endY_calendar - self.plocY_calendar) / smoothening
+
+            x_calendar = int(self.clocX_calendar)
+            y_calendar = int(self.clocY_calendar)
+
+            self.calendarFrame.place_configure(x=x_calendar,y=y_calendar)
+            self.calendarFrame.update()
+
+            time.sleep(0.015)
+
+        self.calendarFrame.place_configure(x=endX_calendar,y=endY_calendar)
+        self.calendarFrame.update()
+
+    def QuoteRefreshing(self, smoothening, endX_quote, endY_quote):
+        while int(self.plocX_quote) != int(self.clocX_quote) and int(self.plocY_quote) != int(self.clocY_quote):
+            self.plocX_quote = self.quoteFrame.winfo_x()
+            self.plocY_quote = self.quoteFrame.winfo_y()
+
+            self.clocX_quote = self.plocX_quote + (endX_quote - self.plocX_quote) / smoothening
+            self.clocY_quote =self.plocY_quote + (endY_quote - self.plocY_quote) / smoothening
+
+            x_quote = int(self.clocX_quote)
+            y_quote = int(self.clocY_quote)
+
+            self.quoteFrame.place_configure(x=x_quote,y=y_quote)
+            self.quoteFrame.update()
+
+            time.sleep(0.015)
+        
+        self.quoteFrame.place_configure(x=endX_quote,y=endY_quote)
+        self.quoteFrame.update()
+
+    def WeatherRefreshing(self, smoothening, endX_weather, endY_weather):
+        while int(self.plocX_weather) != int(self.clocX_weather) and int(self.plocY_weather) != int(self.clocY_weather):
+            self.plocX_weather = self.weatherFrame.winfo_x()
+            self.plocY_weather = self.weatherFrame.winfo_y()
+
+            self.clocX_weather = self.plocX_weather + (endX_weather - self.plocX_weather) / smoothening
+            self.clocY_weather = self.plocY_weather + (endY_weather - self.plocY_weather) / smoothening
+
+            x_weather = int(self.clocX_weather)
+            y_weather = int(self.clocY_weather)
+
+            self.weatherFrame.place_configure(x=x_weather,y=y_weather)
+            self.weatherFrame.update()
+
+            time.sleep(0.015)
+
+        self.weatherFrame.place_configure(x=endX_weather,y=endY_weather)
+        self.weatherFrame.update()
+
+    def TimeRefreshing(self, smoothening, endX_time, endY_time):
+        while int(self.plocX_time) != int(self.clocX_time) and int(self.plocY_time) != int(self.clocY_time):
+            self.plocX_time = self.timeFrame.winfo_x()
+            self.plocY_time = self.timeFrame.winfo_y()
+
+            self.clocX_time = self.plocX_time + (endX_time - self.plocX_time) / smoothening
+            self.clocY_time = self.plocY_time + (endY_time - self.plocY_time) / smoothening
+
+            x_time = int(self.clocX_time)
+            y_time = int(self.clocY_time)
+
+            self.timeFrame.place_configure(x=x_time,y=y_time)
+            self.timeFrame.update()
+
+            time.sleep(0.017)
+        
+        self.timeFrame.place_configure(x=endX_time,y=endY_time)
+        self.timeFrame.update()
         
 
 
