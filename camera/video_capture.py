@@ -1,3 +1,4 @@
+import threading
 import cv2
 import face_recognition
 import numpy as np 
@@ -17,14 +18,10 @@ from IntelligentMirror.functions.CalendarFunction.calendar_function import Calen
 detector = HandDetector(detectionCon=0.65, maxHands=1)
 
 class Camera:
-    def __init__(self, tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame,calendarFrame ,no_finge_icon=None) -> None:
-        try:
-            print("Nooo CAPPP")
-            print(self.cap)
-        except:
-            print("CAPPP")
-            self.cap = cv2.VideoCapture(0)
-            print(self.cap)
+    def __init__(self, tk:Frame, toolbarFrame:Frame, timeFrame:Frame, weatherFrame:Frame, gmailFrame:Frame,\
+         quoteFrame:Frame,calendarFrame:Frame ,no_finge_icon=None) -> None:
+        
+        self.cap = cv2.VideoCapture(0)   
         self.toolbarFrame = toolbarFrame
         self.tk = tk
         self.timeFrame = timeFrame
@@ -216,11 +213,26 @@ class Camera:
         isDown = False
 
         self.no_finger_button.place(relx=.48, rely=.2)
+
+        self.T = False 
+        self.W = False 
+        self.G = False 
+        self.Q = False 
+        self.C = False 
+        self.B = False 
+
+
+        with open(self.db, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            user = data["db"]["camera"]["actuall_user"]
+
+        self.photos = self.photos_prefix + user + ".jpg"
+        self.counterLabel = Label(self.tk, text="", font=("Arial", 60), bg="black", fg="white")
  
         while self.no_hand < 50:
-            try:
-                _, img = self.cap.read()
-                hands, img = detector.find_hands(img, draw=False)
+            #try:
+                _, self.img = self.cap.read()
+                hands, self.img = detector.find_hands(self.img, draw=False)
 
                 if hands:
                    
@@ -272,24 +284,93 @@ class Camera:
                 
                 with open(self.db, "r", encoding="utf-8") as file:
                     data = json.load(file)
+ 
                     takephoto = data["db"]["camera"]["photo"]
             
                 if takephoto == "true":
-                    print("11111")
-                    user = data["db"]["camera"]["actuall_user"]
-                    data["db"]["camera"]["photo"] = "false"
+                    
+                    if self.timeFrame:
+                        self.T = True
+                        self.Tx,self.Ty = self.timeFrame.winfo_x(), self.timeFrame.winfo_y()
+                        self.timeFrame.place_forget()
 
-                    photos = self.photos_prefix + user + ".jpg"
-                    print(photos)
-                    cv2.imwrite(photos, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
-          
+                    if self.weatherFrame:
+                        self.W = True
+                        self.Wx,self.Wy = self.weatherFrame.winfo_x(), self.weatherFrame.winfo_y()
+                        self.weatherFrame.place_forget() 
+                    
+                    if self.gmailFrame:
+                        self.G = True
+                        self.Gx,self.Gy = self.gmailFrame.winfo_x(), self.gmailFrame.winfo_y()
+                        self.gmailFrame.place_forget()
+                    
+                    if self.quoteFrame:
+                        self.Q = True
+                        self.Qx,self.Qy = self.quoteFrame.winfo_x(), self.quoteFrame.winfo_y()
+                        self.quoteFrame.place_forget() 
+                    
+                    if self.calendarFrame:
+                        self.C = True
+                        self.Cx,self.Cy = self.calendarFrame.winfo_x(), self.calendarFrame.winfo_y()
+                        self.calendarFrame.place_forget() 
+                    
+                    if self.no_finger_button:
+                        self.B = True
+                        self.Bx,self.By = self.no_finger_button.winfo_x(), self.no_finger_button.winfo_y()
+                        self.no_finger_button.place_forget() 
+
+                    self.Tolx,self.Toly = self.toolbarFrame.winfo_x(), self.toolbarFrame.winfo_y()
+                    self.toolbarFrame.place_forget()
+
+
+                    data["db"]["camera"]["photo"] = "false"
                     with open(self.db, "w", encoding="utf-8") as user_file:
                         json.dump(data, user_file, ensure_ascii=False, indent=4)
+
+                    photoThreading = threading.Thread(target=lambda:self.takePhoto_function())
+                    photoThreading.start()
                     
           
-            except:
-                print("ERROR")
+            # except:
+            #     print("ERROR")
         
         pyautogui.moveTo(1,1)
         self.no_finger_button.place_forget()
+
+    def takePhoto_function(self):
+        self.counterLabel.place(relx=0.5, rely=0.3)
+
+        for i in range(5,0,-1):
+            print(str(i) + " popop")
+            self.counterLabel.config(text=str(i))
+            time.sleep(1)
+
+        self.counterLabel.place_forget()
+        cv2.imwrite(self.photos, self.img)
+        if self.T:
+            self.T = False 
+            self.timeFrame.place(x=self.Tx, y=self.Ty)
+        
+        if self.W:
+            self.W = False 
+            self.weatherFrame.place(x=self.Wx, y=self.Wy) 
+        
+        if self.G:
+            self.G = False 
+            self.gmailFrame.place(x=self.Gx, y=self.Gy)
+        
+        if self.Q:
+            self.Q = False 
+            self.quoteFrame.place(x=self.Qx, y=self.Qy) 
+        
+        if self.C:
+            self.C = False 
+            self.calendarFrame.place(x=self.Cx, y=self.Cy) 
+        
+        if self.B:
+            self.B = False 
+            self.no_finger_button.place(x=self.Bx, y=self.By) 
+        
+        self.toolbarFrame.place(x=self.Tolx, y=self.Toly)
+          
     

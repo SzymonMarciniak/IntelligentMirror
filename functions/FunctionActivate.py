@@ -163,7 +163,6 @@ class FunctionsActivateClass:
         if TimeToRefresh:
             TimeThread = threading.Thread(target=lambda: self.TimeRefreshing(smoothening, endX_time, endY_time))
             TimeThread.start()
-            # self.TimeRefreshing(smoothening, endX_time, endY_time)
         
         if WeatherToRefresh:
             WeatherThread = threading.Thread(target=lambda: self.WeatherRefreshing(smoothening, endX_weather, endY_weather))
