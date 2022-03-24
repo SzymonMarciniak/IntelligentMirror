@@ -10,7 +10,7 @@ db = f"{prefix}/IntelligentMirror/DataBase.json"
 class QuoteMain:
 
     def __init__(self, tk: Frame, toolbarFrame:Frame, quoteFrame: Frame ,timeFrame:Frame = None, weatherFrame:Frame = None,\
-         gmailFrame: Frame = None, calendarFrame:Frame = None) -> None:
+         gmailFrame: Frame = None, calendarFrame:Frame = None, photosFrame:Frame= None) -> None:
 
         self.tk = tk
         self.timeFrame = timeFrame
@@ -19,6 +19,7 @@ class QuoteMain:
         self.toolbarFrame = toolbarFrame
         self.quoteFrame = quoteFrame 
         self.calendarFrame = calendarFrame
+        self.photosFrame = photosFrame
 
         self.text_label = Label(self.quoteFrame, font=("Arial", 30), bg="black", fg="white")
 
@@ -135,7 +136,7 @@ class QuoteMain:
             self.quoteFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, \
-                self.gmailFrame, self.quoteFrame, self.calendarFrame, NoMove="quote")
+                self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame, NoMove="quote")
 
         else:
             self.quoteFrame.ToOn = False
@@ -187,7 +188,7 @@ class QuoteMain:
        
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
-                 self.gmailFrame, self.quoteFrame, self.calendarFrame)
+                 self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
 
 
 

@@ -9,7 +9,7 @@ from IntelligentMirror.functions.WeatherFunction.weather_function import Current
 from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 from IntelligentMirror.functions.QuoteFunction.quote_function import QuoteMain
 from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
-from IntelligentMirror.functions.CameraFunction.camera_function import Camera as Camera2
+from IntelligentMirror.functions.PhotosFunction.photos_function import Photos
 
 
 class FunctionsActivateClass:
@@ -22,7 +22,8 @@ class FunctionsActivateClass:
                 weatherFrame: Frame,
                 gmailFrame: Frame,
                 quoteFrame: Frame,
-                calendarFrame: Frame) -> None:
+                calendarFrame: Frame,
+                photosFrame:Frame) -> None:
 
         """
         Parametrs
@@ -45,13 +46,14 @@ class FunctionsActivateClass:
         self.gmailFrame = gmailFrame
         self.quoteFrame = quoteFrame
         self.calendarFrame = calendarFrame
+        self.photosFrame = photosFrame
 
-        self.time = CurrentTime(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame)
-        self.weather = CurrentWeather(self.tk, toolbarFrame, self.weatherFrame, self.timeFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame)
-        self.gmail = GmailMain(self.tk, toolbarFrame, self.gmailFrame ,self.timeFrame, self.weatherFrame, self.quoteFrame, self.calendarFrame)
-        self.quote = QuoteMain(self.tk, toolbarFrame, self.quoteFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.calendarFrame)
-        self.calendar = Calendar(self.tk, self.toolbarFrame, self.calendarFrame,self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame )
-        self.camera2 = Camera2()
+        self.time = CurrentTime(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
+        self.weather = CurrentWeather(self.tk, toolbarFrame, self.weatherFrame, self.timeFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
+        self.gmail = GmailMain(self.tk, toolbarFrame, self.gmailFrame ,self.timeFrame, self.weatherFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
+        self.quote = QuoteMain(self.tk, toolbarFrame, self.quoteFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.calendarFrame, self.photosFrame)
+        self.calendar = Calendar(self.tk, toolbarFrame, self.calendarFrame,self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.photosFrame)
+        self.photos = Photos(self.tk, toolbarFrame, self.photosFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame)
 
         self.prefix = os.getcwd()
         self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
@@ -76,6 +78,7 @@ class FunctionsActivateClass:
             gmailOn = data["db"]["accounts"][RFace]["positions"]["gmail"]["event"]
             quoteOn = data["db"]["accounts"][RFace]["positions"]["quote"]["event"]
             calendarOn = data["db"]["accounts"][RFace]["positions"]["calendar"]["event"]
+            photosOn = data["db"]["accounts"][RFace]["positions"]["photos"]["event"]
         
         if timeOn == "True":
             TimeToRefresh = True
@@ -107,9 +110,16 @@ class FunctionsActivateClass:
             CalendarToRefresh = False 
             self.calendar.destroy_calendar() 
         
-        self.function_refreshing(RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh,CalendarToRefresh)
+        if photosOn == "True":
+            PhotosToRefresh = True
+        else:
+            PhotosToRefresh = False 
+            self.photos.destroy_photos() 
+      
+        
+        self.function_refreshing(RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh,CalendarToRefresh, PhotosToRefresh)
     
-    def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh, CalendarToRefresh):
+    def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh, CalendarToRefresh, PhotosToRefresh):
 
         with open(self.db, "r", encoding="utf-8") as file:
             data = json.load(file)
@@ -118,6 +128,7 @@ class FunctionsActivateClass:
             PgmailOn = data["db"]["accounts"]["None"]["positions"]["gmail"]["event"]
             PquoteOn = data["db"]["accounts"]["None"]["positions"]["quote"]["event"]
             PcalendarOn = data["db"]["accounts"]["None"]["positions"]["calendar"]["event"]        
+            PphotosOn = data["db"]["accounts"]["None"]["positions"]["photos"]["event"]
         
         smoothening = 11
 
@@ -158,6 +169,15 @@ class FunctionsActivateClass:
         else:
             self.clocX_calendar, self.clocY_calendar = 0,0
         
+        endX_photos, endY_photos = self.check_functions_position("photos", RFace)
+        self.plocX_photos, self.plocY_photos = 0,0
+        if PhotosToRefresh:
+            self.clocX_photos, self.clocY_photos = 1,1
+            if PphotosOn == "False":
+                self.photos_function()
+        else:
+            self.clocX_photos, self.clocY_photos = 0,0
+        
        
         
         if TimeToRefresh:
@@ -179,6 +199,10 @@ class FunctionsActivateClass:
         if GmailToRefresh:
             GmailThread = threading.Thread(target=lambda:self.GmailRefreshing(PgmailOn))
             GmailThread.start()
+        
+        if PhotosToRefresh:
+            PhotosThread = threading.Thread(target=lambda:self.PhotosRefreshing(smoothening,endX_photos, endY_photos))
+            PhotosThread.start()
 
     def GmailRefreshing(self, PgmailOn):
         self.gmail_function(on=False)
@@ -261,6 +285,25 @@ class FunctionsActivateClass:
         
         self.timeFrame.place_configure(x=endX_time,y=endY_time)
         self.timeFrame.update()
+    
+    def PhotosRefreshing(self, smoothening, endX_photos, endY_photos):
+        while int(self.plocX_photos) != int(self.clocX_photos) and int(self.plocY_photos) != int(self.clocY_photos):
+            self.plocX_photos = self.photosFrame.winfo_x()
+            self.plocY_photos = self.photosFrame.winfo_y()
+
+            self.clocX_photos = self.plocX_photos + (endX_photos - self.plocX_photos) / smoothening
+            self.clocY_photos = self.plocY_photos + (endY_photos - self.plocY_photos) / smoothening
+
+            x_photos = int(self.clocX_photos)
+            y_photos = int(self.clocY_photos)
+
+            self.photosFrame.place_configure(x=x_photos,y=y_photos)
+            self.photosFrame.update()
+
+            time.sleep(0.017)
+        
+        self.photosFrame.place_configure(x=endX_photos,y=endY_photos)
+        self.photosFrame.update()
         
 
 
@@ -299,9 +342,12 @@ class FunctionsActivateClass:
         else:
             self.calendar.destroy_calendar()
 
-    def camera_function(self) -> None:
-        self.camera2.takePicture()
-    
+    def photos_function(self, on=True) -> None:
+        """Activates photos function"""
+        if on:
+            self.photos.photos()
+        else:
+            self.photos.destroy_photos()
     
         
 

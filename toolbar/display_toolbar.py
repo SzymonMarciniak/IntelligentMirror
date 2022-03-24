@@ -1,3 +1,4 @@
+from calendar import Calendar
 from tkinter import *
 import json
 import os
@@ -17,6 +18,7 @@ class Toolbar:
                 gmailFrame: Frame,
                 quoteFrame: Frame,
                 calendarFrame: Frame,
+                photosFrame: Frame,
                 clockIcon: PhotoImage = None,
                 sunIcon: PhotoImage = None,
                 homeIcon: PhotoImage = None,
@@ -34,7 +36,7 @@ class Toolbar:
                 rollerShuttersDownIcon: PhotoImage = None,
                 instagramIcon: PhotoImage = None,
                 spotifyIcon: PhotoImage = None,
-                cameraIcon:PhotoImage = None) -> None:
+                photosIcon:PhotoImage = None) -> None:
         """
         Parametrs
         ---------
@@ -68,6 +70,7 @@ class Toolbar:
         self.gmailFrame = gmailFrame
         self.quoteFrame = quoteFrame
         self.calendarFrame = calendarFrame
+        self.photosFrame = photosFrame
 
         self.clockIcon = clockIcon
         self.sunIcon = sunIcon
@@ -84,7 +87,7 @@ class Toolbar:
         self.rollerShuttersDownIcon = rollerShuttersDownIcon
         self.instagramIcon = instagramIcon
         self.spotifyIcon = spotifyIcon
-        self.cameraIcon = cameraIcon
+        self.photosIcon = photosIcon
 
         self.leftArrow = leftArrow
         self.rightArrow = rightArrow
@@ -118,7 +121,7 @@ class Toolbar:
         self.gmail_button = Button(self.toolbarFrame, image=self.gmailIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.gmail_function)    
         self.instagram_button = Button(self.toolbarFrame, image=self.instagramIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.instagram_function)
         self.spotify_button = Button(self.toolbarFrame, image=self.spotifyIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.spotify_function)
-        self.camera_button = Button(self.toolbarFrame, image=self.cameraIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.camera_function)
+        self.photos_button = Button(self.toolbarFrame, image=self.photosIcon,highlightthickness=2, highlightbackground='black', bg='black', command=self.photos_function)
 
         self.arrowFrame = LabelFrame(self.toolbarFrame, bg="black", bd=0)
         self.arrow_button = Button(self.arrowFrame, image=self.rightArrow, bd=0, highlightbackground='black',borderwidth=0, bg='black', \
@@ -138,7 +141,7 @@ class Toolbar:
 
 
         self.functions_activate = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, \
-            self.gmailFrame, self.quoteFrame, self.calendarFrame)
+            self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
 
         self.check_buttons()
     
@@ -210,7 +213,7 @@ class Toolbar:
         self.gmail_button.pack_forget()
         self.instagram_button.pack_forget()
         self.spotify_button.pack_forget()
-        self.camera_button.pack_forget()
+        self.photos_button.pack_forget()
         self.return_button.pack_forget() 
 
     def OpenInternetToolbar(self):
@@ -218,7 +221,7 @@ class Toolbar:
         self.gmail_button.pack(anchor=NW)
         self.instagram_button.pack(anchor=NW)
         self.spotify_button.pack(anchor=NW)
-        self.camera_button.pack(anchor=NW)
+        self.photos_button.pack(anchor=NW)
         self.return_button.pack(anchor=NW)
         self.toolbarFrame.place(y=20) 
         
@@ -236,7 +239,7 @@ class Toolbar:
             with open(db, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
 
-            time, weather, gmail, quote, calendar = self.displacement_function()
+            time, weather, gmail, quote, calendar, photos = self.displacement_function()
 
             y_pos= 200
 
@@ -267,6 +270,11 @@ class Toolbar:
                     Ccx = self.calendarFrame.winfo_x()
                     if Ccx < 210:
                         self.calendarFrame.place(x=x_pos+Ccx+200)
+                
+                if photos:
+                    Cpx = self.photosFrame.winfo_x()
+                    if Cpx < 210:
+                        self.photosFrame.place(x=x_pos+Cpx+200)
 
                 self.toolbarFrame.update()
             self.arrow_button.config(image=self.leftArrow, command=self.HideToolbarAnimation)
@@ -276,7 +284,7 @@ class Toolbar:
         
     
     def OpenToolbarAnimation_DF(toolbarFrame: Frame, timeFrame: Frame = None, weatherFrame: Frame = None, \
-        gmailFrame: Frame = None, quoteFrame: Frame = None, calendarFrame:Frame = None) -> None:
+        gmailFrame: Frame = None, quoteFrame: Frame = None, calendarFrame:Frame = None, photosFrame:Frame = None) -> None:
         """
         Show toolbar from diffrent file
         Paramets
@@ -293,7 +301,7 @@ class Toolbar:
             with open(db, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
 
-            time, weather, gmail, quote, calendar = Toolbar.displacement_function()
+            time, weather, gmail, quote, calendar, photos = Toolbar.displacement_function()
             print(weather, timeFrame)
             for x_pos in range(-200,1,10):
                 toolbarFrame.place(x=x_pos)
@@ -327,6 +335,12 @@ class Toolbar:
                         Ccx = calendarFrame.winfo_x()
                         if Ccx < 210:
                             calendarFrame.place(x=x_pos+Ccx+200)
+                
+                if photosFrame:
+                    if photos:
+                        Cpx = photosFrame.winfo_x()
+                        if Cpx < 210:
+                            photosFrame.place(x=x_pos+Cpx+200)
 
                 toolbarFrame.update()
             
@@ -344,7 +358,7 @@ class Toolbar:
             with open(db, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
 
-            time,timeX, weather,weatherX, gmail,gmailX, quote, quoteX, calendar, calendarX = self.displacement_function(val=True)
+            time,timeX, weather,weatherX, gmail,gmailX, quote, quoteX, calendar, calendarX, photos, photosX = self.displacement_function(val=True)
 
             y_pos= 200
 
@@ -370,6 +384,10 @@ class Toolbar:
                 if calendar:
                     if calendarX < 210:
                         self.calendarFrame.place(x=x_pos+calendarX+211)
+                    
+                if photos:
+                    if photosX < 210:
+                        self.photosFrame.place(x=x_pos+photosX+211)
 
                 self.toolbarFrame.update()
 
@@ -378,7 +396,7 @@ class Toolbar:
         
             
     def HideToolbarAnimation_DF(toolbarFrame: Frame, timeFrame: Frame = None, weatherFrame: Frame = None, \
-        gmailFrame: Frame = None,quoteFrame: Frame = None,calendarFrame:Frame=None, NoMove = None) -> None:
+        gmailFrame: Frame = None,quoteFrame: Frame = None,calendarFrame:Frame=None, photosFrame:Frame = None, NoMove = None) -> None:
         """
         Hide toolbar from diffrent file
         Paramets
@@ -398,7 +416,7 @@ class Toolbar:
             for x_pos in range(1,-211,-3):
                 toolbarFrame.place(x=x_pos)
 
-                time,timeX, weather,weatherX, gmail,gmailX, quote, quoteX, calendar, calendarX = Toolbar.displacement_function(val=True)
+                time,timeX, weather,weatherX, gmail,gmailX, quote, quoteX, calendar, calendarX, photos, photosX = Toolbar.displacement_function(val=True)
                 if timeFrame:
                     if not NoMove == "time":
                         if time:
@@ -424,6 +442,11 @@ class Toolbar:
                             if calendar:
                                 if calendarX < 210:
                                     calendarFrame.place(x=x_pos+calendarX+211)
+                    
+                    if not NoMove == "photos":
+                            if photos:
+                                if photosX < 210:
+                                    photosFrame.place(x=x_pos+photosX+211)
 
                 toolbarFrame.update()
             
@@ -522,9 +545,15 @@ class Toolbar:
             self.spotify_button.config(highlightbackground="black")
         #self.functions_activate.spotify_function(self.spotify_on)
     
-    def camera_function(self):
-        print("Taking picture")
-        self.functions_activate.camera_function()
+    def photos_function(self):
+        if self.photos_on == False:
+            self.photos_on = True
+            self.photos_button.config(highlightbackground="blue")
+        else:
+            self.photos_on = False
+            self.photos_button.config(highlightbackground="black")
+
+        self.functions_activate.photos_function()
       
     def check_buttons(self):
         with open(db, "r", encoding="utf-8") as file:
@@ -535,6 +564,7 @@ class Toolbar:
             gmail = data["db"]["accounts"][RFace]["positions"]["gmail"]["event"]
             quote = data["db"]["accounts"][RFace]["positions"]["quote"]["event"]
             calendar = data["db"]["accounts"][RFace]["positions"]["calendar"]["event"]
+            photos = data["db"]["accounts"][RFace]["positions"]["photos"]["event"]
             toolbar = data["db"]["toolbar"]
         
         if time == "True":
@@ -571,6 +601,13 @@ class Toolbar:
         else:
             self.calendar_button.config(highlightbackground="black")
             self.calendar_on = False 
+        
+        if photos == "True":
+            self.photos_button.config(highlightbackground="blue")
+            self.photos_on = True
+        else:
+            self.photos_button.config(highlightbackground="black")
+            self.photos_on = False 
 
         if toolbar == "on":
             self.arrow_button.config(image=self.leftArrow, command=self.HideToolbarAnimation)
@@ -589,8 +626,9 @@ class Toolbar:
             gmailX = data["db"]["accounts"][RFace]["positions"]["gmail"]["x"]
             quoteX = data["db"]["accounts"][RFace]["positions"]["quote"]["x"]
             calendarX = data["db"]["accounts"][RFace]["positions"]["calendar"]["x"]
+            photosX = data["db"]["accounts"][RFace]["positions"]["photos"]["x"]
 
-        Dtime, Dweather, Dgmail, Dquote, Dcalendar = False, False, False, False, False 
+        Dtime, Dweather, Dgmail, Dquote, Dcalendar, Dphotos = False, False, False, False, False, False
         if timeX <= 200:
             Dtime = True 
         if weatherX <=200:
@@ -601,9 +639,11 @@ class Toolbar:
             Dquote = True
         if calendarX <= 200:
             Dcalendar = True
+        if photosX <= 210:
+            Dphotos = True
         
-        if val: return Dtime,timeX, Dweather,weatherX, Dgmail,gmailX, Dquote,quoteX, Dcalendar, calendarX
-        else: return Dtime, Dweather, Dgmail, Dquote, Dcalendar
+        if val: return Dtime,timeX, Dweather,weatherX, Dgmail,gmailX, Dquote,quoteX, Dcalendar, calendarX, Dphotos, photosX
+        else: return Dtime, Dweather, Dgmail, Dquote, Dcalendar, Dphotos
     
    
         

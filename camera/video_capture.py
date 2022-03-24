@@ -14,12 +14,13 @@ from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
 from IntelligentMirror.functions.WeatherFunction.weather_function import CurrentWeather
 from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
+from IntelligentMirror.functions.PhotosFunction.photos_function import Photos
 
 detector = HandDetector(detectionCon=0.65, maxHands=1)
 
 class Camera:
     def __init__(self, tk:Frame, toolbarFrame:Frame, timeFrame:Frame, weatherFrame:Frame, gmailFrame:Frame,\
-         quoteFrame:Frame,calendarFrame:Frame ,no_finge_icon=None) -> None:
+         quoteFrame:Frame,calendarFrame:Frame, photosFrame: Frame, no_finge_icon=None) -> None:
         
         self.cap = cv2.VideoCapture(0)   
         self.toolbarFrame = toolbarFrame
@@ -29,16 +30,18 @@ class Camera:
         self.gmailFrame = gmailFrame
         self.quoteFrame = quoteFrame
         self.calendarFrame = calendarFrame
+        self.photosFrame = photosFrame
         self.no_finger_icon = no_finge_icon
 
         if self.no_finger_icon:
             self.no_finger_button = Button(self.tk, image=self.no_finger_icon, highlightthickness=0, bd=0,highlightbackground='black',borderwidth=0,\
                  bg='black',activebackground="black" ,command=self.mouse_off)
 
-        self.Time = CurrentTime(self.tk, self.toolbarFrame, self.timeFrame)    #???
+        self.Time = CurrentTime(self.tk, self.toolbarFrame, self.timeFrame)    
         self.Weather = CurrentWeather(self.tk, self.toolbarFrame, self.weatherFrame)
         self.Gmail = GmailMain(self.tk, self.toolbarFrame, self.gmailFrame)
-        self.Calendar = Calendar(self.tk, self.toolbarFrame, self.calendarFrame) #???
+        self.Calendar = Calendar(self.tk, self.toolbarFrame, self.calendarFrame) 
+        self.Photos = Photos(self.tk, self.toolbarFrame, self.photosFrame)
 
         prefix = os.getcwd()
         self.db = f"{prefix}/IntelligentMirror/DataBase.json"
@@ -87,7 +90,7 @@ class Camera:
         from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
     
         refresh = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, \
-            self.gmailFrame, self.quoteFrame, self.calendarFrame)
+            self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
 
         refresh.functions_position_refresh(self.RFace)
        
@@ -220,6 +223,7 @@ class Camera:
         self.Q = False 
         self.C = False 
         self.B = False 
+        self.P = False
 
 
         with open(self.db, "r", encoding="utf-8") as file:
@@ -229,7 +233,7 @@ class Camera:
         self.photos = self.photos_prefix + user + ".jpg"
         self.counterLabel = Label(self.tk, text="", font=("Arial", 60), bg="black", fg="white")
  
-        while self.no_hand < 50:
+        while self.no_hand < 80:
             #try:
                 _, self.img = self.cap.read()
                 hands, self.img = detector.find_hands(self.img, draw=False)
@@ -296,8 +300,9 @@ class Camera:
 
                     if self.weatherFrame:
                         self.W = True
-                        self.Wx,self.Wy = self.weatherFrame.winfo_x(), self.weatherFrame.winfo_y()
-                        self.weatherFrame.place_forget() 
+                        self.Weather.destroy_weather()
+                        # self.Wx,self.Wy = self.weatherFrame.winfo_x(), self.weatherFrame.winfo_y()
+                        # self.weatherFrame.place_forget() 
                     
                     if self.gmailFrame:
                         self.G = True
@@ -313,6 +318,11 @@ class Camera:
                         self.C = True
                         self.Cx,self.Cy = self.calendarFrame.winfo_x(), self.calendarFrame.winfo_y()
                         self.calendarFrame.place_forget() 
+                    
+                    if self.photosFrame:
+                        self.P = True
+                        self.Px,self.Py = self.photosFrame.winfo_x(), self.photosFrame.winfo_y()
+                        self.photosFrame.place_forget() 
                     
                     if self.no_finger_button:
                         self.B = True
@@ -341,7 +351,6 @@ class Camera:
         self.counterLabel.place(relx=0.5, rely=0.3)
 
         for i in range(5,0,-1):
-            print(str(i) + " popop")
             self.counterLabel.config(text=str(i))
             time.sleep(1)
 
@@ -353,7 +362,8 @@ class Camera:
         
         if self.W:
             self.W = False 
-            self.weatherFrame.place(x=self.Wx, y=self.Wy) 
+            self.Weather.weather()
+            #self.weatherFrame.place(x=self.Wx, y=self.Wy) 
         
         if self.G:
             self.G = False 
@@ -365,12 +375,20 @@ class Camera:
         
         if self.C:
             self.C = False 
-            self.calendarFrame.place(x=self.Cx, y=self.Cy) 
+            self.calendarFrame.place(x=self.Cx, y=self.Cy)
+
+        if self.P:
+            self.P = False 
+            self.photosFrame.place(x=self.Px, y=self.Py) 
         
         if self.B:
             self.B = False 
             self.no_finger_button.place(x=self.Bx, y=self.By) 
         
-        self.toolbarFrame.place(x=self.Tolx, y=self.Toly)
+        self.toolbarFrame.place(x=0, y=0)
+
+        if not self.no_hand < 80:  
+            self.no_hand = 0
+            self.Mouse()
           
     
