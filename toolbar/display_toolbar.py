@@ -135,6 +135,8 @@ class Toolbar:
             data["db"]["accounts"]["None"]["positions"]["gmail"]["event"] = "False"
             data["db"]["accounts"]["None"]["positions"]["quote"]["event"] = "False"
             data["db"]["accounts"]["None"]["positions"]["calendar"]["event"] = "False"
+            data["db"]["accounts"]["None"]["positions"]["photos"]["event"] = "False"
+
 
         with open(db, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)

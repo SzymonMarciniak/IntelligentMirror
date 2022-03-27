@@ -38,7 +38,6 @@ class Photos:
         
 
     def takePhotos(self):
-        print("33333")
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
             data["db"]["camera"]["photo"] = "true"
@@ -64,15 +63,13 @@ class Photos:
             x = 210
 
         self.photosFrame.place(x=x, y=y, width=150, height=150)
-        print("111111")
 
         def photos_loading(ToOn = False):
             
             self.get_image()
-            self.mainButton.config(image=self.photos_icon, bg="gray")
+            self.mainButton.config(image=self.photos_icon, bg="black")
 
             if ToOn:
-                print("222222")
                 ToOn = False
                 self.mainButton.place(x=0,y=0)
         
@@ -120,69 +117,76 @@ class Photos:
 
 
     def drag_start_frame(self, event):
-        self.photosFrame.startX = event.x
-        self.photosFrame.startY = event.y
 
         with open(db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            toolbar_event = data["db"]["toolbar"]
-        
-        if toolbar_event == "on":
+            self.toolbar_event = data["db"]["toolbar"]
+
+
+        if self.toolbar_event == "on":
+
+            self.photosFrame.startX = event.x
+            self.photosFrame.startY = event.y
+
             self.photosFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
                  self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame,NoMove="photos")
 
         else:
-            self.photosFrame.ToOn = False
+            #self.photosFrame.ToOn = False
+            self.photos()
+
+
     
     
     def drag_motion_frame(self, event):
-        x = self.photosFrame.winfo_x() - self.photosFrame.startX + event.x
-        y = self.photosFrame.winfo_y() - self.photosFrame.startY + event.y
+        if self.toolbar_event == "on":
+            x = self.photosFrame.winfo_x() - self.photosFrame.startX + event.x
+            y = self.photosFrame.winfo_y() - self.photosFrame.startY + event.y
 
-        tk_width = 1920
-        tk_height = 1080
-        frame_width = self.photosFrame.winfo_width()
-        frame_height = self.photosFrame.winfo_height()
+            tk_width = 1920
+            tk_height = 1080
+            frame_width = self.photosFrame.winfo_width()
+            frame_height = self.photosFrame.winfo_height()
 
-        max_x = tk_width - frame_width
-        max_y = tk_height - frame_height
+            max_x = tk_width - frame_width
+            max_y = tk_height - frame_height
 
-        if x > max_x:
-            x = max_x
-        elif x < 0:
-            x = 0
+            if x > max_x:
+                x = max_x
+            elif x < 0:
+                x = 0
 
-        if y > max_y:
-            y = max_y
-        elif y < 0:
-            y = 0
+            if y > max_y:
+                y = max_y
+            elif y < 0:
+                y = 0
 
-        self.photosFrame.place(x=x, y=y)
+            self.photosFrame.place(x=x, y=y)
 
-        self.photosFrame.stopX = x
-        self.photosFrame.stopY = y
-        print("000000000")
+            self.photosFrame.stopX = x
+            self.photosFrame.stopY = y
 
     
     def drag_stop(self, event=None):
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            if self.photosFrame.stopX :
-                data["db"]["accounts"][RFace]["positions"]["photos"]["x"] = self.photosFrame.stopX 
-                data["db"]["accounts"][RFace]["positions"]["photos"]["y"] = self.photosFrame.stopY 
+        if self.toolbar_event == "on":
+            with open(db, "r", encoding="utf-8") as file:
+                data = json.load(file)
+                RFace = data["db"]["camera"]["actuall_user"]
+                if self.photosFrame.stopX :
+                    data["db"]["accounts"][RFace]["positions"]["photos"]["x"] = self.photosFrame.stopX 
+                    data["db"]["accounts"][RFace]["positions"]["photos"]["y"] = self.photosFrame.stopY 
 
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4) 
+            with open(db, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4) 
+            
+            if self.photosFrame.ToOn == True: 
         
-        if self.photosFrame.ToOn == True: 
-       
-            from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
-                 self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame)
+                from IntelligentMirror.toolbar.display_toolbar import Toolbar
+                Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
+                    self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame)
 
 
 

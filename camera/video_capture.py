@@ -1,6 +1,7 @@
 import threading
 import cv2
 import face_recognition
+import glob
 import numpy as np 
 import os 
 import time 
@@ -46,7 +47,7 @@ class Camera:
         prefix = os.getcwd()
         self.db = f"{prefix}/IntelligentMirror/DataBase.json"
         self.prefix = f"{prefix}/IntelligentMirror/camera"
-        self.photos_prefix = f"{prefix}/IntelligentMirror/functions/CameraFunction/photos/"
+        self.photos_prefix = f"{prefix}/IntelligentMirror/functions/PhotosFunction/photos/"
 
         persons = [person for person in os.listdir(f"{self.prefix}/data")]
 
@@ -75,7 +76,7 @@ class Camera:
         #pyautogui.moveTo(10, 10)
     
     def mouse_off(self):
-        self.no_hand = 60
+        self.no_hand = 200
 
         
     def refresh_methods(self):
@@ -109,14 +110,14 @@ class Camera:
      
         
         while True:
-            _, img = self.cap.read()
-            img = cv2.flip(img, 1)
-            hands, img_gest = detector.find_hands(img, flipType=False)
+            _, self.img = self.cap.read()
+            self.img = cv2.flip(self.img, 1)
+            hands, img_gest = detector.find_hands(self.img, flipType=False)
             
 
             def face_recognition_module():
                 #try:
-                    small_frame = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
+                    small_frame = cv2.resize(self.img, (0, 0), fx=0.25, fy=0.25)
 
                     rgb_small_frame = small_frame[:, :, ::-1]
                     self.rgb_small_frame = rgb_small_frame  # Preparation image
@@ -228,9 +229,9 @@ class Camera:
 
         with open(self.db, "r", encoding="utf-8") as file:
             data = json.load(file)
-            user = data["db"]["camera"]["actuall_user"]
+            self.user = data["db"]["camera"]["actuall_user"]
 
-        self.photos = self.photos_prefix + user + ".jpg"
+        self.photos = self.photos_prefix + self.user
         self.counterLabel = Label(self.tk, text="", font=("Arial", 60), bg="black", fg="white")
  
         while self.no_hand < 80:
@@ -300,13 +301,15 @@ class Camera:
 
                     if self.weatherFrame:
                         self.W = True
-                        self.Weather.destroy_weather()
-                        # self.Wx,self.Wy = self.weatherFrame.winfo_x(), self.weatherFrame.winfo_y()
-                        # self.weatherFrame.place_forget() 
+                        self.Wx,self.Wy = self.weatherFrame.winfo_x(), self.weatherFrame.winfo_y()
+                        self.weatherFrame.place_configure(x=-200,y=-300)
+                        #self.Weather.destroy_weather()
+
                     
                     if self.gmailFrame:
                         self.G = True
                         self.Gx,self.Gy = self.gmailFrame.winfo_x(), self.gmailFrame.winfo_y()
+                        self.Gw, self.Gh = self.gmailFrame.winfo_width(), self.gmailFrame.winfo_height()
                         self.gmailFrame.place_forget()
                     
                     if self.quoteFrame:
@@ -326,11 +329,10 @@ class Camera:
                     
                     if self.no_finger_button:
                         self.B = True
-                        self.Bx,self.By = self.no_finger_button.winfo_x(), self.no_finger_button.winfo_y()
-                        self.no_finger_button.place_forget() 
+                        self.no_finger_button.place_forget()
 
                     self.Tolx,self.Toly = self.toolbarFrame.winfo_x(), self.toolbarFrame.winfo_y()
-                    self.toolbarFrame.place_forget()
+                    self.toolbarFrame.place_configure(x=-400)
 
 
                     data["db"]["camera"]["photo"] = "false"
@@ -348,6 +350,8 @@ class Camera:
         self.no_finger_button.place_forget()
 
     def takePhoto_function(self):
+        self.no_hand = 81
+        self.no_face = 0
         self.counterLabel.place(relx=0.5, rely=0.3)
 
         for i in range(5,0,-1):
@@ -355,6 +359,13 @@ class Camera:
             time.sleep(1)
 
         self.counterLabel.place_forget()
+
+        
+        photosArray = [photo_ for photo_ in glob.glob(f"{self.photos}/{self.user}*.jpg")]
+        print(photosArray)
+        photo_nr = str(len(photosArray) + 1)
+        self.photos = self.photos + "/" +self.user + photo_nr + ".jpg"
+
         cv2.imwrite(self.photos, self.img)
         if self.T:
             self.T = False 
@@ -362,12 +373,11 @@ class Camera:
         
         if self.W:
             self.W = False 
-            self.Weather.weather()
-            #self.weatherFrame.place(x=self.Wx, y=self.Wy) 
+            self.weatherFrame.place_configure(x=self.Wx, y=self.Wy, width=350) 
         
         if self.G:
             self.G = False 
-            self.gmailFrame.place(x=self.Gx, y=self.Gy)
+            self.gmailFrame.place(x=self.Gx, y=self.Gy,width=self.Gw, height=self.Gh)
         
         if self.Q:
             self.Q = False 
@@ -379,16 +389,11 @@ class Camera:
 
         if self.P:
             self.P = False 
-            self.photosFrame.place(x=self.Px, y=self.Py) 
+            self.photosFrame.place(x=self.Px, y=self.Py, width=150, height=150) 
         
         if self.B:
             self.B = False 
-            self.no_finger_button.place(x=self.Bx, y=self.By) 
+            
         
-        self.toolbarFrame.place(x=0, y=0)
+        self.toolbarFrame.place_configure(x=-210)
 
-        if not self.no_hand < 80:  
-            self.no_hand = 0
-            self.Mouse()
-          
-    
