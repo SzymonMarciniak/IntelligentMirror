@@ -1,19 +1,18 @@
 import imaplib
 import email
 from email.header import decode_header
-from json import tool
 from typing import List
 import os
-import json
 from tkinter import *
 
+from IntelligentMirror.DataBase.data_base import DataBase
+base = DataBase()
 
 global Subject_list, From_list
 Subject_list = []
 From_list = []
 
 prefix = os.getcwd()
-db = f"{prefix}/IntelligentMirror/DataBase.json"
 
 class Gmail:
     """Gmail module"""
@@ -23,8 +22,6 @@ class Gmail:
     def __init__(self) ->None:
         super().__init__()
         self.prefix = os.getcwd()
-        self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
-
 
     def start(self) -> List:
         """
@@ -44,65 +41,76 @@ class Gmail:
         
                         
 
-        with open(self.db, "r", encoding="utf-8") as gmail_f:
-            data = json.load(gmail_f)
-            Rface = data["db"]["camera"]["actuall_user"]
+        # with open(self.db, "r", encoding="utf-8") as gmail_f:
+        #     data = json.load(gmail_f)
             
-            try: 
-                if Rface != "unknown":
-                    username = data["db"]["accounts"][Rface]["positions"]["gmail"]["login"]
-                    password = data["db"]["accounts"][Rface]["positions"]["gmail"]["haslo"]
+            #RFace = data["db"]["camera"]["actuall_user"]
+
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        connection.close()
+            
+        try: 
+            if RFace != 0:
+                # username = data["db"]["accounts"][RFace]["positions"]["gmail"]["login"]
+                # password = data["db"]["accounts"][RFace]["positions"]["gmail"]["haslo"]
+
+                connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                data = base.read_query(connection, f"select gmail_login, gmail_password from accounts WHERE user_id={RFace}")[0]
+                connection.close()
+
+                username = data[0]
+                password = data[1]
+
+                From = " "
+                encoding = " "
+                response = " "
+                subject = " "
+                msg = " "
+                i = " "
+            
+                N = 4
+
+                imap = imaplib.IMAP4_SSL("imap.gmail.com")
+                imap.login(username, password)
 
 
-                    From = " "
-                    encoding = " "
-                    response = " "
-                    subject = " "
-                    msg = " "
-                    i = " "
-                
-                    N = 4
+                status, messages = imap.select("INBOX")
 
-                    imap = imaplib.IMAP4_SSL("imap.gmail.com")
-                    imap.login(username, password)
+                messages = int(messages[0])
 
+                for i in range(messages, messages-N, -1):
+                    res, msg = imap.fetch(str(i), "(RFC822)")
+                    for response in msg:
+                        if isinstance(response, tuple):
+                            msg = email.message_from_bytes(response[1])
+                            subject, encoding = decode_header(msg["Subject"])[0]
+                            if isinstance(subject, bytes):
+                                if encoding == None:
+                                    encoding = str("utf-8")
+                                subject = subject.decode(encoding)
+                            From, encoding = decode_header(msg.get("From"))[0]
+                            if isinstance(From, bytes):
+                                if encoding == None:
+                                    encoding = str("utf-8")
+                                From = From.decode(encoding)
 
-                    status, messages = imap.select("INBOX")
+                            From_list_2 = From.split()
+                            From_list_2.pop()
+                            From_list_2 = " ".join(From_list_2)
+                            # print("Subject:", subject)
+                            # print("From:", From_list_2)
+                            Subject_list.append(subject)
+                            From_list.append(From_list_2)
+                            From_list_2 = []
+                # print(From_list)
+                # print(Subject_list)
+                imap.close()
+                imap.logout()
 
-                    messages = int(messages[0])
-
-                    for i in range(messages, messages-N, -1):
-                        res, msg = imap.fetch(str(i), "(RFC822)")
-                        for response in msg:
-                            if isinstance(response, tuple):
-                                msg = email.message_from_bytes(response[1])
-                                subject, encoding = decode_header(msg["Subject"])[0]
-                                if isinstance(subject, bytes):
-                                    if encoding == None:
-                                        encoding = str("utf-8")
-                                    subject = subject.decode(encoding)
-                                From, encoding = decode_header(msg.get("From"))[0]
-                                if isinstance(From, bytes):
-                                    if encoding == None:
-                                        encoding = str("utf-8")
-                                    From = From.decode(encoding)
-
-                                From_list_2 = From.split()
-                                From_list_2.pop()
-                                From_list_2 = " ".join(From_list_2)
-                                # print("Subject:", subject)
-                                # print("From:", From_list_2)
-                                Subject_list.append(subject)
-                                From_list.append(From_list_2)
-                                From_list_2 = []
-                    # print(From_list)
-                    # print(Subject_list)
-                    imap.close()
-                    imap.logout()
-
-                    return Subject_list, From_list 
-            except:
-                return False, False 
+                return Subject_list, From_list 
+        except: return False, False 
+        
 class GmailMain:
     """
     Display gmail frame
@@ -122,7 +130,7 @@ class GmailMain:
         self.gmail = gmail 
         self.data = gmail.start() 
         self.prefix = os.getcwd()
-        self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
+    
       
         self.gmailFrame= gmailFrame
         self.timeFrame = timeFrame
@@ -278,20 +286,30 @@ class GmailMain:
     def main(self) -> None:
         """Function responsible for displaying gmail frame"""
         
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["gmail"]["event"] = "True"
-            toolbar_staus = data["db"]["toolbar"]
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["gmail"]["event"] = "True"
+        #     toolbar_staus = data["db"]["toolbar"]
         
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET gmail_event=1 WHERE user_id={RFace}")
+        toolbar_staus = base.read_query(connection, "select toolbar from camera")[0][0]
+        connection.close()
 
-        self.data = self.gmail.start() 
-        if self.data[0] and self.data[1]:
-            with open(self.db, "r", encoding="utf-8") as gmail_f:
-                data2 = json.load(gmail_f)
-                Rface = data2["db"]["camera"]["actuall_user"]
+        gm_data = self.gmail.start() 
+        if gm_data[0] and gm_data[1]:
+            # with open(self.db, "r", encoding="utf-8") as gmail_f:
+            #     data2 = json.load(gmail_f)
+            #     RFace = data2["db"]["camera"]["actuall_user"]
+
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+            connection.close()
                     
             Froms = GmailMain.set_from_gamil_headers(self)
 
@@ -322,7 +340,11 @@ class GmailMain:
             b = int(82)
             c = int(1)
             d = int(43)
-            user = Rface.split("_")
+
+            #user = RFace.split("_")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            user = base.read_query(connection, f"select name, lastname from user WHERE user_id={RFace}")[0]
+            connection.close()
     
             self.preGmail_Label.configure(text=f"{user[0].title()} \n {user[1].title()} ")
             self.preGmail_Label.pack(side=LEFT, padx=23)
@@ -345,12 +367,21 @@ class GmailMain:
             self.gmailFrame.place(x=x_pos, y=y_pos,width=221, height=4*82+1+d)
         
         else:
-            with open(self.db, "r", encoding="utf-8") as gmail_f:
-                data2 = json.load(gmail_f)
-                Rface = data2["db"]["camera"]["actuall_user"]
-            
-            if "_" in Rface:
-                user = Rface.split("_")
+            # with open(self.db, "r", encoding="utf-8") as gmail_f:
+            #     data2 = json.load(gmail_f)
+            #     RFace = data2["db"]["camera"]["actuall_user"]
+
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+            connection.close()
+
+            if RFace != 0:
+                #user = RFace.split("_")
+
+                connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                user = base.read_query(connection, f"select name, lastname from user WHERE id={RFace}")[0]
+                connection.close()
+
                 self.preGmail_Label.configure(text=f"{user[0].title()} \n {user[1].title()} ")
             else:
                 self.preGmail_Label.configure(text=f"    None")
@@ -370,26 +401,42 @@ class GmailMain:
             
     def destroy_gmail(self):
     
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["gmail"]["event"] = "False"
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["gmail"]["event"] = "False"
         
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET gmail_event=0 WHERE user_id={RFace}")
+        connection.close()
 
         self.gmailFrame.place_forget()
 
     def check_position(self, RFace = None):
-        with open(self.db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            if RFace == None:
-                 RFace = data["db"]["camera"]["actuall_user"]
-            x_pos = data["db"]["accounts"][RFace]["positions"]["gmail"]["x"]
-            y_pos = data["db"]["accounts"][RFace]["positions"]["gmail"]["y"]
+        # with open(self.db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     if RFace == None:
+        #          RFace = data["db"]["camera"]["actuall_user"]
+        #     x_pos = data["db"]["accounts"][RFace]["positions"]["gmail"]["x"]
+        #     y_pos = data["db"]["accounts"][RFace]["positions"]["gmail"]["y"]
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        if RFace == None:
+            RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+
+        coor = base.read_query(connection, f"select gmail_x, gmail_y from accounts WHERE user_id={RFace}")[0]
+        connection.close()
+
+        x_pos = coor[0]
+        y_pos = coor[1]
+
         return x_pos,y_pos
     
-    def gmail_refresh(self, RFace):
+    def gmail_refresh(self, RFace):  #?
         x,y = self.check_position(RFace)
         self.gmailFrame.place(x=x, y=y)
 
@@ -398,9 +445,13 @@ class GmailMain:
         self.gmailFrame.startX = event.x
         self.gmailFrame.startY = event.y
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            toolbar_event = data["db"]["toolbar"]
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     toolbar_event = data["db"]["toolbar"]
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
+        connection.close()
 
         if toolbar_event == "on":
             self.gmailFrame.ToOn = True 
@@ -441,14 +492,20 @@ class GmailMain:
 
     def drag_stop(self, event=None):
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["gmail"]["x"] = self.gmailFrame.stopX 
-            data["db"]["accounts"][RFace]["positions"]["gmail"]["y"] = self.gmailFrame.stopY 
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["gmail"]["x"] = self.gmailFrame.stopX 
+        #     data["db"]["accounts"][RFace]["positions"]["gmail"]["y"] = self.gmailFrame.stopY 
 
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET gmail_x={self.gmailFrame.stopX} WHERE user_id={RFace}")
+        base.execute_query(connection, f"update accounts SET gmail_y={self.gmailFrame.stopY} WHERE user_id={RFace}")
+        connection.close()
 
         if self.gmailFrame.ToOn == True: 
 

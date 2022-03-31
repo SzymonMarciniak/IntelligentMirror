@@ -7,8 +7,6 @@ import os
 import time 
 import pyautogui
 from tkinter import * 
-import json
-
 
 from IntelligentMirror.camera.modules.HandTrackingModule import HandDetector
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
@@ -16,8 +14,12 @@ from IntelligentMirror.functions.WeatherFunction.weather_function import Current
 from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
 from IntelligentMirror.functions.PhotosFunction.photos_function import Photos
+from IntelligentMirror.DataBase.data_base import DataBase
+base = DataBase()
 
 detector = HandDetector(detectionCon=0.65, maxHands=1)
+
+pyautogui.FAILSAFE = False
 
 class Camera:
     def __init__(self, tk:Frame, toolbarFrame:Frame, timeFrame:Frame, weatherFrame:Frame, gmailFrame:Frame,\
@@ -55,8 +57,7 @@ class Camera:
         self.known_face_names = []
         for person_img in persons:
 
-            name =  person_img[:-5]
-            name = name 
+            name =  person_img[-8:-6] #user id
             someone = face_recognition.load_image_file(f"{self.prefix}/data/{person_img}") 
             someone_face_encoding = face_recognition.face_encodings(someone, num_jitters=5, model="large")[0]
 
@@ -66,10 +67,10 @@ class Camera:
         self.process_this_frame = True
         self.no_face = 0
 
-        self.RFace = "None"
+        self.RFace = 0
         self.no_hand = 0 
 
-        self.nick = Label(self.tk, font=("Arial", 30), bg="black", fg="white", text=self.RFace)
+        self.nick = Label(self.tk, font=("Arial", 30), bg="black", fg="white", text="None")
         self.nick.pack(side=BOTTOM,anchor=SE)
 
         self.rgb_small_frame = None
@@ -81,12 +82,16 @@ class Camera:
         
     def refresh_methods(self):
 
-        with open(self.db, "r", encoding="utf-8") as file: 
-            data = json.load(file)
-            data["db"]["camera"]["actuall_user"] = self.RFace
+        # with open(self.db, "r", encoding="utf-8") as file: 
+        #     data = json.load(file)
+        #     data["db"]["camera"]["actuall_user"] = self.RFace
         
-        with open(self.db, "w", encoding="utf-8") as user_file:
-            json.dump(data, user_file, ensure_ascii=False, indent=4)
+        # with open(self.db, "w", encoding="utf-8") as user_file:
+        #     json.dump(data, user_file, ensure_ascii=False, indent=4)
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        base.execute_query(connection, f"update camera set actuall_user = {self.RFace}")
+        connection.close()
 
         from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
     
@@ -138,38 +143,51 @@ class Camera:
                                 self.no_face = 0
 
                             else:                           #if name now and then are not the same 
-                                if  self.RFace == "None":
+                                if  self.RFace == 0:
 
                                     self.RFace = name
-                                    with open(self.db, "r", encoding="utf-8") as file:
-                                        data = json.load(file)
-                                        my_nick = data["db"]["accounts"][self.RFace]["login"]
+
+                                    # with open(self.db, "r", encoding="utf-8") as file:
+                                    #     data = json.load(file)
+                                    #     my_nick = data["db"]["accounts"][self.RFace]["login"]
+
+                                    connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                                    my_nick = base.read_query(connection, f"select nick FROM accounts WHERE user_id={self.RFace}")[0][0]
+                                    connection.close()
+
                                     self.nick.config(text=my_nick)
                                     self.no_face = 0
                                     self.refresh_methods()
 
-                    name = "None"               #Counting how many times dont recognition any face 
-                    if name == "None":
+                    name = 0             #Counting how many times dont recognition any face 
+                    if name == 0:
  
                         self.no_face = self.no_face + 1
                         print(f"{self.no_face} No name")
                         if self.no_face == 60:
-                            if self.RFace != "None":
+                            if self.RFace != 0:
                                 self.RFace = name
-                                self.nick.config(text=self.RFace)
+
+                                connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                                my_nick = base.read_query(connection, f"select nick FROM accounts WHERE user_id={self.RFace}")[0][0]
+                                connection.close()
+
+                                self.nick.config(text=my_nick)
                                 self.refresh_methods()
                             self.no_face = 0
                     
                     
 
-                    with open(self.db, "r", encoding="utf-8") as file:  #Save data
-                        data = json.load(file)
-                        data["db"]["camera"]["actuall_user"] = self.RFace
+                    # with open(self.db, "r", encoding="utf-8") as file:  #Save data
+                    #     data = json.load(file)
+                    #     data["db"]["camera"]["actuall_user"] = self.RFace
                     
-                    with open(self.db, "w", encoding="utf-8") as user_file:
-                        json.dump(data, user_file, ensure_ascii=False, indent=4)
-                   
-                       
+                    # with open(self.db, "w", encoding="utf-8") as user_file:
+                    #     json.dump(data, user_file, ensure_ascii=False, indent=4)
+                    
+                    connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                    base.execute_query(connection, f"update camera SET actuall_user={int(self.RFace)}")
+                    connection.close()
 
                     print(self.RFace)
                     time.sleep(0.25)
@@ -177,9 +195,13 @@ class Camera:
                 # except:
                 #     print("Face Recognition error")
 
-            with open(self.db, "r", encoding="utf-8") as file:
-                data = json.load(file)
-                toolbar = data["db"]["toolbar"]
+            # with open(self.db, "r", encoding="utf-8") as file:
+            #     data = json.load(file)
+            #     toolbar = data["db"]["toolbar"]
+            
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            toolbar = base.read_query(connection, "select toolbar from camera")[0][0]
+            connection.close()
 
             if not toolbar == "on":
             
@@ -227,9 +249,16 @@ class Camera:
         self.P = False
 
 
-        with open(self.db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            self.user = data["db"]["camera"]["actuall_user"]
+        # with open(self.db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     self.user = data["db"]["camera"]["actuall_user"]
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        user_id = base.read_query(connection, "select actuall_user from camera")[0][0]
+        self.user = base.read_query(connection, f"select name, lastname from user WHERE id={user_id}")[0]
+        connection.close()
+
+        self.user = self.user[0] + "_" + self.user[1]
 
         self.photos = self.photos_prefix + self.user
         self.counterLabel = Label(self.tk, text="", font=("Arial", 60), bg="black", fg="white")
@@ -287,12 +316,16 @@ class Camera:
                 else:
                     self.no_hand +=1
                 
-                with open(self.db, "r", encoding="utf-8") as file:
-                    data = json.load(file)
+                # with open(self.db, "r", encoding="utf-8") as file:
+                #     data = json.load(file)
  
-                    takephoto = data["db"]["camera"]["photo"]
+                #     takephoto = data["db"]["camera"]["photo"]
+                
+                connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                takephoto = base.read_query(connection, "select photo from camera")[0][0]
+                connection.close()
             
-                if takephoto == "true":
+                if takephoto:
                     
                     if self.timeFrame:
                         self.T = True
@@ -335,9 +368,13 @@ class Camera:
                     self.toolbarFrame.place_configure(x=-400)
 
 
-                    data["db"]["camera"]["photo"] = "false"
-                    with open(self.db, "w", encoding="utf-8") as user_file:
-                        json.dump(data, user_file, ensure_ascii=False, indent=4)
+                    # data["db"]["camera"]["photo"] = "false"
+                    # with open(self.db, "w", encoding="utf-8") as user_file:
+                    #     json.dump(data, user_file, ensure_ascii=False, indent=4)
+
+                    connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                    base.execute_query(connection, "update camera SET photo=0")
+                    connection.close()
 
                     photoThreading = threading.Thread(target=lambda:self.takePhoto_function())
                     photoThreading.start()
@@ -362,9 +399,9 @@ class Camera:
 
         
         photosArray = [photo_ for photo_ in glob.glob(f"{self.photos}/{self.user}*.jpg")]
-        print(photosArray)
         photo_nr = str(len(photosArray) + 1)
         self.photos = self.photos + "/" +self.user + photo_nr + ".jpg"
+        print(self.photos)
 
         cv2.imwrite(self.photos, self.img)
         if self.T:

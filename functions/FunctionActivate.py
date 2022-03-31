@@ -1,7 +1,6 @@
 import time 
 from tkinter import *
 import threading
-import json
 import os 
 
 from IntelligentMirror.functions.TimeFunction.DisplayTime import CurrentTime
@@ -10,6 +9,8 @@ from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 from IntelligentMirror.functions.QuoteFunction.quote_function import QuoteMain
 from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
 from IntelligentMirror.functions.PhotosFunction.photos_function import Photos
+from IntelligentMirror.DataBase.data_base import DataBase
+base = DataBase()
 
 
 class FunctionsActivateClass:
@@ -60,57 +61,80 @@ class FunctionsActivateClass:
     
     def check_functions_position(self, function, RFace):
 
-        with open(self.db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            if RFace == None: 
-                RFace = data["db"]["camera"]["actuall_user"]
+        # with open(self.db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     if RFace == None: 
+        #         RFace = data["db"]["camera"]["actuall_user"]
 
-            x = data["db"]["accounts"][RFace]["positions"][function]["x"]
-            y = data["db"]["accounts"][RFace]["positions"][function]["y"]
+        #     x = data["db"]["accounts"][RFace]["positions"][function]["x"]
+        #     y = data["db"]["accounts"][RFace]["positions"][function]["y"]
+
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+
+        if RFace == None:
+            RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
+
+        coor = base.read_query(connection,f"select {function}_x, {function}_y from accounts WHERE user_id={RFace}")[0]
+        connection.close()
+
+        x = coor[0]
+        y = coor[1]
+
         return x, y
         
     def functions_position_refresh(self, RFace):
 
-        with open(self.db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            timeOn = data["db"]["accounts"][RFace]["positions"]["time"]["event"]
-            weatherOn = data["db"]["accounts"][RFace]["positions"]["weather"]["event"]
-            gmailOn = data["db"]["accounts"][RFace]["positions"]["gmail"]["event"]
-            quoteOn = data["db"]["accounts"][RFace]["positions"]["quote"]["event"]
-            calendarOn = data["db"]["accounts"][RFace]["positions"]["calendar"]["event"]
-            photosOn = data["db"]["accounts"][RFace]["positions"]["photos"]["event"]
+        # with open(self.db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     timeOn = data["db"]["accounts"][RFace]["positions"]["time"]["event"]
+        #     weatherOn = data["db"]["accounts"][RFace]["positions"]["weather"]["event"]
+        #     gmailOn = data["db"]["accounts"][RFace]["positions"]["gmail"]["event"]
+        #     quoteOn = data["db"]["accounts"][RFace]["positions"]["quote"]["event"]
+        #     calendarOn = data["db"]["accounts"][RFace]["positions"]["calendar"]["event"]
+        #     photosOn = data["db"]["accounts"][RFace]["positions"]["photos"]["event"]
         
-        if timeOn == "True":
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        data = base.read_query(connection, f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event from accounts WHERE user_id={RFace}")[0]
+        connection.close()
+
+        timeOn = data[0]
+        weatherOn = data[1]
+        gmailOn = data[2]
+        quoteOn = data[3]
+        calendarOn = data[4]
+        photosOn = data[5]
+
+        if timeOn:
             TimeToRefresh = True
         else:
             TimeToRefresh = False
             self.time.destroy_time()
 
-        if weatherOn == "True":
+        if weatherOn:
             WeatherToRefresh = True
         else:
             WeatherToRefresh = False 
             self.weather.destroy_weather()
 
-        if gmailOn == "True":
+        if gmailOn:
             GmailToRefresh = True
         else:
             GmailToRefresh = False 
             self.gmail.destroy_gmail() 
         
-        if quoteOn == "True":
+        if quoteOn:
             QuoteToRefresh = True
         else:
             QuoteToRefresh = False 
             self.quote.destroy_quote() 
         
-        if calendarOn == "True":
+        if calendarOn:
             CalendarToRefresh = True
         else:
             CalendarToRefresh = False 
             self.calendar.destroy_calendar() 
         
-        if photosOn == "True":
+        if photosOn:
             PhotosToRefresh = True
         else:
             PhotosToRefresh = False 
@@ -121,14 +145,25 @@ class FunctionsActivateClass:
     
     def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh, CalendarToRefresh, PhotosToRefresh):
 
-        with open(self.db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            PtimeOn = data["db"]["accounts"]["None"]["positions"]["time"]["event"]
-            PweatherOn = data["db"]["accounts"]["None"]["positions"]["weather"]["event"]
-            PgmailOn = data["db"]["accounts"]["None"]["positions"]["gmail"]["event"]
-            PquoteOn = data["db"]["accounts"]["None"]["positions"]["quote"]["event"]
-            PcalendarOn = data["db"]["accounts"]["None"]["positions"]["calendar"]["event"]        
-            PphotosOn = data["db"]["accounts"]["None"]["positions"]["photos"]["event"]
+        # with open(self.db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     PtimeOn = data["db"]["accounts"]["None"]["positions"]["time"]["event"]
+        #     PweatherOn = data["db"]["accounts"]["None"]["positions"]["weather"]["event"]
+        #     PgmailOn = data["db"]["accounts"]["None"]["positions"]["gmail"]["event"]
+        #     PquoteOn = data["db"]["accounts"]["None"]["positions"]["quote"]["event"]
+        #     PcalendarOn = data["db"]["accounts"]["None"]["positions"]["calendar"]["event"]        
+        #     PphotosOn = data["db"]["accounts"]["None"]["positions"]["photos"]["event"]
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        data = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event from accounts WHERE user_id=0")[0]
+        connection.close()
+        
+        PtimeOn = data[0]
+        PweatherOn = data[1]
+        PgmailOn = data[2]
+        PquoteOn = data[3]
+        PcalendarOn = data[4]
+        PphotosOn = data[5]
         
         smoothening = 11
 
@@ -136,7 +171,7 @@ class FunctionsActivateClass:
         self.plocX_time, self.plocY_time = 0,0
         if TimeToRefresh:
             self.clocX_time, self.clocY_time = 1,1
-            if PtimeOn == "False":
+            if not PtimeOn:
                 self.time_function()
         else:
             self.clocX_time, self.clocY_time = 0,0
@@ -146,7 +181,7 @@ class FunctionsActivateClass:
         self.plocX_weather, self.plocY_weather = 0,0
         if WeatherToRefresh:
             self.clocX_weather, self.clocY_weather = 1,1
-            if PweatherOn == "False":
+            if not PweatherOn:
                 self.weather_function()
         else:
             self.clocX_weather, self.clocY_weather = 0,0
@@ -155,7 +190,7 @@ class FunctionsActivateClass:
         self.plocX_quote, self.plocY_quote = 0,0
         if QuoteToRefresh:
             self.clocX_quote, self.clocY_quote = 1,1
-            if PquoteOn == "False":
+            if not PquoteOn:
                 self.quote_function()
         else:
             self.clocX_quote, self.clocY_quote = 0,0
@@ -164,7 +199,7 @@ class FunctionsActivateClass:
         self.plocX_calendar, self.plocY_calendar = 0,0
         if CalendarToRefresh:
             self.clocX_calendar, self.clocY_calendar = 1,1
-            if PcalendarOn == "False":
+            if not PcalendarOn:
                 self.calendar_function()
         else:
             self.clocX_calendar, self.clocY_calendar = 0,0
@@ -173,7 +208,7 @@ class FunctionsActivateClass:
         self.plocX_photos, self.plocY_photos = 0,0
         if PhotosToRefresh:
             self.clocX_photos, self.clocY_photos = 1,1
-            if PphotosOn == "False":
+            if not PphotosOn:
                 self.photos_function()
         else:
             self.clocX_photos, self.clocY_photos = 0,0
@@ -207,7 +242,7 @@ class FunctionsActivateClass:
     def GmailRefreshing(self, PgmailOn):
         self.gmail_function(on=False)
         self.gmail_function()
-        if PgmailOn == "False":
+        if not PgmailOn:
             self.gmail_function()
 
     def CalendarRefreshing(self, smoothening, endX_calendar, endY_calendar):

@@ -1,12 +1,14 @@
 import PIL.Image, PIL.ImageTk
 from tkinter import *
 from time import *
-import json 
 import threading
 import os
  
 from IntelligentMirror.toolbar.display_toolbar import Toolbar
 from IntelligentMirror.camera.video_capture import Camera
+from IntelligentMirror.DataBase.data_base import DataBase
+
+base = DataBase()
 
 prefix = os.getcwd()
 icon_prefix = f"{prefix}/IntelligentMirror/icons/"
@@ -57,19 +59,23 @@ no_move_icon = no_move_icon.resize((120,120))
 no_move_icon = PIL.ImageTk.PhotoImage(no_move_icon)
 
                 
-camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame ,calendarFrame,photosFrame,no_move_icon)
+camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame ,calendarFrame,photosFrame, no_move_icon)
 
 toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame, calendarFrame, photosFrame, \
     clockIcon, sunIcon, homeIcon, calendarIcon, quoteIcon, left_arrow, right_arrow, gmailIcon,returnIcon, test1Icon, test2Icon, \
         bulbOnIcon, rollerShuttersUpIcon, pauseIcon, rollerShuttersDownIcon, instagramIcon, spotifyIcon, cameraIcon)
 
 if __name__ == "__main__":
-    with open(db, "r", encoding="utf-8") as file: 
-        data = json.load(file)
-        data["db"]["camera"]["actuall_user"] = "None"
+    # with open(db, "r", encoding="utf-8") as file: 
+    #     data = json.load(file)
+    #     data["db"]["camera"]["actuall_user"] = "None"
     
-    with open(db, "w", encoding="utf-8") as user_file:
-        json.dump(data, user_file, ensure_ascii=False, indent=4)
+    # with open(db, "w", encoding="utf-8") as user_file:
+    #     json.dump(data, user_file, ensure_ascii=False, indent=4)
+
+    connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
+    base.execute_query(connection,"update camera set actuall_user = 0")
+    connection.close()
 
     toolbar.OpenPreToolbar()
 

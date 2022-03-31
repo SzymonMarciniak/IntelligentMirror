@@ -3,10 +3,11 @@ import shutil
 from tkinter import *
 from PIL import ImageTk, Image
 import os
-import json
+
+from IntelligentMirror.DataBase.data_base import DataBase
+base = DataBase()
 
 prefix_ = os.getcwd()
-db = f"{prefix_}/IntelligentMirror/DataBase.json"
 
 class CurrentWeather:
     """This class is responsible for correctly displaying the current weather"""
@@ -62,18 +63,25 @@ class CurrentWeather:
 
     def weather(self) -> None:
         """Enables the weather display function"""
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["weather"]["event"] = "True"
-            toolbar_staus = data["db"]["toolbar"]
+
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["weather"]["event"] = "True"
+        #     toolbar_status = data["db"]["toolbar"]
         
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET weather_event=1 WHERE user_id={RFace}")
+        toolbar_status = base.read_query(connection, "select toolbar from camera")[0][0]
+        connection.close()
 
         x,y = CurrentWeather.check_position(self)
 
-        if toolbar_staus == "on" and x <= 210:
+        if toolbar_status == "on" and x <= 210:
             x = 210
 
         self.weatherFrame.place(x=x, y=y, width=350, height=179)
@@ -140,13 +148,18 @@ class CurrentWeather:
         weather_loading(True)
     
     def destroy_weather(self):
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["weather"]["event"] = "False"
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["weather"]["event"] = "False"
 
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET weather_event=0 WHERE user_id={RFace}")
+        connection.close()
         
         for pack in self.weatherFrame.pack_slaves():
             pack.pack_forget()
@@ -159,17 +172,27 @@ class CurrentWeather:
         Returns
         -------
         x: int
-            Value of "x" time position
+            Value of "x" weather position
         y: int 
-            value of "y" time position
+            value of "y" weather position
         """
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            if RFace == None: 
-                 RFace = data["db"]["camera"]["actuall_user"]
-            x = data["db"]["accounts"][RFace]["positions"]["weather"]["x"]
-            y = data["db"]["accounts"][RFace]["positions"]["weather"]["y"]
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     if RFace == None: 
+        #          RFace = data["db"]["camera"]["actuall_user"]
+        #     x = data["db"]["accounts"][RFace]["positions"]["weather"]["x"]
+        #     y = data["db"]["accounts"][RFace]["positions"]["weather"]["y"]
+
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        if RFace == None:
+            RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        coor = base.read_query(connection, f"select weather_x, weather_y from accounts WHERE user_id={RFace}")[0]
+        connection.close()
+
+        x = coor[0]
+        y = coor[1]
+
         return x, y
     
     def weather_refresh(self, RFace):
@@ -182,9 +205,13 @@ class CurrentWeather:
         self.weatherFrame.startX = event.x
         self.weatherFrame.startY = event.y
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            toolbar_event = data["db"]["toolbar"]
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     toolbar_event = data["db"]["toolbar"]
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
+        connection.close()
         
         if toolbar_event == "on":
             self.weatherFrame.ToOn = True 
@@ -226,14 +253,20 @@ class CurrentWeather:
     
     def drag_stop(self, event=None):
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["weather"]["x"] = self.weatherFrame.stopX 
-            data["db"]["accounts"][RFace]["positions"]["weather"]["y"] = self.weatherFrame.stopY 
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["weather"]["x"] = self.weatherFrame.stopX 
+        #     data["db"]["accounts"][RFace]["positions"]["weather"]["y"] = self.weatherFrame.stopY 
 
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4) 
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4) 
+
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET weather_x={self.weatherFrame.stopX} WHERE user_id={RFace}")
+        base.execute_query(connection, f"update accounts SET weather_y={self.weatherFrame.stopY} WHERE user_id={RFace}")
+        connection.close()
         
         if self.weatherFrame.ToOn == True: 
        

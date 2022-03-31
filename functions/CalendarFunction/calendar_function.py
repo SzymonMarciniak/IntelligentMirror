@@ -3,14 +3,17 @@ import json
 import os
 
 from IntelligentMirror.functions.CalendarFunction.data_base_functions import DataBase
+from IntelligentMirror.DataBase.data_base import DataBase as DataBase2
 
 prefix = os.getcwd()
+
 db_mysql = DataBase()
+base = DataBase2()
 
-connection = db_mysql.create_db_connection("localhost","szymon", "dzbanek", "mysql_calendar")
-
+connection_data = db_mysql.create_db_connection("localhost","szymon", "dzbanek", "mysql_calendar")
 query = "select * from events where date_event = '2022-02-26';"
-events = db_mysql.read_query(connection, query)
+events = db_mysql.read_query(connection_data, query)
+connection_data.close()
 
 db = f"{prefix}/IntelligentMirror/DataBase.json"
 
@@ -77,18 +80,24 @@ class Calendar:
 
     def calendarMain(self):
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["calendar"]["event"] = "True"
-            toolbar_staus = data["db"]["toolbar"]
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["calendar"]["event"] = "True"
+        #     toolbar_status = data["db"]["toolbar"]
         
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET calendar_event=1 WHERE user_id={RFace}")
+        toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
+        connection.close()
 
         x,y = Calendar.check_position(self)
 
-        if toolbar_staus == "on" and x <= 210:
+        if toolbar_status == "on" and x <= 210:
             x = 210
             
         self.calendarFrame.place(x=x,y=y)
@@ -163,25 +172,39 @@ class Calendar:
         y: int 
             value of "y" calendar position
         """
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            if RFace == None: 
-                RFace = data["db"]["camera"]["actuall_user"]
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     if RFace == None: 
+        #         RFace = data["db"]["camera"]["actuall_user"]
 
-            x = data["db"]["accounts"][RFace]["positions"]["calendar"]["x"]
-            y = data["db"]["accounts"][RFace]["positions"]["calendar"]["y"]
+        #     x = data["db"]["accounts"][RFace]["positions"]["calendar"]["x"]
+        #     y = data["db"]["accounts"][RFace]["positions"]["calendar"]["y"]
+
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        if RFace == None:
+            RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        coor = base.read_query(connection, f"select calendar_x, calendar_y from accounts WHERE user_id={RFace}")[0]
+        connection.close()
+
+        x = coor[0]
+        y = coor[1]
+
         return x, y
     
     def destroy_calendar(self):
     
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["calendar"]["event"] = "False"
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["calendar"]["event"] = "False"
         
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET calendar_event=0 WHERE user_id={RFace}")
+        connection.close()
 
         for pack in self.calendarFrame.pack_slaves():
             pack.pack_forget()
@@ -193,9 +216,13 @@ class Calendar:
         self.calendarFrame.startX = event.x
         self.calendarFrame.startY = event.y
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            toolbar_event = data["db"]["toolbar"]
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     toolbar_event = data["db"]["toolbar"]
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
+        connection.close()
         
         if toolbar_event == "on":
             self.calendarFrame.ToOn = True 
@@ -239,16 +266,21 @@ class Calendar:
 
     def drag_stop(self, event=None):
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["calendar"]["x"] = self.calendarFrame.stopX 
-            data["db"]["accounts"][RFace]["positions"]["calendar"]["y"] = self.calendarFrame.stopY 
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["calendar"]["x"] = self.calendarFrame.stopX 
+        #     data["db"]["accounts"][RFace]["positions"]["calendar"]["y"] = self.calendarFrame.stopY 
 
-            
 
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET calendar_x={self.calendarFrame.stopX} WHERE user_id={RFace}")
+        base.execute_query(connection, f"update accounts SET calendar_y={self.calendarFrame.stopY} WHERE user_id={RFace}")
+        connection.close()
 
         if self.calendarFrame.ToOn == True: 
        

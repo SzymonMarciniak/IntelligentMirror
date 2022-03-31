@@ -2,16 +2,13 @@ from tkinter import *
 from datetime import date
 import calendar
 import time
-import json 
 import os
 
-
-
+from IntelligentMirror.DataBase.data_base import DataBase
+base = DataBase()
 
 prefix = os.getcwd()
-db = f"{prefix}/IntelligentMirror/DataBase.json"
       
-
 class CurrentTime:
     """
     This class is responsible for the display and correct operation of the clock 
@@ -59,18 +56,24 @@ class CurrentTime:
         Clock displaying
         """
         
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["time"]["event"] = "True"
-            toolbar_staus = data["db"]["toolbar"]
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["time"]["event"] = "True"
+        #     toolbar_staus = data["db"]["toolbar"]
         
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET time_event=1 WHERE user_id={RFace}")
+        toolbar_status = base.read_query(connection, "select toolbar from camera")[0][0]
+        connection.close()
 
         x,y = CurrentTime.check_position(self)
 
-        if toolbar_staus == "on" and x <= 210:
+        if toolbar_status == "on" and x <= 210:
             x = 210
 
         self.timeFrame.place(x=x,y=y)
@@ -103,14 +106,18 @@ class CurrentTime:
     
     def destroy_time(self):
     
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["time"]["event"] = "False"
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["time"]["event"] = "False"
         
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-
+        # with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET time_event=0 WHERE user_id={RFace}")
+        connection.close()
 
         for pack in self.timeFrame.pack_slaves():
             pack.pack_forget()
@@ -129,13 +136,23 @@ class CurrentTime:
         """
 
     
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            if RFace == None: 
-                RFace = data["db"]["camera"]["actuall_user"]
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     if RFace == None: 
+        #         RFace = data["db"]["camera"]["actuall_user"]
 
-            x = data["db"]["accounts"][RFace]["positions"]["time"]["x"]
-            y = data["db"]["accounts"][RFace]["positions"]["time"]["y"]
+        #     x = data["db"]["accounts"][RFace]["positions"]["time"]["x"]
+        #     y = data["db"]["accounts"][RFace]["positions"]["time"]["y"]
+    
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        if RFace == None:
+            RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        coor = base.read_query(connection, f"select time_x, time_y from accounts WHERE user_id={RFace}")[0]
+        connection.close()
+
+        x = coor[0]
+        y = coor[1]
+
         return x, y
 
     
@@ -143,9 +160,13 @@ class CurrentTime:
         self.timeFrame.startX = event.x
         self.timeFrame.startY = event.y
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            toolbar_event = data["db"]["toolbar"]
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     toolbar_event = data["db"]["toolbar"]
+
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
+        connection.close()
         
         if toolbar_event == "on":
             self.timeFrame.ToOn = True 
@@ -189,16 +210,20 @@ class CurrentTime:
 
     def drag_stop(self, event=None):
 
-        with open(db, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            RFace = data["db"]["camera"]["actuall_user"]
-            data["db"]["accounts"][RFace]["positions"]["time"]["x"] = self.timeFrame.stopX 
-            data["db"]["accounts"][RFace]["positions"]["time"]["y"] = self.timeFrame.stopY 
+        # with open(db, "r", encoding="utf-8") as file:
+        #     data = json.load(file)
+        #     RFace = data["db"]["camera"]["actuall_user"]
+        #     data["db"]["accounts"][RFace]["positions"]["time"]["x"] = self.timeFrame.stopX 
+        #     data["db"]["accounts"][RFace]["positions"]["time"]["y"] = self.timeFrame.stopY 
 
-            
+        #with open(db, 'w', encoding='utf-8') as f:
+        #     json.dump(data, f, ensure_ascii=False, indent=4)
 
-        with open(db, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+        base.execute_query(connection, f"update accounts SET time_x={self.timeFrame.stopX} WHERE user_id={RFace}")
+        base.execute_query(connection, f"update accounts SET time_y={self.timeFrame.stopY} WHERE user_id={RFace}")
+        connection.close()
 
         if self.timeFrame.ToOn == True: 
        
