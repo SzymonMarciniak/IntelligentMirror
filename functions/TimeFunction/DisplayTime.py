@@ -56,14 +56,6 @@ class CurrentTime:
         Clock displaying
         """
         
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["time"]["event"] = "True"
-        #     toolbar_staus = data["db"]["toolbar"]
-        
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
@@ -106,13 +98,6 @@ class CurrentTime:
     
     def destroy_time(self):
     
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["time"]["event"] = "False"
-        
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
@@ -134,15 +119,6 @@ class CurrentTime:
         y: int 
             value of "y" time position
         """
-
-    
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     if RFace == None: 
-        #         RFace = data["db"]["camera"]["actuall_user"]
-
-        #     x = data["db"]["accounts"][RFace]["positions"]["time"]["x"]
-        #     y = data["db"]["accounts"][RFace]["positions"]["time"]["y"]
     
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         if RFace == None:
@@ -159,10 +135,6 @@ class CurrentTime:
     def drag_start_frame(self, event):
         self.timeFrame.startX = event.x
         self.timeFrame.startY = event.y
-
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     toolbar_event = data["db"]["toolbar"]
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
@@ -209,15 +181,6 @@ class CurrentTime:
        
 
     def drag_stop(self, event=None):
-
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["time"]["x"] = self.timeFrame.stopX 
-        #     data["db"]["accounts"][RFace]["positions"]["time"]["y"] = self.timeFrame.stopY 
-
-        #with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]

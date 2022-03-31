@@ -39,12 +39,6 @@ class Photos:
         
 
     def takePhotos(self):
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     data["db"]["camera"]["photo"] = "true"
-            
-        # with open(db, "w", encoding="utf-8") as user_file:
-        #     json.dump(data, user_file, ensure_ascii=False, indent=4)
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         base.execute_query(connection, "update camera SET photo=1")
@@ -52,15 +46,6 @@ class Photos:
     
     
     def photos(self):
-
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["photos"]["event"] = "True"
-        #     toolbar_status = data["db"]["toolbar"]
-        
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
@@ -88,13 +73,6 @@ class Photos:
     
 
     def destroy_photos(self):
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["photos"]["event"] = "False"
-
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
@@ -117,12 +95,6 @@ class Photos:
             value of "y" time position
         """
 
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     if RFace == None: 
-        #          RFace = data["db"]["camera"]["actuall_user"]
-        #     x = data["db"]["accounts"][RFace]["positions"]["photos"]["x"]
-        #     y = data["db"]["accounts"][RFace]["positions"]["photos"]["y"]
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         if RFace == None:
@@ -143,10 +115,6 @@ class Photos:
 
 
     def drag_start_frame(self, event):
-
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     self.toolbar_event = data["db"]["toolbar"]
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         self.toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
@@ -201,15 +169,6 @@ class Photos:
     def drag_stop(self, event=None):
 
         if self.toolbar_event == "on":
-            # with open(db, "r", encoding="utf-8") as file:
-            #     data = json.load(file)
-            #     RFace = data["db"]["camera"]["actuall_user"]
-            #     if self.photosFrame.stopX :
-            #         data["db"]["accounts"][RFace]["positions"]["photos"]["x"] = self.photosFrame.stopX 
-            #         data["db"]["accounts"][RFace]["positions"]["photos"]["y"] = self.photosFrame.stopY 
-
-            # with open(db, 'w', encoding='utf-8') as f:
-            #     json.dump(data, f, ensure_ascii=False, indent=4) 
             
             connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]

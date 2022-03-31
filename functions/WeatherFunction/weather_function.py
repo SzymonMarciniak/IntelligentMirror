@@ -64,14 +64,6 @@ class CurrentWeather:
     def weather(self) -> None:
         """Enables the weather display function"""
 
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["weather"]["event"] = "True"
-        #     toolbar_status = data["db"]["toolbar"]
-        
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
@@ -148,14 +140,7 @@ class CurrentWeather:
         weather_loading(True)
     
     def destroy_weather(self):
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["weather"]["event"] = "False"
-
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
-
+    
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
         base.execute_query(connection, f"update accounts SET weather_event=0 WHERE user_id={RFace}")
@@ -177,12 +162,6 @@ class CurrentWeather:
             value of "y" weather position
         """
 
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     if RFace == None: 
-        #          RFace = data["db"]["camera"]["actuall_user"]
-        #     x = data["db"]["accounts"][RFace]["positions"]["weather"]["x"]
-        #     y = data["db"]["accounts"][RFace]["positions"]["weather"]["y"]
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         if RFace == None:
@@ -205,9 +184,6 @@ class CurrentWeather:
         self.weatherFrame.startX = event.x
         self.weatherFrame.startY = event.y
 
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     toolbar_event = data["db"]["toolbar"]
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
@@ -253,14 +229,6 @@ class CurrentWeather:
     
     def drag_stop(self, event=None):
 
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["weather"]["x"] = self.weatherFrame.stopX 
-        #     data["db"]["accounts"][RFace]["positions"]["weather"]["y"] = self.weatherFrame.stopY 
-
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4) 
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]

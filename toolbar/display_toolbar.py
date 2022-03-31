@@ -129,20 +129,6 @@ class Toolbar:
         self.arrow_button = Button(self.arrowFrame, image=self.rightArrow, bd=0, highlightbackground='black',borderwidth=0, bg='black', \
             highlightthickness=0, command=self.OpenToolbarAnimation)
 
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     data["db"]["toolbar"] = "off"
-        #     data["db"]["accounts"]["None"]["positions"]["time"]["event"] = "False"
-        #     data["db"]["accounts"]["None"]["positions"]["weather"]["event"] = "False"
-        #     data["db"]["accounts"]["None"]["positions"]["gmail"]["event"] = "False"
-        #     data["db"]["accounts"]["None"]["positions"]["quote"]["event"] = "False"
-        #     data["db"]["accounts"]["None"]["positions"]["calendar"]["event"] = "False"
-        #     data["db"]["accounts"]["None"]["positions"]["photos"]["event"] = "False"
-
-
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
-
         connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
         base.execute_query(connection, "update accounts SET time_event=0, weather_event=0, gmail_event=0, quote_event=0, calendar_event=0, photos_event=0 WHERE user_id = 0")
         connection.close()
@@ -160,13 +146,6 @@ class Toolbar:
         self.arrow_button.pack_forget()
     
     def OpenPreToolbar(self):
-
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     data["db"]["toolbar"] = "on"
-
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
 
         connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
         base.execute_query(connection, "update camera SET toolbar='on'")
@@ -241,18 +220,11 @@ class Toolbar:
         """
         Show toolbar 
         """        
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-
         connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
             
         if toolbar_status != "on":
-            #data["db"]["toolbar"] = "on"
-
-            # with open(db, 'w', encoding='utf-8') as f:
-            #     json.dump(data, f, ensure_ascii=False, indent=4)
             
             connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
             base.execute_query(connection, "update camera SET toolbar='on'")
@@ -311,18 +283,12 @@ class Toolbar:
         toolbarFrame: Frame
             Frame for toolbar
         """        
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
         
         if toolbar_status != "on":
-            #data["db"]["toolbar"] = "on"
-
-            # with open(db, 'w', encoding='utf-8') as f:
-            #     json.dump(data, f, ensure_ascii=False, indent=4)
 
             connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
             base.execute_query(connection, "update camera SET toolbar='on'")
@@ -376,18 +342,12 @@ class Toolbar:
         """
         Hide toolbar
         """        
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
         
         if toolbar_status != "off":
-            #data["db"]["toolbar"] = "off"
-
-            # with open(db, 'w', encoding='utf-8') as f:
-            #     json.dump(data, f, ensure_ascii=False, indent=4)
             
             connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
             base.execute_query(connection,"update camera SET toolbar='off'")
@@ -439,18 +399,11 @@ class Toolbar:
         toolbarFrame: Frame
             Frame for toolbar
         """
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
 
         if toolbar_status != "off":
-            #data["db"]["toolbar"] = "off"
-
-            # with open(db, 'w', encoding='utf-8') as f:
-            #     json.dump(data, f, ensure_ascii=False, indent=4)
             
             connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
             base.execute_query(connection,"update camera SET toolbar='off'")
@@ -599,16 +552,6 @@ class Toolbar:
         self.functions_activate.photos_function()
       
     def check_buttons(self):
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     time = data["db"]["accounts"][RFace]["positions"]["time"]["event"]
-        #     weather = data["db"]["accounts"][RFace]["positions"]["weather"]["event"]
-        #     gmail = data["db"]["accounts"][RFace]["positions"]["gmail"]["event"]
-        #     quote = data["db"]["accounts"][RFace]["positions"]["quote"]["event"]
-        #     calendar = data["db"]["accounts"][RFace]["positions"]["calendar"]["event"]
-        #     photos = data["db"]["accounts"][RFace]["positions"]["photos"]["event"]
-        #     toolbar = data["db"]["toolbar"]
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
@@ -675,15 +618,6 @@ class Toolbar:
 
     @staticmethod
     def displacement_function(val=False,*args):
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     timeX = data["db"]["accounts"][RFace]["positions"]["time"]["x"]
-        #     weatherX = data["db"]["accounts"][RFace]["positions"]["weather"]["x"]
-        #     gmailX = data["db"]["accounts"][RFace]["positions"]["gmail"]["x"]
-        #     quoteX = data["db"]["accounts"][RFace]["positions"]["quote"]["x"]
-        #     calendarX = data["db"]["accounts"][RFace]["positions"]["calendar"]["x"]
-        #     photosX = data["db"]["accounts"][RFace]["positions"]["photos"]["x"]
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]

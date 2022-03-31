@@ -34,15 +34,6 @@ class QuoteMain:
     
     def main(self):
 
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["quote"]["event"] = "True"
-        #     toolbar_staus = data["db"]["toolbar"]
-        
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
-
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
         base.execute_query(connection, f"update accounts SET quote_event=1 WHERE user_id={RFace}")
@@ -93,14 +84,6 @@ class QuoteMain:
 
     
     def destroy_quote(self):
-    
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["quote"]["event"] = "False"
-        
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
@@ -123,14 +106,6 @@ class QuoteMain:
             value of "y" quote position
         """
 
-    
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     if RFace == None: 
-        #         RFace = data["db"]["camera"]["actuall_user"]
-
-        #     x = data["db"]["accounts"][RFace]["positions"]["quote"]["x"]
-        #     y = data["db"]["accounts"][RFace]["positions"]["quote"]["y"]
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         if RFace == None:
@@ -147,10 +122,6 @@ class QuoteMain:
     def drag_start_frame(self, event):
         self.quoteFrame.startX = event.x
         self.quoteFrame.startY = event.y
-
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     toolbar_event = data["db"]["toolbar"]
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
@@ -198,16 +169,6 @@ class QuoteMain:
 
     def drag_stop(self, event=None):
 
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["quote"]["x"] = self.quoteFrame.stopX 
-        #     data["db"]["accounts"][RFace]["positions"]["quote"]["y"] = self.quoteFrame.stopY 
-
-
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
-    
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
         base.execute_query(connection, f"update accounts SET quote_x={self.quoteFrame.stopX} WHERE user_id={RFace}")

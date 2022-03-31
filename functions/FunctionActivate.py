@@ -61,14 +61,6 @@ class FunctionsActivateClass:
     
     def check_functions_position(self, function, RFace):
 
-        # with open(self.db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     if RFace == None: 
-        #         RFace = data["db"]["camera"]["actuall_user"]
-
-        #     x = data["db"]["accounts"][RFace]["positions"][function]["x"]
-        #     y = data["db"]["accounts"][RFace]["positions"][function]["y"]
-
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
 
         if RFace == None:
@@ -83,15 +75,6 @@ class FunctionsActivateClass:
         return x, y
         
     def functions_position_refresh(self, RFace):
-
-        # with open(self.db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     timeOn = data["db"]["accounts"][RFace]["positions"]["time"]["event"]
-        #     weatherOn = data["db"]["accounts"][RFace]["positions"]["weather"]["event"]
-        #     gmailOn = data["db"]["accounts"][RFace]["positions"]["gmail"]["event"]
-        #     quoteOn = data["db"]["accounts"][RFace]["positions"]["quote"]["event"]
-        #     calendarOn = data["db"]["accounts"][RFace]["positions"]["calendar"]["event"]
-        #     photosOn = data["db"]["accounts"][RFace]["positions"]["photos"]["event"]
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         data = base.read_query(connection, f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event from accounts WHERE user_id={RFace}")[0]
@@ -144,15 +127,6 @@ class FunctionsActivateClass:
         self.function_refreshing(RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh,CalendarToRefresh, PhotosToRefresh)
     
     def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh, CalendarToRefresh, PhotosToRefresh):
-
-        # with open(self.db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     PtimeOn = data["db"]["accounts"]["None"]["positions"]["time"]["event"]
-        #     PweatherOn = data["db"]["accounts"]["None"]["positions"]["weather"]["event"]
-        #     PgmailOn = data["db"]["accounts"]["None"]["positions"]["gmail"]["event"]
-        #     PquoteOn = data["db"]["accounts"]["None"]["positions"]["quote"]["event"]
-        #     PcalendarOn = data["db"]["accounts"]["None"]["positions"]["calendar"]["event"]        
-        #     PphotosOn = data["db"]["accounts"]["None"]["positions"]["photos"]["event"]
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         data = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event from accounts WHERE user_id=0")[0]

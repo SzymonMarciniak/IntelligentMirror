@@ -1,5 +1,4 @@
 from tkinter import * 
-import json 
 import os
 
 from IntelligentMirror.functions.CalendarFunction.data_base_functions import DataBase
@@ -79,15 +78,6 @@ class Calendar:
 
 
     def calendarMain(self):
-
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["calendar"]["event"] = "True"
-        #     toolbar_status = data["db"]["toolbar"]
-        
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
@@ -172,13 +162,6 @@ class Calendar:
         y: int 
             value of "y" calendar position
         """
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     if RFace == None: 
-        #         RFace = data["db"]["camera"]["actuall_user"]
-
-        #     x = data["db"]["accounts"][RFace]["positions"]["calendar"]["x"]
-        #     y = data["db"]["accounts"][RFace]["positions"]["calendar"]["y"]
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         if RFace == None:
@@ -192,14 +175,6 @@ class Calendar:
         return x, y
     
     def destroy_calendar(self):
-    
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["calendar"]["event"] = "False"
-        
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
@@ -215,10 +190,6 @@ class Calendar:
     def drag_start_frame(self, event):
         self.calendarFrame.startX = event.x
         self.calendarFrame.startY = event.y
-
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     toolbar_event = data["db"]["toolbar"]
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
@@ -266,16 +237,6 @@ class Calendar:
 
     def drag_stop(self, event=None):
 
-        # with open(db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     RFace = data["db"]["camera"]["actuall_user"]
-        #     data["db"]["accounts"][RFace]["positions"]["calendar"]["x"] = self.calendarFrame.stopX 
-        #     data["db"]["accounts"][RFace]["positions"]["calendar"]["y"] = self.calendarFrame.stopY 
-
-
-        # with open(db, 'w', encoding='utf-8') as f:
-        #     json.dump(data, f, ensure_ascii=False, indent=4)
-        
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
         base.execute_query(connection, f"update accounts SET calendar_x={self.calendarFrame.stopX} WHERE user_id={RFace}")

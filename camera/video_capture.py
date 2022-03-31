@@ -82,12 +82,6 @@ class Camera:
         
     def refresh_methods(self):
 
-        # with open(self.db, "r", encoding="utf-8") as file: 
-        #     data = json.load(file)
-        #     data["db"]["camera"]["actuall_user"] = self.RFace
-        
-        # with open(self.db, "w", encoding="utf-8") as user_file:
-        #     json.dump(data, user_file, ensure_ascii=False, indent=4)
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         base.execute_query(connection, f"update camera set actuall_user = {self.RFace}")
@@ -147,9 +141,6 @@ class Camera:
 
                                     self.RFace = name
 
-                                    # with open(self.db, "r", encoding="utf-8") as file:
-                                    #     data = json.load(file)
-                                    #     my_nick = data["db"]["accounts"][self.RFace]["login"]
 
                                     connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
                                     my_nick = base.read_query(connection, f"select nick FROM accounts WHERE user_id={self.RFace}")[0][0]
@@ -177,14 +168,6 @@ class Camera:
                             self.no_face = 0
                     
                     
-
-                    # with open(self.db, "r", encoding="utf-8") as file:  #Save data
-                    #     data = json.load(file)
-                    #     data["db"]["camera"]["actuall_user"] = self.RFace
-                    
-                    # with open(self.db, "w", encoding="utf-8") as user_file:
-                    #     json.dump(data, user_file, ensure_ascii=False, indent=4)
-                    
                     connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
                     base.execute_query(connection, f"update camera SET actuall_user={int(self.RFace)}")
                     connection.close()
@@ -194,10 +177,6 @@ class Camera:
 
                 # except:
                 #     print("Face Recognition error")
-
-            # with open(self.db, "r", encoding="utf-8") as file:
-            #     data = json.load(file)
-            #     toolbar = data["db"]["toolbar"]
             
             connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
             toolbar = base.read_query(connection, "select toolbar from camera")[0][0]
@@ -247,11 +226,6 @@ class Camera:
         self.C = False 
         self.B = False 
         self.P = False
-
-
-        # with open(self.db, "r", encoding="utf-8") as file:
-        #     data = json.load(file)
-        #     self.user = data["db"]["camera"]["actuall_user"]
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         user_id = base.read_query(connection, "select actuall_user from camera")[0][0]
@@ -316,11 +290,6 @@ class Camera:
                 else:
                     self.no_hand +=1
                 
-                # with open(self.db, "r", encoding="utf-8") as file:
-                #     data = json.load(file)
- 
-                #     takephoto = data["db"]["camera"]["photo"]
-                
                 connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
                 takephoto = base.read_query(connection, "select photo from camera")[0][0]
                 connection.close()
@@ -366,11 +335,6 @@ class Camera:
 
                     self.Tolx,self.Toly = self.toolbarFrame.winfo_x(), self.toolbarFrame.winfo_y()
                     self.toolbarFrame.place_configure(x=-400)
-
-
-                    # data["db"]["camera"]["photo"] = "false"
-                    # with open(self.db, "w", encoding="utf-8") as user_file:
-                    #     json.dump(data, user_file, ensure_ascii=False, indent=4)
 
                     connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
                     base.execute_query(connection, "update camera SET photo=0")
