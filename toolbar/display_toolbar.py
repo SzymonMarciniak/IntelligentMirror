@@ -549,7 +549,7 @@ class Toolbar:
             self.photos_on = False
             self.photos_button.config(highlightbackground="black")
 
-        self.functions_activate.photos_function()
+        self.functions_activate.photos_function(self.photos_on)
       
     def check_buttons(self):
         

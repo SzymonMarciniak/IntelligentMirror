@@ -205,7 +205,7 @@ class Camera:
         This function is responsible for control mouse (moveing and clicking). You control mouse with your hand.
         """
          
-        wCam, hCam = 640, 480
+        wCam, hCam = 640, 370
         frameR = 0 # Frame Reduction
         smoothening = 6
 
@@ -236,7 +236,9 @@ class Camera:
 
         self.photos = self.photos_prefix + self.user
         self.counterLabel = Label(self.tk, text="", font=("Arial", 60), bg="black", fg="white")
- 
+
+        to_up = 0 
+
         while self.no_hand < 80:
             #try:
                 _, self.img = self.cap.read()
@@ -272,23 +274,29 @@ class Camera:
                         # Moving Mode
                         if total_fingers >=3:
                             if isDown:
-                                pyautogui.mouseUp(button="left")
-                                isDown = False
+                                to_up += 1
+                                if to_up == 3:
+                                    to_up = 0
+                                    pyautogui.mouseUp(button="left")
+                                    isDown = False
 
-                            self.activate = False
+                                self.activate = False
                                   
                         # Clicking Mode
-                        else:
+                        elif total_fingers < 3:
                             if self.activate == False:
+                                to_up = 0
                                 pyautogui.mouseDown(button="left")
                                 isDown = True
                             self.activate = True
 
                         plocX, plocY = clocX, clocY
-                        pyautogui.moveTo(x, y)
 
+                        t1 = threading.Thread(target=lambda:self.moveing_thread(x, y))
+                        t1.start()
                 else:
                     self.no_hand +=1
+                
                 
                 connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
                 takephoto = base.read_query(connection, "select photo from camera")[0][0]
@@ -305,8 +313,6 @@ class Camera:
                         self.W = True
                         self.Wx,self.Wy = self.weatherFrame.winfo_x(), self.weatherFrame.winfo_y()
                         self.weatherFrame.place_configure(x=-200,y=-300)
-                        #self.Weather.destroy_weather()
-
                     
                     if self.gmailFrame:
                         self.G = True
@@ -342,13 +348,26 @@ class Camera:
 
                     photoThreading = threading.Thread(target=lambda:self.takePhoto_function())
                     photoThreading.start()
+                
                     
           
             # except:
             #     print("ERROR")
-        
+            
         pyautogui.moveTo(1,1)
         self.no_finger_button.place_forget()
+
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        toolbar_on = base.read_query(connection, "select toolbar from camera")[0][0]
+        connection.close()
+
+        if toolbar_on == "on":
+            from IntelligentMirror.toolbar.display_toolbar import Toolbar
+            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, \
+                self.calendarFrame, self.photosFrame)
+
+    def moveing_thread(self, x, y):
+        pyautogui.moveTo(x, y)
 
     def takePhoto_function(self):
         self.no_hand = 81

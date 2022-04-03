@@ -5,3 +5,6 @@ face-recognition
 opencv-python
 pyautogui
 mediapipe
+mysqlclient
+mysql-connector-python
+pymysql
