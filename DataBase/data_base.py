@@ -79,11 +79,11 @@ if __name__ == "__main__":
 
     # create_event_table_query = """
     # create table event(
-    #     id INT(6) UNSIGNED PRIMARY KEY,
-    #     userid INT(3) UNSIGNED NOT NULL,
-    #     name VARCHAR(20) NOT NULL,
+    #     id INT(11) UNSIGNED PRIMARY KEY,
+    #     userid INT(11) UNSIGNED NOT NULL,
+    #     name text NOT NULL,
     #     howlong INT(3) NOT NULL,
-    #     date date NOT NULL
+    #     date datetime NOT NULL
     # )
     # """
 
@@ -160,6 +160,54 @@ if __name__ == "__main__":
 
     #base.execute_query(add_user_query)
     #base.execute_query(add_camera_query)
+
+    # q = """
+    # ALTER TABLE camera ADD instagram_on bit NOT NULL
+    # """
+
+    # q2 = """
+    # UPDATE camera set instagram_on=0
+    # """
+
+    # base.execute_query(connection, q)
+    # base.execute_query(connection, q2)
+
+    # q3 = """
+    # ALTER TABLE camera ADD camera_on bit NOT NULL
+    # """
+
+    # q4 = """
+    # UPDATE camera set camera_on=1
+    # """
+
+    # base.execute_query(connection, q3)
+    # base.execute_query(connection, q4)
+
+    # q5 = """
+    # ALTER TABLE accounts ADD instagram_event bit NOT NULL
+    # """
+    # q8 = """
+    # UPDATE accounts set instagram_event=0
+    # """
+    # q6 = """
+    # ALTER TABLE user ADD instagram_login text 
+    # """
+    # q7 = """
+    # ALTER TABLE user ADD instagram_password text
+    # """
+    # base.execute_query(connection, q5)
+    # base.execute_query(connection, q6)
+    # base.execute_query(connection, q7)
+    # base.execute_query(connection, q8)
+
+    # q9 = """
+    # UPDATE user set instagram_login='szymonmarciniak24@gmail.com' WHERE id=1
+    # """
+    # q10 = """
+    # UPDATE user set instagram_password='' WHERE id=1
+    # """
+    # base.execute_query(connection, q9)
+    # base.execute_query(connection, q10)
 
     print("\n\n")
     print(base.read_query(connection,"select * from accounts"))

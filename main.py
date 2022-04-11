@@ -68,11 +68,13 @@ toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFra
 if __name__ == "__main__":
     connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
     base.execute_query(connection,"update camera set actuall_user = 0")
+    base.execute_query(connection,"update camera set camera_on = 1")
     connection.close()
+
+    os.environ["was_instagram_open"] = "False"
 
     toolbar.OpenPreToolbar()
     Toolbar.HideToolbarAnimation_DF(toolbarFrame)
-
 
 MouseThread = threading.Thread(target=camera.FaceRecognition)
 MouseThread.start() 

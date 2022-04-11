@@ -1,4 +1,5 @@
 import threading
+import Xlib.threaded
 import cv2
 import face_recognition
 import glob
@@ -180,18 +181,24 @@ class Camera:
             
             connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
             toolbar = base.read_query(connection, "select toolbar from camera")[0][0]
+            camera_on = base.read_query(connection, "select camera_on from camera")[0][0]
             connection.close()
-
+            print(f"cam {camera_on}")
             if not toolbar == "on":
-            
+                print("11")
                 if hands:       #Detection gest
                     isgesture = gesture(hands)
                     if isgesture:
+                        print("22")
                         Camera.Mouse(self)
                     else:
-                        face_recognition_module()
+                        if camera_on:
+                            print("33")
+                            face_recognition_module() 
                 else:
-                    face_recognition_module()
+                    if camera_on:
+                        print("44")
+                        face_recognition_module()
             
                 #cv2.imshow("Image", self.rgb_small_frame)
                 cv2.waitKey(1)
@@ -230,6 +237,8 @@ class Camera:
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         user_id = base.read_query(connection, "select actuall_user from camera")[0][0]
         self.user = base.read_query(connection, f"select name, lastname from user WHERE id={user_id}")[0]
+        camera_on = base.read_query(connection, "select camera_on from camera")[0][0]
+        base.execute_query(connection, "UPDATE camera SET instagram_on=0")
         connection.close()
 
         self.user = self.user[0] + "_" + self.user[1]
@@ -238,137 +247,149 @@ class Camera:
         self.counterLabel = Label(self.tk, text="", font=("Arial", 60), bg="black", fg="white")
 
         to_up = 0 
+        
+        if camera_on:
+            while self.no_hand < 80:
+                #try:
+                    _, self.img = self.cap.read()
+                    hands, self.img = detector.find_hands(self.img, draw=False)
 
-        while self.no_hand < 80:
-            #try:
-                _, self.img = self.cap.read()
-                hands, self.img = detector.find_hands(self.img, draw=False)
-
-                if hands:
-                   
-                    self.no_hand = 0
-                    hand = hands[0]
-                    lmList = hand["lmList"]
-               
-
-                    # Get the tip of the finger 
-                    if len(lmList) != 0:
-                        x1, y1 = lmList[8]
+                    if hands:
                     
-                        # Check how many fingers are up
-                        _, total_fingers = detector.fingers_up(hands[0])
+                        self.no_hand = 0
+                        hand = hands[0]
+                        lmList = hand["lmList"]
+                
 
-                        # Convert Coordinates
-                        x3 = np.interp(x1, (frameR, wCam - frameR), (0, wScr))
-                        y3 = np.interp(y1, (frameR, hCam - frameR), (0, hScr))
-
-                        # Smoothen Values
-                        clocX = plocX + (x3 - plocX) / smoothening
-                        clocY = plocY + (y3 - plocY) / smoothening
-                                
-                        # Move Mouse
-                        x = wScr - clocX
-                        x = int(x)
-                        y = int(clocY)
+                        # Get the tip of the finger 
+                        if len(lmList) != 0:
+                            x1, y1 = lmList[8]
                         
-                        # Moving Mode
-                        if total_fingers >=3:
-                            if isDown:
-                                to_up += 1
-                                if to_up == 3:
+                            # Check how many fingers are up
+                            _, total_fingers = detector.fingers_up(hands[0])
+
+                            # Convert Coordinates
+                            x3 = np.interp(x1, (frameR, wCam - frameR), (0, wScr))
+                            y3 = np.interp(y1, (frameR, hCam - frameR), (0, hScr))
+
+                            # Smoothen Values
+                            clocX = plocX + (x3 - plocX) / smoothening
+                            clocY = plocY + (y3 - plocY) / smoothening
+                                    
+                            # Move Mouse
+                            x = wScr - clocX
+                            x = int(x)
+                            y = int(clocY)
+                            
+                            # Moving Mode
+                            if total_fingers >=3:
+                                if isDown:
+                                    to_up += 1
+                                    if to_up == 3:
+                                        to_up = 0
+                                        pyautogui.mouseUp(button="left")
+                                        isDown = False
+
+                                    self.activate = False
+                                    
+                            # Clicking Mode
+                            elif total_fingers < 3:
+                                if self.activate == False:
                                     to_up = 0
-                                    pyautogui.mouseUp(button="left")
-                                    isDown = False
+                                    pyautogui.mouseDown(button="left")
+                                    isDown = True
+                                self.activate = True
 
-                                self.activate = False
-                                  
-                        # Clicking Mode
-                        elif total_fingers < 3:
-                            if self.activate == False:
-                                to_up = 0
-                                pyautogui.mouseDown(button="left")
-                                isDown = True
-                            self.activate = True
+                            plocX, plocY = clocX, clocY
 
-                        plocX, plocY = clocX, clocY
-
-                        t1 = threading.Thread(target=lambda:self.moveing_thread(x, y))
-                        t1.start()
-                else:
-                    self.no_hand +=1
-                
-                
-                connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-                takephoto = base.read_query(connection, "select photo from camera")[0][0]
-                connection.close()
-            
-                if takephoto:
+                            print(x,y)
+                            try:
+                                t1 = threading.Thread(target=lambda:self.moveing_thread(x, y))
+                                t1.start()
+                            except: print("MOVEING ERROR")
+                            
+                    else:
+                        self.no_hand +=1
                     
-                    if self.timeFrame:
-                        self.T = True
-                        self.Tx,self.Ty = self.timeFrame.winfo_x(), self.timeFrame.winfo_y()
-                        self.timeFrame.place_forget()
-
-                    if self.weatherFrame:
-                        self.W = True
-                        self.Wx,self.Wy = self.weatherFrame.winfo_x(), self.weatherFrame.winfo_y()
-                        self.weatherFrame.place_configure(x=-200,y=-300)
                     
-                    if self.gmailFrame:
-                        self.G = True
-                        self.Gx,self.Gy = self.gmailFrame.winfo_x(), self.gmailFrame.winfo_y()
-                        self.Gw, self.Gh = self.gmailFrame.winfo_width(), self.gmailFrame.winfo_height()
-                        self.gmailFrame.place_forget()
-                    
-                    if self.quoteFrame:
-                        self.Q = True
-                        self.Qx,self.Qy = self.quoteFrame.winfo_x(), self.quoteFrame.winfo_y()
-                        self.quoteFrame.place_forget() 
-                    
-                    if self.calendarFrame:
-                        self.C = True
-                        self.Cx,self.Cy = self.calendarFrame.winfo_x(), self.calendarFrame.winfo_y()
-                        self.calendarFrame.place_forget() 
-                    
-                    if self.photosFrame:
-                        self.P = True
-                        self.Px,self.Py = self.photosFrame.winfo_x(), self.photosFrame.winfo_y()
-                        self.photosFrame.place_forget() 
-                    
-                    if self.no_finger_button:
-                        self.B = True
-                        self.no_finger_button.place_forget()
-
-                    self.Tolx,self.Toly = self.toolbarFrame.winfo_x(), self.toolbarFrame.winfo_y()
-                    self.toolbarFrame.place_configure(x=-400)
-
                     connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-                    base.execute_query(connection, "update camera SET photo=0")
+                    takephoto = base.read_query(connection, "select photo from camera")[0][0]
                     connection.close()
-
-                    photoThreading = threading.Thread(target=lambda:self.takePhoto_function())
-                    photoThreading.start()
                 
+                    if takephoto:
+                        
+                        if self.timeFrame:
+                            self.T = True
+                            self.Tx,self.Ty = self.timeFrame.winfo_x(), self.timeFrame.winfo_y()
+                            self.timeFrame.place_forget()
+
+                        if self.weatherFrame:
+                            self.W = True
+                            self.Wx,self.Wy = self.weatherFrame.winfo_x(), self.weatherFrame.winfo_y()
+                            self.weatherFrame.place_configure(x=-200,y=-300)
+                        
+                        if self.gmailFrame:
+                            self.G = True
+                            self.Gx,self.Gy = self.gmailFrame.winfo_x(), self.gmailFrame.winfo_y()
+                            self.Gw, self.Gh = self.gmailFrame.winfo_width(), self.gmailFrame.winfo_height()
+                            self.gmailFrame.place_forget()
+                        
+                        if self.quoteFrame:
+                            self.Q = True
+                            self.Qx,self.Qy = self.quoteFrame.winfo_x(), self.quoteFrame.winfo_y()
+                            self.quoteFrame.place_forget() 
+                        
+                        if self.calendarFrame:
+                            self.C = True
+                            self.Cx,self.Cy = self.calendarFrame.winfo_x(), self.calendarFrame.winfo_y()
+                            self.calendarFrame.place_forget() 
+                        
+                        if self.photosFrame:
+                            self.P = True
+                            self.Px,self.Py = self.photosFrame.winfo_x(), self.photosFrame.winfo_y()
+                            self.photosFrame.place_forget() 
+                        
+                        if self.no_finger_button:
+                            self.B = True
+                            self.no_finger_button.place_forget()
+
+                        self.Tolx,self.Toly = self.toolbarFrame.winfo_x(), self.toolbarFrame.winfo_y()
+                        self.toolbarFrame.place_configure(x=-400)
+
+                        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                        base.execute_query(connection, "update camera SET photo=0")
+                        connection.close()
+
+                        photoThreading = threading.Thread(target=lambda:self.takePhoto_function())
+                        photoThreading.start()
                     
-          
-            # except:
-            #     print("ERROR")
+                        
             
-        pyautogui.moveTo(1,1)
-        self.no_finger_button.place_forget()
+                # except:
+                #     print("ERROR")
+                
+            pyautogui.moveTo(1,1)
+            self.no_finger_button.place_forget()
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-        toolbar_on = base.read_query(connection, "select toolbar from camera")[0][0]
-        connection.close()
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            toolbar_on = base.read_query(connection, "select toolbar from camera")[0][0]
+            RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
+            
 
-        if toolbar_on == "on":
-            from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, \
-                self.calendarFrame, self.photosFrame)
+            if toolbar_on == "on":
+                from IntelligentMirror.toolbar.display_toolbar import Toolbar
+                Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, \
+                    self.calendarFrame, self.photosFrame)
+            
+            if base.read_query(connection,f"select instagram_event from accounts WHERE user_id={RFace}")[0][0] ==1:
+                base.execute_query(connection, "UPDATE camera SET instagram_on=1")
+            connection.close()
 
     def moveing_thread(self, x, y):
+       
         pyautogui.moveTo(x, y)
-
+    
+    
     def takePhoto_function(self):
         self.no_hand = 81
         self.no_face = 0

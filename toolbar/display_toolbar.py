@@ -130,7 +130,7 @@ class Toolbar:
             highlightthickness=0, command=self.OpenToolbarAnimation)
 
         connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
-        base.execute_query(connection, "update accounts SET time_event=0, weather_event=0, gmail_event=0, quote_event=0, calendar_event=0, photos_event=0 WHERE user_id = 0")
+        base.execute_query(connection, "update accounts SET time_event=0, weather_event=0, gmail_event=0, quote_event=0, calendar_event=0, photos_event=0, instagram_event=0 WHERE user_id = 0")
         connection.close()
 
         self.functions_activate = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, \
@@ -528,7 +528,7 @@ class Toolbar:
             print("Close Instagram")
             self.instagram_on = False 
             self.instagram_button.config(highlightbackground="black")
-        #self.functions_activate.instagram_function(self.instagram_on)
+        self.functions_activate.instagram_function(self.instagram_on)
     
     def spotify_function(self):
         if self.spotify_on == False:
@@ -555,7 +555,7 @@ class Toolbar:
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
-        events = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event from accounts WHERE user_id = {RFace}")[0]
+        events = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event,instagram_event from accounts WHERE user_id = {RFace}")[0]
         toolbar = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
 
@@ -565,6 +565,7 @@ class Toolbar:
         quote = events[3]
         calendar = events[4]
         photos = events[5]
+        instagram = events[6]
 
 
         if time:
@@ -608,6 +609,14 @@ class Toolbar:
         else:
             self.photos_button.config(highlightbackground="black")
             self.photos_on = False 
+        
+        if instagram:
+            self.instagram_button.config(highlightbackground="blue")
+            self.instagram_on = True
+        else:
+            self.instagram_button.config(highlightbackground="black")
+            self.instagram_on = False 
+
 
         if toolbar == "on":
             self.arrow_button.config(image=self.leftArrow, command=self.HideToolbarAnimation)

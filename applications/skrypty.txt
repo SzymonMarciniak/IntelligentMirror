@@ -1,0 +1,3 @@
+snap install istekram
+snap install spotify
+apt-get install wmctrl

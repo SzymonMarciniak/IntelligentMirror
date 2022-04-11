@@ -9,6 +9,7 @@ from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 from IntelligentMirror.functions.QuoteFunction.quote_function import QuoteMain
 from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
 from IntelligentMirror.functions.PhotosFunction.photos_function import Photos
+from IntelligentMirror.applications.InstagramFunction.instargram_function import Instagram
 from IntelligentMirror.DataBase.data_base import DataBase
 base = DataBase()
 
@@ -55,9 +56,12 @@ class FunctionsActivateClass:
         self.quote = QuoteMain(self.tk, toolbarFrame, self.quoteFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.calendarFrame, self.photosFrame)
         self.calendar = Calendar(self.tk, toolbarFrame, self.calendarFrame,self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.photosFrame)
         self.photos = Photos(self.tk, toolbarFrame, self.photosFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame)
-
+        self.instagram = Instagram(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
+        
         self.prefix = os.getcwd()
         self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
+
+        self.instagram_open_once = False
     
     def check_functions_position(self, function, RFace):
 
@@ -77,7 +81,7 @@ class FunctionsActivateClass:
     def functions_position_refresh(self, RFace):
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-        data = base.read_query(connection, f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event from accounts WHERE user_id={RFace}")[0]
+        data = base.read_query(connection, f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event, instagram_event from accounts WHERE user_id={RFace}")[0]
         connection.close()
 
         timeOn = data[0]
@@ -86,6 +90,7 @@ class FunctionsActivateClass:
         quoteOn = data[3]
         calendarOn = data[4]
         photosOn = data[5]
+        instagramOn = data[6]
 
         if timeOn:
             TimeToRefresh = True
@@ -122,14 +127,25 @@ class FunctionsActivateClass:
         else:
             PhotosToRefresh = False 
             self.photos.destroy_photos() 
-      
         
-        self.function_refreshing(RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh,CalendarToRefresh, PhotosToRefresh)
+        if instagramOn:
+            InstagramToRefresh = True
+        else:
+            InstagramToRefresh = False 
+
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            base.execute_query(connection,"update camera set instagram_on = 0")
+            connection.close()
+
+            self.instagram.destroy_instagram() 
+        
+      
+        self.function_refreshing(RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh,CalendarToRefresh, PhotosToRefresh, InstagramToRefresh)
     
-    def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh, CalendarToRefresh, PhotosToRefresh):
+    def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh, CalendarToRefresh, PhotosToRefresh, InstagramToRefresh):
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-        data = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event from accounts WHERE user_id=0")[0]
+        data = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event, instagram_event from accounts WHERE user_id=0")[0]
         connection.close()
         
         PtimeOn = data[0]
@@ -138,6 +154,7 @@ class FunctionsActivateClass:
         PquoteOn = data[3]
         PcalendarOn = data[4]
         PphotosOn = data[5]
+        PinstagramOn = data[6]
         
         smoothening = 11
 
@@ -187,6 +204,13 @@ class FunctionsActivateClass:
         else:
             self.clocX_photos, self.clocY_photos = 0,0
         
+        if InstagramToRefresh:
+            if PinstagramOn: instagram_to_close = True
+            else: instagram_to_close = False 
+
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            instagram_to_open = base.read_query(connection,f"select instagram_event from accounts WHERE user_id={RFace}")[0][0]
+            connection.close()        
        
         
         if TimeToRefresh:
@@ -212,6 +236,22 @@ class FunctionsActivateClass:
         if PhotosToRefresh:
             PhotosThread = threading.Thread(target=lambda:self.PhotosRefreshing(smoothening,endX_photos, endY_photos))
             PhotosThread.start()
+        
+        if InstagramToRefresh:
+            InstagramThread = threading.Thread(target=lambda:self.InstagramRefreshing(instagram_to_close, instagram_to_open))
+            InstagramThread.start()
+    
+    def InstagramRefreshing(self, to_close, to_open):
+        if to_close:
+            self.instagram.destroy_instagram()
+        
+        if to_open:
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            base.execute_query(connection,"update camera set instagram_on = 1")
+            connection.close()
+
+            self.instagram.main_instargram()
+
 
     def GmailRefreshing(self, PgmailOn):
         self.gmail_function(on=False)
@@ -359,4 +399,15 @@ class FunctionsActivateClass:
             self.photos.destroy_photos()
     
         
+    def instagram_function(self, on=True) -> None:
+        """Activates instargram function"""
+        if on:
+            self.instagram.main_instargram()  
+
+        else:
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            base.execute_query(connection,"update camera set instagram_on = 0")
+            base.execute_query(connection,"update camera set camera_on = 1")
+            connection.close()
+            self.instagram.destroy_instagram()
 
