@@ -12,7 +12,6 @@ base = DataBase()
 
 prefix = os.getcwd()
 icon_prefix = f"{prefix}/IntelligentMirror/icons/"
-db = f"{prefix}/IntelligentMirror/DataBase.json"
 
 tk = Tk()
 tk.configure(background="black")
@@ -30,27 +29,27 @@ calendarFrame = LabelFrame(tk, bg="black", bd=0)
 photosFrame = LabelFrame(tk, bg="gray", bd=1)
 
 
-clockIcon = PhotoImage(file=f"{icon_prefix}clock_black.png") 
-sunIcon = PhotoImage(file=f"{icon_prefix}sun_black.png") 
-homeIcon = PhotoImage(file=f"{icon_prefix}home_black.png") 
-calendarIcon = PhotoImage(file=f"{icon_prefix}calendar_black.png") 
-quoteIcon = PhotoImage(file=f"{icon_prefix}quote_black.png") 
-gmailIcon = PhotoImage(file=f"{icon_prefix}gmail_black.png")
-returnIcon = PhotoImage(file=f"{icon_prefix}return_black.png")
-test1Icon = PhotoImage(file=f"{icon_prefix}external_black.png")
-test2Icon = PhotoImage(file=f"{icon_prefix}briefcase_black.png")
+clockIcon = PhotoImage(file=f"{icon_prefix}clock.png") 
+sunIcon = PhotoImage(file=f"{icon_prefix}weather.png") 
+homeIcon = PhotoImage(file=f"{icon_prefix}home.png") 
+calendarIcon = PhotoImage(file=f"{icon_prefix}calendar.png") 
+quoteIcon = PhotoImage(file=f"{icon_prefix}quote.png") 
+gmailIcon = PhotoImage(file=f"{icon_prefix}mail.png")
+returnIcon = PhotoImage(file=f"{icon_prefix}return.png")
+test1Icon = PhotoImage(file=f"{icon_prefix}apps2.png")
+test2Icon = PhotoImage(file=f"{icon_prefix}web apps.png")
 bulbOnIcon = PhotoImage(file=f"{icon_prefix}bulb.png")
 rollerShuttersUpIcon = PhotoImage(file=f"{icon_prefix}up.png")
-pauseIcon = PhotoImage(file=f"{icon_prefix}pause_black.png")
+pauseIcon = PhotoImage(file=f"{icon_prefix}pause.png")
 rollerShuttersDownIcon = PhotoImage(file=f"{icon_prefix}down.png")
-instagramIcon = PhotoImage(file=f"{icon_prefix}instagram_black.png")
-spotifyIcon = PhotoImage(file=f"{icon_prefix}spotify_black.png")
+instagramIcon = PhotoImage(file=f"{icon_prefix}instagram.png")
+spotifyIcon = PhotoImage(file=f"{icon_prefix}spotify.png")
 cameraIcon = PhotoImage(file=f"{icon_prefix}camera.png")
 
-left_arrow = PIL.Image.open(f"{icon_prefix}left-arrow_black.png")
+left_arrow = PIL.Image.open(f"{icon_prefix}left.png")
 left_arrow = left_arrow.resize((150,150))
 left_arrow = PIL.ImageTk.PhotoImage(left_arrow)
-right_arrow = PIL.Image.open(f"{icon_prefix}right-arrow_black.png")
+right_arrow = PIL.Image.open(f"{icon_prefix}right.png")
 right_arrow = right_arrow.resize((150,150))
 right_arrow = PIL.ImageTk.PhotoImage(right_arrow)
 
@@ -66,8 +65,8 @@ toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFra
         bulbOnIcon, rollerShuttersUpIcon, pauseIcon, rollerShuttersDownIcon, instagramIcon, spotifyIcon, cameraIcon)
 
 if __name__ == "__main__":
-    connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
-    base.execute_query(connection,"update camera set actuall_user = 0")
+    connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mirror")
+    base.execute_query(connection,"update camera set actuall_user = 1")
     base.execute_query(connection,"update camera set camera_on = 1")
     connection.close()
 

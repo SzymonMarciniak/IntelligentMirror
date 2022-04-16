@@ -1,20 +1,16 @@
 from tkinter import * 
 import os
 
-from IntelligentMirror.functions.CalendarFunction.data_base_functions import DataBase
-from IntelligentMirror.DataBase.data_base import DataBase as DataBase2
+from IntelligentMirror.DataBase.data_base import DataBase
 
 prefix = os.getcwd()
 
-db_mysql = DataBase()
-base = DataBase2()
+base = DataBase()
 
-connection_data = db_mysql.create_db_connection("localhost","szymon", "dzbanek", "mysql_calendar")
-query = "select * from events where date_event = '2022-02-26';"
-events = db_mysql.read_query(connection_data, query)
+connection_data = base.create_db_connection("localhost","szymon", "dzbanek", "mirror")
+query = "select date, name from event"
+events = base.read_query(connection_data, query)
 connection_data.close()
-
-db = f"{prefix}/IntelligentMirror/DataBase.json"
 
 class Calendar:
     def __init__(self, tk: Frame, toolbarFrame:Frame , calendarFrame: LabelFrame, timeFrame:Frame = None, weatherFrame:Frame = None,\
@@ -79,9 +75,9 @@ class Calendar:
 
     def calendarMain(self):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET calendar_event=1 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET calendar_event=1 WHERE id={RFace}")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
 
@@ -163,10 +159,10 @@ class Calendar:
             value of "y" calendar position
         """
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         if RFace == None:
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        coor = base.read_query(connection, f"select calendar_x, calendar_y from accounts WHERE user_id={RFace}")[0]
+        coor = base.read_query(connection, f"select calendar_x, calendar_y from user WHERE id={RFace}")[0]
         connection.close()
 
         x = coor[0]
@@ -176,9 +172,9 @@ class Calendar:
     
     def destroy_calendar(self):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET calendar_event=0 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET calendar_event=0 WHERE id={RFace}")
         connection.close()
 
         for pack in self.calendarFrame.pack_slaves():
@@ -191,7 +187,7 @@ class Calendar:
         self.calendarFrame.startX = event.x
         self.calendarFrame.startY = event.y
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
         connection.close()
         
@@ -237,10 +233,10 @@ class Calendar:
 
     def drag_stop(self, event=None):
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET calendar_x={self.calendarFrame.stopX} WHERE user_id={RFace}")
-        base.execute_query(connection, f"update accounts SET calendar_y={self.calendarFrame.stopY} WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET calendar_x={self.calendarFrame.stopX} WHERE id={RFace}")
+        base.execute_query(connection, f"update user SET calendar_y={self.calendarFrame.stopY} WHERE id={RFace}")
         connection.close()
 
         if self.calendarFrame.ToOn == True: 

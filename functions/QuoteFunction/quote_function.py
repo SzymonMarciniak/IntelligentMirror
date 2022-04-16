@@ -34,9 +34,9 @@ class QuoteMain:
     
     def main(self):
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET quote_event=1 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET quote_event=1 WHERE id={RFace}")
         toolbar_status = base.read_query(connection, "select toolbar from camera")[0][0]
         connection.close()
 
@@ -85,9 +85,9 @@ class QuoteMain:
     
     def destroy_quote(self):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET quote_event=0 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET quote_event=0 WHERE id={RFace}")
         connection.close()
 
         for pack in self.quoteFrame.pack_slaves():
@@ -107,10 +107,10 @@ class QuoteMain:
         """
 
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         if RFace == None:
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        coor = base.read_query(connection, f"select quote_x, quote_y from accounts WHERE user_id={RFace}")[0]
+        coor = base.read_query(connection, f"select quote_x, quote_y from user WHERE id={RFace}")[0]
         connection.close()
 
         x = coor[0]
@@ -123,7 +123,7 @@ class QuoteMain:
         self.quoteFrame.startX = event.x
         self.quoteFrame.startY = event.y
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
         connection.close()
         
@@ -169,10 +169,10 @@ class QuoteMain:
 
     def drag_stop(self, event=None):
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET quote_x={self.quoteFrame.stopX} WHERE user_id={RFace}")
-        base.execute_query(connection, f"update accounts SET quote_y={self.quoteFrame.stopY} WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET quote_x={self.quoteFrame.stopX} WHERE id={RFace}")
+        base.execute_query(connection, f"update user SET quote_y={self.quoteFrame.stopY} WHERE id={RFace}")
         connection.close()
 
         if self.quoteFrame.ToOn == True: 

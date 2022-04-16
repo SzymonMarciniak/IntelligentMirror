@@ -1,5 +1,4 @@
 import threading
-import Xlib.threaded
 import cv2
 import face_recognition
 import glob
@@ -15,6 +14,7 @@ from IntelligentMirror.functions.WeatherFunction.weather_function import Current
 from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
 from IntelligentMirror.functions.PhotosFunction.photos_function import Photos
+from IntelligentMirror.applications.InstagramFunction.instargram_function import Instagram
 from IntelligentMirror.DataBase.data_base import DataBase
 base = DataBase()
 
@@ -46,9 +46,9 @@ class Camera:
         self.Gmail = GmailMain(self.tk, self.toolbarFrame, self.gmailFrame)
         self.Calendar = Calendar(self.tk, self.toolbarFrame, self.calendarFrame) 
         self.Photos = Photos(self.tk, self.toolbarFrame, self.photosFrame)
+        self.Instagram = Instagram(self.tk, self.toolbarFrame)
 
         prefix = os.getcwd()
-        self.db = f"{prefix}/IntelligentMirror/DataBase.json"
         self.prefix = f"{prefix}/IntelligentMirror/camera"
         self.photos_prefix = f"{prefix}/IntelligentMirror/functions/PhotosFunction/photos/"
 
@@ -68,10 +68,10 @@ class Camera:
         self.process_this_frame = True
         self.no_face = 0
 
-        self.RFace = 0
+        self.RFace = 1
         self.no_hand = 0 
 
-        self.nick = Label(self.tk, font=("Arial", 30), bg="black", fg="white", text="None")
+        self.nick = Label(self.tk, font=("Arial", 30), bg="black", fg="white", text="Guest")
         self.nick.pack(side=BOTTOM,anchor=SE)
 
         self.rgb_small_frame = None
@@ -83,8 +83,7 @@ class Camera:
         
     def refresh_methods(self):
 
-        
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         base.execute_query(connection, f"update camera set actuall_user = {self.RFace}")
         connection.close()
 
@@ -138,13 +137,13 @@ class Camera:
                                 self.no_face = 0
 
                             else:                           #if name now and then are not the same 
-                                if  self.RFace == 0:
-
+                                if  self.RFace == 1:
+                                    
                                     self.RFace = name
 
 
-                                    connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-                                    my_nick = base.read_query(connection, f"select nick FROM accounts WHERE user_id={self.RFace}")[0][0]
+                                    connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+                                    my_nick = base.read_query(connection, f"select nick FROM user WHERE id={self.RFace}")[0][0]
                                     connection.close()
 
                                     self.nick.config(text=my_nick)
@@ -157,19 +156,18 @@ class Camera:
                         self.no_face = self.no_face + 1
                         print(f"{self.no_face} No name")
                         if self.no_face == 60:
-                            if self.RFace != 0:
-                                self.RFace = name
+                            if self.RFace != 1:
+                                self.RFace = 1
 
-                                connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-                                my_nick = base.read_query(connection, f"select nick FROM accounts WHERE user_id={self.RFace}")[0][0]
+                                connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+                                my_nick = base.read_query(connection, f"select nick FROM user WHERE id={self.RFace}")[0][0]
                                 connection.close()
 
                                 self.nick.config(text=my_nick)
                                 self.refresh_methods()
                             self.no_face = 0
-                    
-                    
-                    connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+
+                    connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
                     base.execute_query(connection, f"update camera SET actuall_user={int(self.RFace)}")
                     connection.close()
 
@@ -179,25 +177,21 @@ class Camera:
                 # except:
                 #     print("Face Recognition error")
             
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             toolbar = base.read_query(connection, "select toolbar from camera")[0][0]
             camera_on = base.read_query(connection, "select camera_on from camera")[0][0]
             connection.close()
-            print(f"cam {camera_on}")
+
             if not toolbar == "on":
-                print("11")
                 if hands:       #Detection gest
                     isgesture = gesture(hands)
                     if isgesture:
-                        print("22")
                         Camera.Mouse(self)
                     else:
                         if camera_on:
-                            print("33")
                             face_recognition_module() 
                 else:
                     if camera_on:
-                        print("44")
                         face_recognition_module()
             
                 #cv2.imshow("Image", self.rgb_small_frame)
@@ -233,10 +227,11 @@ class Camera:
         self.C = False 
         self.B = False 
         self.P = False
+        self.I = False 
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-        user_id = base.read_query(connection, "select actuall_user from camera")[0][0]
-        self.user = base.read_query(connection, f"select name, lastname from user WHERE id={user_id}")[0]
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+        id = base.read_query(connection, "select actuall_user from camera")[0][0]
+        self.user = base.read_query(connection, f"select name, lastname from user WHERE id={id}")[0]
         camera_on = base.read_query(connection, "select camera_on from camera")[0][0]
         base.execute_query(connection, "UPDATE camera SET instagram_on=0")
         connection.close()
@@ -312,7 +307,7 @@ class Camera:
                         self.no_hand +=1
                     
                     
-                    connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                    connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
                     takephoto = base.read_query(connection, "select photo from camera")[0][0]
                     connection.close()
                 
@@ -353,10 +348,19 @@ class Camera:
                             self.B = True
                             self.no_finger_button.place_forget()
 
+                        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+                        RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
+                        user_instagram_event = base.read_query(connection, f"select instagram_event from user WHERE id={RFace}")
+
+                        if user_instagram_event:
+                            self.I = True
+                            base.execute_query(connection,"update camera set instagram_on = 0")
+                            self.Instagram.destroy_instagram()
+
                         self.Tolx,self.Toly = self.toolbarFrame.winfo_x(), self.toolbarFrame.winfo_y()
                         self.toolbarFrame.place_configure(x=-400)
 
-                        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
                         base.execute_query(connection, "update camera SET photo=0")
                         connection.close()
 
@@ -371,7 +375,7 @@ class Camera:
             pyautogui.moveTo(1,1)
             self.no_finger_button.place_forget()
 
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             toolbar_on = base.read_query(connection, "select toolbar from camera")[0][0]
             RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
             
@@ -381,7 +385,7 @@ class Camera:
                 Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, \
                     self.calendarFrame, self.photosFrame)
             
-            if base.read_query(connection,f"select instagram_event from accounts WHERE user_id={RFace}")[0][0] ==1:
+            if base.read_query(connection,f"select instagram_event from user WHERE id={RFace}")[0][0] ==1:
                 base.execute_query(connection, "UPDATE camera SET instagram_on=1")
             connection.close()
 
@@ -434,6 +438,15 @@ class Camera:
         
         if self.B:
             self.B = False 
+
+        if self.I:
+            self.I = False 
+            
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+            base.execute_query(connection, "UPDATE camera SET instagram_on=1")
+            connection.close()
+
+            self.Instagram.main_instargram()
             
         
         self.toolbarFrame.place_configure(x=-210)

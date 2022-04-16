@@ -13,7 +13,7 @@ class DataBase:
         try:
             cursor.execute(query)
         except Error as err:
-            print(f"Faild: {err}")
+            print(f"Failed: {err}")
 
     @staticmethod
     def create_server_connection(host_name, user_name, user_password):
@@ -21,7 +21,7 @@ class DataBase:
         try:
             connection = mysql.connector.connect(host=host_name, user=user_name, passwd=user_password)
         except Error as err:
-            print(f"FAILD {err}")
+            print(f"FAILED {err}")
         return connection
 
     @staticmethod
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     # connection = base.create_server_connection("localhost", "szymon", "dzbanek")
     # base.create_database(connection, "Create database mysql_mirror")
 
-    connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+    connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
 
     # create_user_table_query = """
     # create table user(
@@ -210,9 +210,11 @@ if __name__ == "__main__":
     # base.execute_query(connection, q10)
 
     print("\n\n")
-    print(base.read_query(connection,"select * from accounts"))
+    print(base.read_query(connection,"show columns from event"))
     print("\n\n")
-    print(base.read_query(connection,"select * from user"))
+    print(base.read_query(connection,"select * from pictures"))
+    print("\n\n")
+    print(base.read_query(connection,"select * from user where id=1"))
     print("\n\n")
     print(base.read_query(connection,"select * from camera"))
    

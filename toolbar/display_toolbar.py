@@ -1,4 +1,3 @@
-from calendar import Calendar
 from tkinter import *
 import os
 
@@ -9,7 +8,7 @@ base = DataBase()
 
 
 prefix_ = os.getcwd()
-db = f"{prefix_}/IntelligentMirror/DataBase.json"
+
 class Toolbar:
 
     def __init__(self,
@@ -129,9 +128,10 @@ class Toolbar:
         self.arrow_button = Button(self.arrowFrame, image=self.rightArrow, bd=0, highlightbackground='black',borderwidth=0, bg='black', \
             highlightthickness=0, command=self.OpenToolbarAnimation)
 
-        connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
-        base.execute_query(connection, "update accounts SET time_event=0, weather_event=0, gmail_event=0, quote_event=0, calendar_event=0, photos_event=0, instagram_event=0 WHERE user_id = 0")
+        connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mirror")
+        base.execute_query(connection, "update user SET time_event=0, weather_event=0, gmail_event=0, quote_event=0, calendar_event=0, photos_event=0, instagram_event=0 WHERE id=1")
         connection.close()
+        print("YES")
 
         self.functions_activate = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, \
             self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
@@ -147,7 +147,7 @@ class Toolbar:
     
     def OpenPreToolbar(self):
 
-        connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
+        connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mirror")
         base.execute_query(connection, "update camera SET toolbar='on'")
         connection.close()
 
@@ -220,13 +220,13 @@ class Toolbar:
         """
         Show toolbar 
         """        
-        connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
+        connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mirror")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
             
         if toolbar_status != "on":
             
-            connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mysql_mirror")
+            connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mirror")
             base.execute_query(connection, "update camera SET toolbar='on'")
             connection.close()
 
@@ -284,13 +284,13 @@ class Toolbar:
             Frame for toolbar
         """        
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
         
         if toolbar_status != "on":
 
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             base.execute_query(connection, "update camera SET toolbar='on'")
             connection.close()
 
@@ -343,13 +343,13 @@ class Toolbar:
         Hide toolbar
         """        
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
         
         if toolbar_status != "off":
             
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             base.execute_query(connection,"update camera SET toolbar='off'")
             connection.close()
 
@@ -399,13 +399,13 @@ class Toolbar:
         toolbarFrame: Frame
             Frame for toolbar
         """
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
 
         if toolbar_status != "off":
             
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             base.execute_query(connection,"update camera SET toolbar='off'")
             connection.close()
 
@@ -508,16 +508,16 @@ class Toolbar:
             print("Bulb off!!!")
             self.bulb_on = False 
             self.bulb_on_button.config(highlightbackground="black")
-        #self.functions_activate.bulb_function(self.bulb_on)
+        self.functions_activate.light_function(self.bulb_on)
         
     def roller_shutters_up_function(self):
-        print("Roller shutter up")
+        self.functions_activate.roller_shutters_up_function()
 
     def roller_shutters_pause_function(self):
-        print("Roller shutter pause")
+        self.functions_activate.roller_shutters_pause_function()
 
     def roller_shutters_down_function(self):
-        print("Roller shutter down")
+        self.functions_activate.roller_shutters_down_function()
     
     def instagram_function(self):
         if self.instagram_on == False:
@@ -553,9 +553,10 @@ class Toolbar:
       
     def check_buttons(self):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
-        events = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event,instagram_event from accounts WHERE user_id = {RFace}")[0]
+        if RFace == 0: RFace = 1
+        events = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event,instagram_event from user WHERE id = {RFace}")[0]
         toolbar = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
 
@@ -628,9 +629,9 @@ class Toolbar:
     @staticmethod
     def displacement_function(val=False,*args):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
-        events = base.read_query(connection,f"select time_x, weather_x, gmail_x, quote_x, calendar_x, photos_x from accounts WHERE user_id = {int(RFace)}")[0]
+        events = base.read_query(connection,f"select time_x, weather_x, gmail_x, quote_x, calendar_x, photos_x from user WHERE id = {int(RFace)}")[0]
         connection.close()
 
         timeX = events[0]

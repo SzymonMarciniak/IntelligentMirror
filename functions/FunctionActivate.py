@@ -10,6 +10,7 @@ from IntelligentMirror.functions.QuoteFunction.quote_function import QuoteMain
 from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
 from IntelligentMirror.functions.PhotosFunction.photos_function import Photos
 from IntelligentMirror.applications.InstagramFunction.instargram_function import Instagram
+from IntelligentMirror.functions.LightAndRollerShutters.light_and_rollershutters import Light
 from IntelligentMirror.DataBase.data_base import DataBase
 base = DataBase()
 
@@ -57,20 +58,20 @@ class FunctionsActivateClass:
         self.calendar = Calendar(self.tk, toolbarFrame, self.calendarFrame,self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.photosFrame)
         self.photos = Photos(self.tk, toolbarFrame, self.photosFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame)
         self.instagram = Instagram(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
-        
+        self.light = Light() 
+
         self.prefix = os.getcwd()
-        self.db = f"{self.prefix}/IntelligentMirror/DataBase.json"
 
         self.instagram_open_once = False
     
     def check_functions_position(self, function, RFace):
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
 
         if RFace == None:
             RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
 
-        coor = base.read_query(connection,f"select {function}_x, {function}_y from accounts WHERE user_id={RFace}")[0]
+        coor = base.read_query(connection,f"select {function}_x, {function}_y from user WHERE id={RFace}")[0]
         connection.close()
 
         x = coor[0]
@@ -80,8 +81,8 @@ class FunctionsActivateClass:
         
     def functions_position_refresh(self, RFace):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-        data = base.read_query(connection, f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event, instagram_event from accounts WHERE user_id={RFace}")[0]
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+        data = base.read_query(connection, f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event, instagram_event from user WHERE id={RFace}")[0]
         connection.close()
 
         timeOn = data[0]
@@ -133,7 +134,7 @@ class FunctionsActivateClass:
         else:
             InstagramToRefresh = False 
 
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             base.execute_query(connection,"update camera set instagram_on = 0")
             connection.close()
 
@@ -144,8 +145,8 @@ class FunctionsActivateClass:
     
     def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh, CalendarToRefresh, PhotosToRefresh, InstagramToRefresh):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-        data = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event, instagram_event from accounts WHERE user_id=0")[0]
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+        data = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event, instagram_event from user WHERE id=1")[0]
         connection.close()
         
         PtimeOn = data[0]
@@ -208,8 +209,8 @@ class FunctionsActivateClass:
             if PinstagramOn: instagram_to_close = True
             else: instagram_to_close = False 
 
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-            instagram_to_open = base.read_query(connection,f"select instagram_event from accounts WHERE user_id={RFace}")[0][0]
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+            instagram_to_open = base.read_query(connection,f"select instagram_event from user WHERE id={RFace}")[0][0]
             connection.close()        
        
         
@@ -246,7 +247,7 @@ class FunctionsActivateClass:
             self.instagram.destroy_instagram()
         
         if to_open:
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             base.execute_query(connection,"update camera set instagram_on = 1")
             connection.close()
 
@@ -405,9 +406,24 @@ class FunctionsActivateClass:
             self.instagram.main_instargram()  
 
         else:
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             base.execute_query(connection,"update camera set instagram_on = 0")
             base.execute_query(connection,"update camera set camera_on = 1")
             connection.close()
             self.instagram.destroy_instagram()
+    
+    def light_function(self, on=True):
+        if on:
+            self.light.light_on()
+        else:
+            self.light.light_off()
+    
+    def roller_shutters_down_function(self):
+        self.light.rollerShuttersDown()
+    
+    def roller_shutters_up_function(self):
+        self.light.rollerShuttersUp()
+
+    def roller_shutters_pause_function(self):
+        self.light.rollerShuttersStop()
 

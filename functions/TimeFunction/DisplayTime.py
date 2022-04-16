@@ -57,9 +57,9 @@ class CurrentTime:
         """
         
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET time_event=1 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET time_event=1 WHERE id={RFace}")
         toolbar_status = base.read_query(connection, "select toolbar from camera")[0][0]
         connection.close()
 
@@ -99,9 +99,9 @@ class CurrentTime:
     def destroy_time(self):
     
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET time_event=0 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET time_event=0 WHERE id={RFace}")
         connection.close()
 
         for pack in self.timeFrame.pack_slaves():
@@ -120,10 +120,10 @@ class CurrentTime:
             value of "y" time position
         """
     
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         if RFace == None:
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        coor = base.read_query(connection, f"select time_x, time_y from accounts WHERE user_id={RFace}")[0]
+        coor = base.read_query(connection, f"select time_x, time_y from user WHERE id={RFace}")[0]
         connection.close()
 
         x = coor[0]
@@ -136,7 +136,7 @@ class CurrentTime:
         self.timeFrame.startX = event.x
         self.timeFrame.startY = event.y
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
         connection.close()
         
@@ -182,10 +182,10 @@ class CurrentTime:
 
     def drag_stop(self, event=None):
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET time_x={self.timeFrame.stopX} WHERE user_id={RFace}")
-        base.execute_query(connection, f"update accounts SET time_y={self.timeFrame.stopY} WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET time_x={self.timeFrame.stopX} WHERE id={RFace}")
+        base.execute_query(connection, f"update user SET time_y={self.timeFrame.stopY} WHERE id={RFace}")
         connection.close()
 
         if self.timeFrame.ToOn == True: 

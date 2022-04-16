@@ -65,9 +65,9 @@ class CurrentWeather:
         """Enables the weather display function"""
 
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET weather_event=1 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET weather_event=1 WHERE id={RFace}")
         toolbar_status = base.read_query(connection, "select toolbar from camera")[0][0]
         connection.close()
 
@@ -141,9 +141,9 @@ class CurrentWeather:
     
     def destroy_weather(self):
     
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET weather_event=0 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET weather_event=0 WHERE id={RFace}")
         connection.close()
         
         for pack in self.weatherFrame.pack_slaves():
@@ -163,10 +163,10 @@ class CurrentWeather:
         """
 
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         if RFace == None:
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        coor = base.read_query(connection, f"select weather_x, weather_y from accounts WHERE user_id={RFace}")[0]
+        coor = base.read_query(connection, f"select weather_x, weather_y from user WHERE id={RFace}")[0]
         connection.close()
 
         x = coor[0]
@@ -185,7 +185,7 @@ class CurrentWeather:
         self.weatherFrame.startY = event.y
 
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
         connection.close()
         
@@ -230,10 +230,10 @@ class CurrentWeather:
     def drag_stop(self, event=None):
 
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET weather_x={self.weatherFrame.stopX} WHERE user_id={RFace}")
-        base.execute_query(connection, f"update accounts SET weather_y={self.weatherFrame.stopY} WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET weather_x={self.weatherFrame.stopX} WHERE id={RFace}")
+        base.execute_query(connection, f"update user SET weather_y={self.weatherFrame.stopY} WHERE id={RFace}")
         connection.close()
         
         if self.weatherFrame.ToOn == True: 

@@ -39,15 +39,15 @@ class Gmail:
         From_list_2 = []
 
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
         connection.close()
             
         try: 
             if RFace != 0:
 
-                connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-                data = base.read_query(connection, f"select gmail_login, gmail_password from accounts WHERE user_id={RFace}")[0]
+                connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+                data = base.read_query(connection, f"select email, emailpassword from user WHERE id={RFace}")[0]
                 connection.close()
 
                 username = data[0]
@@ -277,16 +277,16 @@ class GmailMain:
     def main(self) -> None:
         """Function responsible for displaying gmail frame"""
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET gmail_event=1 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET gmail_event=1 WHERE id={RFace}")
         toolbar_staus = base.read_query(connection, "select toolbar from camera")[0][0]
         connection.close()
 
         gm_data = self.gmail.start() 
         if gm_data[0] and gm_data[1]:
 
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
             connection.close()
                     
@@ -320,8 +320,8 @@ class GmailMain:
             c = int(1)
             d = int(43)
 
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
-            user = base.read_query(connection, f"select name, lastname from user WHERE user_id={RFace}")[0]
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+            user = base.read_query(connection, f"select name, lastname from user WHERE id={RFace}")[0]
             connection.close()
     
             self.preGmail_Label.configure(text=f"{user[0].title()} \n {user[1].title()} ")
@@ -346,13 +346,13 @@ class GmailMain:
         
         else:
 
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
             connection.close()
 
             if RFace != 0:
 
-                connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+                connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
                 user = base.read_query(connection, f"select name, lastname from user WHERE id={RFace}")[0]
                 connection.close()
 
@@ -375,20 +375,20 @@ class GmailMain:
             
     def destroy_gmail(self):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET gmail_event=0 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET gmail_event=0 WHERE id={RFace}")
         connection.close()
 
         self.gmailFrame.place_forget()
 
     def check_position(self, RFace = None):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         if RFace == None:
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
 
-        coor = base.read_query(connection, f"select gmail_x, gmail_y from accounts WHERE user_id={RFace}")[0]
+        coor = base.read_query(connection, f"select gmail_x, gmail_y from user WHERE id={RFace}")[0]
         connection.close()
 
         x_pos = coor[0]
@@ -405,7 +405,7 @@ class GmailMain:
         self.gmailFrame.startX = event.x
         self.gmailFrame.startY = event.y
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
         connection.close()
 
@@ -448,10 +448,10 @@ class GmailMain:
 
     def drag_stop(self, event=None):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET gmail_x={self.gmailFrame.stopX} WHERE user_id={RFace}")
-        base.execute_query(connection, f"update accounts SET gmail_y={self.gmailFrame.stopY} WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET gmail_x={self.gmailFrame.stopX} WHERE id={RFace}")
+        base.execute_query(connection, f"update user SET gmail_y={self.gmailFrame.stopY} WHERE id={RFace}")
         connection.close()
 
         if self.gmailFrame.ToOn == True: 

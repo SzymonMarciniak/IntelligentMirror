@@ -40,16 +40,16 @@ class Photos:
 
     def takePhotos(self):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         base.execute_query(connection, "update camera SET photo=1")
         connection.close()
     
     
     def photos(self):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update accounts SET photos_event=1 WHERE user_id={RFace}")
+        base.execute_query(connection, f"update user SET photos_event=1 WHERE id={RFace}")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
 
@@ -74,9 +74,9 @@ class Photos:
 
     def destroy_photos(self):
         
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        base.execute_query(connection,f"update accounts SET photos_event=0 WHERE user_id={RFace}")
+        base.execute_query(connection,f"update user SET photos_event=0 WHERE id={RFace}")
         connection.close()
         
         for pack in self.photosFrame.place_slaves():
@@ -96,10 +96,10 @@ class Photos:
         """
 
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         if RFace == None:
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-        coor = base.read_query(connection, f"select photos_x, photos_y from accounts WHERE user_id={RFace}")[0]
+        coor = base.read_query(connection, f"select photos_x, photos_y from user WHERE id={RFace}")[0]
         connection.close()
 
         x = coor[0]
@@ -116,7 +116,7 @@ class Photos:
 
     def drag_start_frame(self, event):
 
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         self.toolbar_event = base.read_query(connection, "select toolbar from camera")[0][0]
         connection.close()
 
@@ -170,10 +170,10 @@ class Photos:
 
         if self.toolbar_event == "on":
             
-            connection = base.create_db_connection("localhost","szymon","dzbanek","mysql_mirror")
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-            base.execute_query(connection, f"update accounts SET photos_x={self.photosFrame.stopX} WHERE user_id={RFace}")
-            base.execute_query(connection, f"update accounts SET photos_y={self.photosFrame.stopY} WHERE user_id={RFace}")
+            base.execute_query(connection, f"update user SET photos_x={self.photosFrame.stopX} WHERE id={RFace}")
+            base.execute_query(connection, f"update user SET photos_y={self.photosFrame.stopY} WHERE id={RFace}")
             connection.close()
 
             if self.photosFrame.ToOn == True: 
