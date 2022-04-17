@@ -13,7 +13,7 @@ prefix = os.getcwd()
 
 class Instagram:
     def __init__(self, tk: Frame = None, toolbarFrame:Frame = None ,timeFrame:Frame = None, weatherFrame:Frame = None,\
-            gmailFrame: Frame = None, quoteFrame: Frame = None, calendarFrame:Frame = None, photosFrame:Frame = None) -> None:
+            gmailFrame: Frame = None, quoteFrame: Frame = None, calendarFrame:Frame = None, photosFrame:Frame = None, spotifyFrame:Frame = None) -> None:
 
         self.tk = tk
         self.timeFrame = timeFrame
@@ -23,6 +23,7 @@ class Instagram:
         self.quoteFrame = quoteFrame
         self.calendarFrame = calendarFrame
         self.photosFrame = photosFrame 
+        self.spotifyFrame = spotifyFrame
 
         self.coord = None
         self.scrolling_on = "close" 

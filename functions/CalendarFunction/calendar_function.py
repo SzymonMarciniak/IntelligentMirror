@@ -14,7 +14,7 @@ connection_data.close()
 
 class Calendar:
     def __init__(self, tk: Frame, toolbarFrame:Frame , calendarFrame: LabelFrame, timeFrame:Frame = None, weatherFrame:Frame = None,\
-         gmailFrame: Frame = None, quoteFrame: Frame = None, photosFrame:Frame = None) -> None:
+         gmailFrame: Frame = None, quoteFrame: Frame = None, photosFrame:Frame = None, spotifyFrame: Frame= None) -> None:
 
         self.tk = tk
         self.timeFrame = timeFrame
@@ -24,6 +24,7 @@ class Calendar:
         self.quoteFrame = quoteFrame
         self.calendarFrame = calendarFrame 
         self.photosFrame = photosFrame
+        self.spotifyFrame = spotifyFrame
 
         self.calendar_header = Label(self.calendarFrame, text="Calendar", font=("Arial", 30), bg="black", fg="white")
 
@@ -195,7 +196,7 @@ class Calendar:
             self.calendarFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, \
-                self.gmailFrame, self.quoteFrame,self.calendarFrame,self.photosFrame, NoMove="calendar")
+                self.gmailFrame, self.quoteFrame,self.calendarFrame,self.photosFrame, self.spotifyFrame, NoMove="calendar")
 
         else:
             self.calendarFrame.ToOn = False
@@ -243,4 +244,4 @@ class Calendar:
        
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
-                 self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
+                 self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame, self.spotifyFrame)

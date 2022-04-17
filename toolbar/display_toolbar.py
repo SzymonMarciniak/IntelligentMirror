@@ -20,6 +20,7 @@ class Toolbar:
                 quoteFrame: Frame,
                 calendarFrame: Frame,
                 photosFrame: Frame,
+                spotifyFrame: Frame,
                 clockIcon: PhotoImage = None,
                 sunIcon: PhotoImage = None,
                 homeIcon: PhotoImage = None,
@@ -72,6 +73,7 @@ class Toolbar:
         self.quoteFrame = quoteFrame
         self.calendarFrame = calendarFrame
         self.photosFrame = photosFrame
+        self.spotifyFrame = spotifyFrame
 
         self.clockIcon = clockIcon
         self.sunIcon = sunIcon
@@ -131,10 +133,10 @@ class Toolbar:
         connection = DataBase.create_db_connection("localhost", "szymon", "dzbanek", "mirror")
         base.execute_query(connection, "update user SET time_event=0, weather_event=0, gmail_event=0, quote_event=0, calendar_event=0, photos_event=0, instagram_event=0 WHERE id=1")
         connection.close()
-        print("YES")
+
 
         self.functions_activate = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, \
-            self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
+            self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame, self.spotifyFrame)
 
         self.check_buttons()
     
@@ -230,7 +232,7 @@ class Toolbar:
             base.execute_query(connection, "update camera SET toolbar='on'")
             connection.close()
 
-            time, weather, gmail, quote, calendar, photos = self.displacement_function()
+            time, weather, gmail, quote, calendar, photos, spotify = self.displacement_function()
 
             y_pos= 200
 
@@ -266,6 +268,11 @@ class Toolbar:
                     Cpx = self.photosFrame.winfo_x()
                     if Cpx < 210:
                         self.photosFrame.place(x=x_pos+Cpx+200)
+                
+                if spotify:
+                    Spx = self.spotifyFrame.winfo_x()
+                    if Spx < 210:
+                        self.spotifyFrame.place(x=x_pos+Spx+200)
 
                 self.toolbarFrame.update()
             self.arrow_button.config(image=self.leftArrow, command=self.HideToolbarAnimation)
@@ -275,7 +282,7 @@ class Toolbar:
         
     
     def OpenToolbarAnimation_DF(toolbarFrame: Frame, timeFrame: Frame = None, weatherFrame: Frame = None, \
-        gmailFrame: Frame = None, quoteFrame: Frame = None, calendarFrame:Frame = None, photosFrame:Frame = None) -> None:
+        gmailFrame: Frame = None, quoteFrame: Frame = None, calendarFrame:Frame = None, photosFrame:Frame = None, spotifyFrame: Frame = None) -> None:
         """
         Show toolbar from diffrent file
         Paramets
@@ -294,7 +301,7 @@ class Toolbar:
             base.execute_query(connection, "update camera SET toolbar='on'")
             connection.close()
 
-            time, weather, gmail, quote, calendar, photos = Toolbar.displacement_function()
+            time, weather, gmail, quote, calendar, photos, spotify = Toolbar.displacement_function()
 
             for x_pos in range(-200,1,10):
                 toolbarFrame.place(x=x_pos)
@@ -335,6 +342,12 @@ class Toolbar:
                         if Cpx < 210:
                             photosFrame.place(x=x_pos+Cpx+200)
 
+                if spotifyFrame:
+                    if spotify:
+                        Spx = spotifyFrame.winfo_x()
+                        if Spx < 210:
+                            spotifyFrame.place(x=x_pos+Spx+200)
+
                 toolbarFrame.update()
             
         
@@ -353,7 +366,7 @@ class Toolbar:
             base.execute_query(connection,"update camera SET toolbar='off'")
             connection.close()
 
-            time,timeX, weather,weatherX, gmail,gmailX, quote, quoteX, calendar, calendarX, photos, photosX = self.displacement_function(val=True)
+            time,timeX, weather,weatherX, gmail,gmailX, quote, quoteX, calendar, calendarX, photos, photosX,spotify, spotifyX = self.displacement_function(val=True)
 
             y_pos= 200
 
@@ -383,6 +396,10 @@ class Toolbar:
                 if photos:
                     if photosX < 210:
                         self.photosFrame.place(x=x_pos+photosX+211)
+                
+                if spotify:
+                    if photosX < 210:
+                        self.spotifyFrame.place(x=x_pos+spotifyX + 211)
 
                 self.toolbarFrame.update()
 
@@ -391,7 +408,7 @@ class Toolbar:
         
             
     def HideToolbarAnimation_DF(toolbarFrame: Frame, timeFrame: Frame = None, weatherFrame: Frame = None, \
-        gmailFrame: Frame = None,quoteFrame: Frame = None,calendarFrame:Frame=None, photosFrame:Frame = None, NoMove = None) -> None:
+        gmailFrame: Frame = None,quoteFrame: Frame = None,calendarFrame:Frame=None, photosFrame:Frame = None, spotifyFrame: Frame = None, NoMove = None) -> None:
         """
         Hide toolbar from diffrent file
         Paramets
@@ -412,7 +429,7 @@ class Toolbar:
             for x_pos in range(1,-211,-3):
                 toolbarFrame.place(x=x_pos)
 
-                time,timeX, weather,weatherX, gmail,gmailX, quote, quoteX, calendar, calendarX, photos, photosX = Toolbar.displacement_function(val=True)
+                time,timeX, weather,weatherX, gmail,gmailX, quote, quoteX, calendar, calendarX, photos, photosX, spotify, spotifyX = Toolbar.displacement_function(val=True)
                 if timeFrame:
                     if not NoMove == "time":
                         if time:
@@ -443,6 +460,12 @@ class Toolbar:
                             if photos:
                                 if photosX < 210:
                                     photosFrame.place(x=x_pos+photosX+211)
+                    
+                    if not NoMove == "spotify":
+                        if spotify:
+                            if spotifyX < 210:
+                                spotifyFrame.place(x=x_pos+spotifyX+211)
+
 
                 toolbarFrame.update()
             
@@ -539,7 +562,7 @@ class Toolbar:
             print("Close spotify")
             self.spotify_on = False 
             self.spotify_button.config(highlightbackground="black")
-        #self.functions_activate.spotify_function(self.spotify_on)
+        self.functions_activate.spotify_function(self.spotify_on)
     
     def photos_function(self):
         if self.photos_on == False:
@@ -556,7 +579,7 @@ class Toolbar:
         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
         if RFace == 0: RFace = 1
-        events = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event,instagram_event from user WHERE id = {RFace}")[0]
+        events = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event,instagram_event, spotify_event from user WHERE id = {RFace}")[0]
         toolbar = base.read_query(connection,"select toolbar from camera")[0][0]
         connection.close()
 
@@ -567,6 +590,7 @@ class Toolbar:
         calendar = events[4]
         photos = events[5]
         instagram = events[6]
+        spotify = events[7]
 
 
         if time:
@@ -617,6 +641,13 @@ class Toolbar:
         else:
             self.instagram_button.config(highlightbackground="black")
             self.instagram_on = False 
+        
+        if spotify:
+            self.spotify_button.config(highlightbackground="blue")
+            self.spotify_on = True
+        else:
+            self.spotify_button.config(highlightbackground="black")
+            self.spotify_on = False 
 
 
         if toolbar == "on":
@@ -631,7 +662,7 @@ class Toolbar:
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
-        events = base.read_query(connection,f"select time_x, weather_x, gmail_x, quote_x, calendar_x, photos_x from user WHERE id = {int(RFace)}")[0]
+        events = base.read_query(connection,f"select time_x, weather_x, gmail_x, quote_x, calendar_x, photos_x, spotify_x from user WHERE id = {int(RFace)}")[0]
         connection.close()
 
         timeX = events[0]
@@ -640,8 +671,9 @@ class Toolbar:
         quoteX = events[3]
         calendarX = events[4]
         photosX = events[5]
+        spotifyX = events[6]
 
-        Dtime, Dweather, Dgmail, Dquote, Dcalendar, Dphotos = False, False, False, False, False, False
+        Dtime, Dweather, Dgmail, Dquote, Dcalendar, Dphotos, Dspotify = False, False, False, False, False, False, False 
         if timeX <= 200:
             Dtime = True 
         if weatherX <=200:
@@ -654,9 +686,11 @@ class Toolbar:
             Dcalendar = True
         if photosX <= 210:
             Dphotos = True
+        if spotifyX <= 210:
+            Dspotify = True 
         
-        if val: return Dtime,timeX, Dweather,weatherX, Dgmail,gmailX, Dquote,quoteX, Dcalendar, calendarX, Dphotos, photosX
-        else: return Dtime, Dweather, Dgmail, Dquote, Dcalendar, Dphotos
+        if val: return Dtime,timeX, Dweather,weatherX, Dgmail,gmailX, Dquote,quoteX, Dcalendar, calendarX, Dphotos, photosX, Dspotify, spotifyX
+        else: return Dtime, Dweather, Dgmail, Dquote, Dcalendar, Dphotos, Dspotify
     
 
         

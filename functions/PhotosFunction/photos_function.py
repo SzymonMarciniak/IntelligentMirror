@@ -11,7 +11,7 @@ icons_prefix = f"{prefix}/IntelligentMirror/icons/"
 
 class Photos:
     def __init__(self,tk: Frame, toolbarFrame:Frame,photosFrame:Frame ,timeFrame:Frame = None, weatherFrame:Frame = None,\
-         gmailFrame: Frame = None, quoteFrame: Frame = None, calendarFrame:Frame = None) -> None:
+         gmailFrame: Frame = None, quoteFrame: Frame = None, calendarFrame:Frame = None, spotifyFrame:Frame = None) -> None:
 
         self.tk = tk
         self.timeFrame = timeFrame
@@ -21,6 +21,7 @@ class Photos:
         self.quoteFrame = quoteFrame
         self.calendarFrame = calendarFrame
         self.photosFrame = photosFrame
+        self.spotifyFrame= spotifyFrame
 
         self.mainButton = Button(self.photosFrame,bg="gray", command=self.takePhotos)
 
@@ -128,7 +129,7 @@ class Photos:
             self.photosFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
-                 self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame,NoMove="photos")
+                 self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame, self.spotifyFrame, NoMove="photos")
 
         else:
             #self.photosFrame.ToOn = False
@@ -180,7 +181,7 @@ class Photos:
         
                 from IntelligentMirror.toolbar.display_toolbar import Toolbar
                 Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
-                    self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame)
+                    self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame, self.spotifyFrame)
 
 
 

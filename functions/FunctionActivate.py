@@ -11,6 +11,7 @@ from IntelligentMirror.functions.CalendarFunction.calendar_function import Calen
 from IntelligentMirror.functions.PhotosFunction.photos_function import Photos
 from IntelligentMirror.applications.InstagramFunction.instargram_function import Instagram
 from IntelligentMirror.functions.LightAndRollerShutters.light_and_rollershutters import Light
+from IntelligentMirror.applications.SpotifyFunction.spotify_function import Spotify
 from IntelligentMirror.DataBase.data_base import DataBase
 base = DataBase()
 
@@ -26,7 +27,8 @@ class FunctionsActivateClass:
                 gmailFrame: Frame,
                 quoteFrame: Frame,
                 calendarFrame: Frame,
-                photosFrame:Frame) -> None:
+                photosFrame:Frame,
+                spotifyFrame: Frame) -> None:
 
         """
         Parametrs
@@ -50,15 +52,17 @@ class FunctionsActivateClass:
         self.quoteFrame = quoteFrame
         self.calendarFrame = calendarFrame
         self.photosFrame = photosFrame
+        self.spotifyFrame = spotifyFrame
 
-        self.time = CurrentTime(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
-        self.weather = CurrentWeather(self.tk, toolbarFrame, self.weatherFrame, self.timeFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
-        self.gmail = GmailMain(self.tk, toolbarFrame, self.gmailFrame ,self.timeFrame, self.weatherFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
-        self.quote = QuoteMain(self.tk, toolbarFrame, self.quoteFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.calendarFrame, self.photosFrame)
-        self.calendar = Calendar(self.tk, toolbarFrame, self.calendarFrame,self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.photosFrame)
-        self.photos = Photos(self.tk, toolbarFrame, self.photosFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame)
-        self.instagram = Instagram(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
+        self.time = CurrentTime(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame, self.spotifyFrame)
+        self.weather = CurrentWeather(self.tk, toolbarFrame, self.weatherFrame, self.timeFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame, self.spotifyFrame)
+        self.gmail = GmailMain(self.tk, toolbarFrame, self.gmailFrame ,self.timeFrame, self.weatherFrame, self.quoteFrame, self.calendarFrame, self.photosFrame, self.spotifyFrame)
+        self.quote = QuoteMain(self.tk, toolbarFrame, self.quoteFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.calendarFrame, self.photosFrame, self.spotifyFrame)
+        self.calendar = Calendar(self.tk, toolbarFrame, self.calendarFrame,self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.photosFrame, self.spotifyFrame)
+        self.photos = Photos(self.tk, toolbarFrame, self.photosFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.spotifyFrame)
+        self.instagram = Instagram(self.tk, toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame, self.spotifyFrame)
         self.light = Light() 
+        self.spotify = Spotify(self.tk, toolbarFrame, self.spotifyFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
 
         self.prefix = os.getcwd()
 
@@ -82,7 +86,7 @@ class FunctionsActivateClass:
     def functions_position_refresh(self, RFace):
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
-        data = base.read_query(connection, f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event, instagram_event from user WHERE id={RFace}")[0]
+        data = base.read_query(connection, f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event, instagram_event, spotify_event from user WHERE id={RFace}")[0]
         connection.close()
 
         timeOn = data[0]
@@ -92,6 +96,7 @@ class FunctionsActivateClass:
         calendarOn = data[4]
         photosOn = data[5]
         instagramOn = data[6]
+        spotifyOn = data[7]
 
         if timeOn:
             TimeToRefresh = True
@@ -129,6 +134,12 @@ class FunctionsActivateClass:
             PhotosToRefresh = False 
             self.photos.destroy_photos() 
         
+        if spotifyOn:
+            SpotifyToRefresh = True 
+        else:
+            SpotifyToRefresh = False 
+            self.spotify.destroy_spotify()
+        
         if instagramOn:
             InstagramToRefresh = True
         else:
@@ -141,12 +152,12 @@ class FunctionsActivateClass:
             self.instagram.destroy_instagram() 
         
       
-        self.function_refreshing(RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh,CalendarToRefresh, PhotosToRefresh, InstagramToRefresh)
+        self.function_refreshing(RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh,CalendarToRefresh, PhotosToRefresh, InstagramToRefresh, SpotifyToRefresh)
     
-    def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh, CalendarToRefresh, PhotosToRefresh, InstagramToRefresh):
+    def function_refreshing(self, RFace, TimeToRefresh, WeatherToRefresh, GmailToRefresh, QuoteToRefresh, CalendarToRefresh, PhotosToRefresh, InstagramToRefresh, SpotifyToRefresh):
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
-        data = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event, instagram_event from user WHERE id=1")[0]
+        data = base.read_query(connection,f"select time_event, weather_event, gmail_event, quote_event, calendar_event, photos_event, instagram_event, spotify_event from user WHERE id=1")[0]
         connection.close()
         
         PtimeOn = data[0]
@@ -156,6 +167,7 @@ class FunctionsActivateClass:
         PcalendarOn = data[4]
         PphotosOn = data[5]
         PinstagramOn = data[6]
+        PspotifyOn = data[7]
         
         smoothening = 11
 
@@ -204,6 +216,15 @@ class FunctionsActivateClass:
                 self.photos_function()
         else:
             self.clocX_photos, self.clocY_photos = 0,0
+
+        endX_spotify, endY_spotify = self.check_functions_position("spotify", RFace)
+        self.plocX_spotify, self.plocY_spotify = 0,0
+        if SpotifyToRefresh:
+            self.clocX_spotify, self.clocY_spotify = 1,1
+            if not PspotifyOn:
+                self.spotify_function()
+        else:
+            self.clocX_spotify, self.clocY_spotify = 0,0
         
         if InstagramToRefresh:
             if PinstagramOn: instagram_to_close = True
@@ -241,6 +262,11 @@ class FunctionsActivateClass:
         if InstagramToRefresh:
             InstagramThread = threading.Thread(target=lambda:self.InstagramRefreshing(instagram_to_close, instagram_to_open))
             InstagramThread.start()
+        
+        if SpotifyToRefresh:
+            SpotifyThread = threading.Thread(target=lambda:self.SpotifyRefreshing(smoothening, endX_spotify, endY_spotify))
+            SpotifyThread.start()
+    
     
     def InstagramRefreshing(self, to_close, to_open):
         if to_close:
@@ -354,6 +380,26 @@ class FunctionsActivateClass:
         
         self.photosFrame.place_configure(x=endX_photos,y=endY_photos)
         self.photosFrame.update()
+    
+    
+    def SpotifyRefreshing(self, smoothening, endX_spotify, endY_spotify):
+        while int(self.plocX_spotify) != int(self.clocX_spotify) and int(self.plocY_spotify) != int(self.clocY_spotify):
+            self.plocX_spotify = self.spotifyFrame.winfo_x()
+            self.plocY_spotify = self.spotifyFrame.winfo_y()
+
+            self.clocX_spotify = self.plocX_spotify + (endX_spotify - self.plocX_spotify) / smoothening
+            self.clocY_spotify = self.plocY_spotify + (endY_spotify - self.plocY_spotify) / smoothening
+
+            x_spotify = int(self.clocX_spotify)
+            y_spotify = int(self.clocY_spotify)
+
+            self.spotifyFrame.place_configure(x=x_spotify,y=y_spotify)
+            self.spotifyFrame.update()
+
+            time.sleep(0.015)
+
+        self.spotifyFrame.place_configure(x=endX_spotify,y=endY_spotify)
+        self.spotifyFrame.update() 
         
 
 
@@ -426,4 +472,10 @@ class FunctionsActivateClass:
 
     def roller_shutters_pause_function(self):
         self.light.rollerShuttersStop()
+    
+    def spotify_function(self, on=True) -> None:
+        if on:
+            self.spotify.main_spotify()
+        else:
+            self.spotify.destroy_spotify()
 

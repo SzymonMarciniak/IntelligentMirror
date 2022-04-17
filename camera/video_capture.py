@@ -15,6 +15,7 @@ from IntelligentMirror.functions.GmailFunction.gmail_function import GmailMain
 from IntelligentMirror.functions.CalendarFunction.calendar_function import Calendar
 from IntelligentMirror.functions.PhotosFunction.photos_function import Photos
 from IntelligentMirror.applications.InstagramFunction.instargram_function import Instagram
+from IntelligentMirror.applications.SpotifyFunction.spotify_function import Spotify
 from IntelligentMirror.DataBase.data_base import DataBase
 base = DataBase()
 
@@ -24,7 +25,7 @@ pyautogui.FAILSAFE = False
 
 class Camera:
     def __init__(self, tk:Frame, toolbarFrame:Frame, timeFrame:Frame, weatherFrame:Frame, gmailFrame:Frame,\
-         quoteFrame:Frame,calendarFrame:Frame, photosFrame: Frame, no_finge_icon=None) -> None:
+         quoteFrame:Frame,calendarFrame:Frame, photosFrame: Frame, spotifyFrame:Frame, no_finge_icon=None) -> None:
         
         self.cap = cv2.VideoCapture(0)   
         self.toolbarFrame = toolbarFrame
@@ -35,6 +36,8 @@ class Camera:
         self.quoteFrame = quoteFrame
         self.calendarFrame = calendarFrame
         self.photosFrame = photosFrame
+        self.spotifyFrame = spotifyFrame
+
         self.no_finger_icon = no_finge_icon
 
         if self.no_finger_icon:
@@ -47,6 +50,7 @@ class Camera:
         self.Calendar = Calendar(self.tk, self.toolbarFrame, self.calendarFrame) 
         self.Photos = Photos(self.tk, self.toolbarFrame, self.photosFrame)
         self.Instagram = Instagram(self.tk, self.toolbarFrame)
+        self.Spotify = Spotify(self.tk, self.toolbarFrame, self.spotifyFrame)
 
         prefix = os.getcwd()
         self.prefix = f"{prefix}/IntelligentMirror/camera"
@@ -90,7 +94,7 @@ class Camera:
         from IntelligentMirror.functions.FunctionActivate import FunctionsActivateClass
     
         refresh = FunctionsActivateClass(self.tk, self.toolbarFrame, self.timeFrame, self.weatherFrame, \
-            self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
+            self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame, self.spotifyFrame)
 
         refresh.functions_position_refresh(self.RFace)
        
@@ -228,6 +232,7 @@ class Camera:
         self.B = False 
         self.P = False
         self.I = False 
+        self.S = False 
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         id = base.read_query(connection, "select actuall_user from camera")[0][0]
@@ -344,6 +349,11 @@ class Camera:
                             self.Px,self.Py = self.photosFrame.winfo_x(), self.photosFrame.winfo_y()
                             self.photosFrame.place_forget() 
                         
+                        if self.spotifyFrame:
+                            self.S = True
+                            self.Sx,self.Sy = self.spotifyFrame.winfo_x(), self.spotifyFrame.winfo_y()
+                            self.spotifyFrame.place_forget() 
+                        
                         if self.no_finger_button:
                             self.B = True
                             self.no_finger_button.place_forget()
@@ -383,7 +393,7 @@ class Camera:
             if toolbar_on == "on":
                 from IntelligentMirror.toolbar.display_toolbar import Toolbar
                 Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, self.gmailFrame, self.quoteFrame, \
-                    self.calendarFrame, self.photosFrame)
+                    self.calendarFrame, self.photosFrame, self.spotifyFrame)
             
             if base.read_query(connection,f"select instagram_event from user WHERE id={RFace}")[0][0] ==1:
                 base.execute_query(connection, "UPDATE camera SET instagram_on=1")
@@ -435,6 +445,10 @@ class Camera:
         if self.P:
             self.P = False 
             self.photosFrame.place(x=self.Px, y=self.Py, width=150, height=150) 
+        
+        if self.S:
+            self.S = False 
+            self.spotifyFrame.place(x=self.Sx, y=self.Sy, width=150, height=150) 
         
         if self.B:
             self.B = False 

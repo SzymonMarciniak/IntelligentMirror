@@ -12,7 +12,7 @@ prefix_ = os.getcwd()
 class CurrentWeather:
     """This class is responsible for correctly displaying the current weather"""
     def __init__(self,tk:Frame, toolbarFrame:Frame, weatherFrame: Frame, timeFrame: Frame = None,\
-         gmailFrame: Frame = None, quoteFrame:Frame = None, calendarFrame:Frame = None, photosFrame:Frame= None) -> None:
+         gmailFrame: Frame = None, quoteFrame:Frame = None, calendarFrame:Frame = None, photosFrame:Frame= None, spotifyFrame:Frame= None) -> None:
         """
         Parametrs
         ---------
@@ -32,6 +32,7 @@ class CurrentWeather:
         self.quoteFrame = quoteFrame
         self.calendarFrame = calendarFrame
         self.photosFrame = photosFrame
+        self.spotifyFrame = spotifyFrame
 
         self.temp = Label(self.weatherFrame, font=("Arial", 50))
         self.humidity = Label(self.weatherFrame, font=("Arial", 25))
@@ -193,7 +194,7 @@ class CurrentWeather:
             self.weatherFrame.ToOn = True 
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
-                 self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame,NoMove="weather")
+                 self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame, self.spotifyFrame, NoMove="weather")
 
         else:
             self.weatherFrame.ToOn = False
@@ -240,4 +241,4 @@ class CurrentWeather:
        
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame,\
-                 self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame)
+                 self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame, self.spotifyFrame)

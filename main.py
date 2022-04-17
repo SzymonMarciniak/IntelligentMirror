@@ -26,7 +26,8 @@ weatherFrame = LabelFrame(tk, bg="black", bd=0)
 gmailFrame = LabelFrame(tk, bg="black", bd=0)
 quoteFrame = LabelFrame(tk, bg="black", bd=0)
 calendarFrame = LabelFrame(tk, bg="black", bd=0)
-photosFrame = LabelFrame(tk, bg="gray", bd=1)
+photosFrame = LabelFrame(tk, bg="black", bd=1)
+spotifyFrame = LabelFrame(tk, bg="black", bd=0)
 
 
 clockIcon = PhotoImage(file=f"{icon_prefix}clock.png") 
@@ -58,9 +59,9 @@ no_move_icon = no_move_icon.resize((120,120))
 no_move_icon = PIL.ImageTk.PhotoImage(no_move_icon)
 
                 
-camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame ,calendarFrame,photosFrame, no_move_icon)
+camera = Camera(tk, toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame ,calendarFrame,photosFrame,spotifyFrame, no_move_icon)
 
-toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame, calendarFrame, photosFrame, \
+toolbar = Toolbar(tk,toolbarFrame, timeFrame, weatherFrame, gmailFrame, quoteFrame, calendarFrame, photosFrame, spotifyFrame, \
     clockIcon, sunIcon, homeIcon, calendarIcon, quoteIcon, left_arrow, right_arrow, gmailIcon,returnIcon, test1Icon, test2Icon, \
         bulbOnIcon, rollerShuttersUpIcon, pauseIcon, rollerShuttersDownIcon, instagramIcon, spotifyIcon, cameraIcon)
 
