@@ -33,6 +33,8 @@ class Photos:
         self.mainButton.bind("<B1-Motion>", self.drag_motion_frame)
         self.mainButton.bind("<ButtonRelease-1>", self.drag_stop)
 
+        self.to_move = False 
+
     def get_image(self):
         photos_icon_old = Image.open(f"{icons_prefix}camera.png")
         photos_icon_new = photos_icon_old.resize((140,140))
@@ -42,7 +44,9 @@ class Photos:
     def takePhotos(self):
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
-        base.execute_query(connection, "update camera SET photo=1")
+        toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
+        if toolbar_status == "off":
+            base.execute_query(connection, "update camera SET photo=1")
         connection.close()
     
     
@@ -91,9 +95,9 @@ class Photos:
         Returns
         -------
         x: int
-            Value of "x" time position
+            Value of "x" photos position
         y: int 
-            value of "y" time position
+            value of "y" photos position
         """
 
 
@@ -122,7 +126,7 @@ class Photos:
         connection.close()
 
         if self.toolbar_event == "on":
-
+            self.to_move = True 
             self.photosFrame.startX = event.x
             self.photosFrame.startY = event.y
 
@@ -133,13 +137,12 @@ class Photos:
 
         else:
             #self.photosFrame.ToOn = False
-            self.photos()
-
+            self.to_move = False 
 
     
     
     def drag_motion_frame(self, event):
-        if self.toolbar_event == "on":
+        if self.to_move:
             x = self.photosFrame.winfo_x() - self.photosFrame.startX + event.x
             y = self.photosFrame.winfo_y() - self.photosFrame.startY + event.y
 
@@ -169,7 +172,7 @@ class Photos:
     
     def drag_stop(self, event=None):
 
-        if self.toolbar_event == "on":
+        if self.to_move:
             
             connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
             RFace = base.read_query(connection, "select actuall_user from camera")[0][0]

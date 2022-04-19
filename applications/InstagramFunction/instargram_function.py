@@ -26,8 +26,8 @@ class Instagram:
         self.spotifyFrame = spotifyFrame
 
         self.coord = None
-        self.scrolling_on = "close" 
-        self.scrolling_once = False
+        os.environ["scrolling_on"] = "close"
+        os.environ["scrolling_once"] = "False"
         self.go_click = False 
         self.wait_time = 5
 
@@ -58,9 +58,9 @@ class Instagram:
                 instagram_on = base.read_query(connection, "select instagram_on from camera")[0][0]
                 connection.close()
 
-                print(f"inst: {instagram_on},,,,,,, {self.scrolling_on}")
+                print(f"inst: {instagram_on},,,,,,, {os.environ['scrolling_on']}")
                 if toolbar_on == "off" and instagram_on == 1:
-                    print(self.scrolling_on, self.scrolling_once)
+                    print(os.environ["scrolling_on"], os.environ["scrolling_once"])
                     print("LOKJHGB")
                     
                     connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
@@ -70,9 +70,9 @@ class Instagram:
                     instagram_data = base.read_query(connection, f"select instagram_login, instagram_password from user WHERE id={RFace}")[0]
                     connection.close()
                     
-                    if self.scrolling_on == "close":
+                    if os.environ["scrolling_on"] == "close":
                         print("STARTTTT")
-                        self.scrolling_once = True
+                        os.environ["scrolling_once"] = "True"
 
                         time.sleep(2)
                         pyautogui.click(1400, 320)
@@ -90,17 +90,16 @@ class Instagram:
                         time.sleep(0.7)             #Scrolling
                         pyautogui.moveTo(1695, 925)
                         time.sleep(2)
-                        pyautogui.click(clicks=11, interval=0.1)
-                        self.scrolling_on = "open" 
+                        os.environ["scrolling_on"] = "open"
                     
-                    elif self.scrolling_on == "again":
+                    elif os.environ["scrolling_on"] == "again":
                         time.sleep(2)
                         pyautogui.moveTo(1695, 925)
                         print("AAAGAIN")
-                        self.scrolling_on = "open" 
+                        os.environ["scrolling_on"] = "open"
                     
                     else:
-                        while instagram_on and self.scrolling_on == "open":
+                        while instagram_on and os.environ["scrolling_on"] == "open":
                             self.coord = pyautogui.locateCenterOnScreen(f"{prefix}/IntelligentMirror/applications/InstagramFunction/kropki.png", confidence=0.65)
 
                             if self.coord != None:
@@ -108,8 +107,6 @@ class Instagram:
                                 how_many_click = ((self.coord[1] - 270) // 40) +1
                                 if how_many_click < 0:
                                     how_many_click = -how_many_click
-                                # elif how_many_click > 10:
-                                #     how_many_click = how_many_click // 2
 
                                 if self.coord[0] in self.xx and self.coord[1] in self.yy:
                                     connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
@@ -122,11 +119,19 @@ class Instagram:
                                     pyautogui.click(clicks=18, interval=0.1)
                                 else:
                                     print(how_many_click)
+                                    connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+                                    base.execute_query(connection, "update camera SET camera_on=0")
                                     pyautogui.click(clicks=how_many_click, interval=0.1)
+                                    base.execute_query(connection, "update camera SET camera_on=1")
+                                    connection.close()
                                     time.sleep(0.2)
                             else:
+                                connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+                                base.execute_query(connection, "update camera SET camera_on=0")
                                 pyautogui.click(clicks=8, interval=0.1)
                                 time.sleep(0.2)
+                                base.execute_query(connection, "update camera SET camera_on=1")
+                                connection.close()
                             
                             connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
                             instagram_on = base.read_query(connection, "select instagram_on from camera")[0][0]
@@ -139,45 +144,45 @@ class Instagram:
                     base.execute_query(connection, "update camera SET camera_on=1")
                     connection.close()
 
-                    print(self.scrolling_on, self.scrolling_once, instagram_on, toolbar_on)
+                    print(os.environ["scrolling_on"], os.environ["scrolling_once"], instagram_on, toolbar_on)
 
-                    if self.scrolling_on == "open" and self.scrolling_once:
+                    if os.environ["scrolling_on"] == "open" and os.environ["scrolling_once"] == "True":
                         print("1111")
-                        self.scrolling_on = "again"
+                        os.environ["scrolling_on"] = "again"
 
                         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
                         base.execute_query(connection, "update camera SET camera_on=1")
                         connection.close()
 
-                    elif self.scrolling_on == "close":
+                    elif os.environ["scrolling_on"] == "close":
                         print("222")
                         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
                         base.execute_query(connection, "update camera SET camera_on=1")
                         connection.close()
-                        self.scrolling_on = "close"
-                        self.scrolling_once = False
+                        os.environ["scrolling_on"] = "close"
+                        os.environ["scrolling_once"] = "False"
 
-                    elif self.scrolling_on == "again": print(f"444444444444444 {self.scrolling_on, self.scrolling_once, instagram_on, toolbar_on}") 
+                    elif os.environ["scrolling_on"] == "again": print(f"444444444444444 {os.environ['scrolling_on'], os.environ['scrolling_once'], instagram_on, toolbar_on}") 
 
                     else: 
                         print("333333")
-                        self.scrolling_on, self.scrolling_once = "close", False 
+                        os.environ["scrolling_on"], os.environ["scrolling_once"] = "close", "False" 
 
-                    print(self.scrolling_on)
+                    print(os.environ["scrolling_on"])
                     time.sleep(2) 
                     scrolling() 
 
             if os.environ.get("was_instagram_open") == "False":
                 os.environ["was_instagram_open"] = "True"
-                self.scrolling_on, self.scrolling_once = "close", False 
+                os.environ["scrolling_on"], os.environ["scrolling_once"] = "close", "False" 
                 self.t3 = threading.Thread(target=scrolling)
                 self.t3.start()
 
         lounch()
     
     def destroy_instagram(self):
-        self.scrolling_on = "close" 
-        self.scrolling_once = False 
+        os.environ["scrolling_on"] = "close"
+        os.environ["scrolling_once"] = "False" 
         self.coord = None
         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
@@ -193,4 +198,4 @@ class Instagram:
 
         os.system("pkill istekram")
 
-        print(self.scrolling_on, self.scrolling_once)
+        print(os.environ["scrolling_on"], os.environ["scrolling_once"])

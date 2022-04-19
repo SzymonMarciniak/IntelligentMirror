@@ -1,16 +1,13 @@
 from tkinter import * 
 import os
+from datetime import datetime
+
 
 from IntelligentMirror.DataBase.data_base import DataBase
 
 prefix = os.getcwd()
 
 base = DataBase()
-
-connection_data = base.create_db_connection("localhost","szymon", "dzbanek", "mirror")
-query = "select date, name from event"
-events = base.read_query(connection_data, query)
-connection_data.close()
 
 class Calendar:
     def __init__(self, tk: Frame, toolbarFrame:Frame , calendarFrame: LabelFrame, timeFrame:Frame = None, weatherFrame:Frame = None,\
@@ -75,14 +72,40 @@ class Calendar:
 
 
     def calendarMain(self):
+        events = []
         
         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
         RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
         base.execute_query(connection, f"update user SET calendar_event=1 WHERE id={RFace}")
         toolbar_status = base.read_query(connection,"select toolbar from camera")[0][0]
+        all_events = base.read_query(connection, f"select date, name, howlong from event") #WHERE userid={RFace}")
         connection.close()
 
+        now = datetime.now()
+
+        for event in all_events:
+            event_date = str(event[0])
+
+            year = int(event_date[:4])
+            month = int(event_date[5:7])
+            day = int(event_date[8:10]) 
+
+            if month > int(now.strftime("%m")):
+                print("DATA: Dodatek")
+                m = month - int(now.strftime("%m"))
+                day += m*30
+                
+            if year == int(now.strftime("%Y")): 
+                print(f"DATA: Year, ")
+                print(int(now.strftime('%d')) + event[2], day)
+
+
+                if int(now.strftime("%d")) + event[2] >= day:
+                    events.append(event)
+
+
         x,y = Calendar.check_position(self)
+
 
         if toolbar_status == "on" and x <= 210:
             x = 210
@@ -98,7 +121,16 @@ class Calendar:
         
         if events_amount >= 1:
             event_01 = events[0]
-            event_1_date = event_01[0]
+            event_1_date = str(event_01[0])
+
+            year = int(event_1_date[:4])
+            month = int(event_1_date[5:7])
+            day = int(event_1_date[8:10])
+            print(year,month,day)
+
+
+
+
             event_1_body = event_01[1]
             self.event_1.config(text=f"{event_1_date}\n{event_1_body}", width=20)
             self.event_1.pack(side=TOP)

@@ -1,6 +1,8 @@
 import threading
 import cv2
 import face_recognition
+import PIL.Image
+import PIL.ImageTk
 import glob
 import numpy as np 
 import os 
@@ -249,7 +251,7 @@ class Camera:
         to_up = 0 
         
         if camera_on:
-            while self.no_hand < 80:
+            while self.no_hand < 80 and camera_on:
                 #try:
                     _, self.img = self.cap.read()
                     hands, self.img = detector.find_hands(self.img, draw=False)
@@ -360,9 +362,9 @@ class Camera:
 
                         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
                         RFace = base.read_query(connection, "select actuall_user from camera")[0][0]
-                        user_instagram_event = base.read_query(connection, f"select instagram_event from user WHERE id={RFace}")
+                        user_instagram_event = base.read_query(connection, f"select instagram_on from camera")
 
-                        if user_instagram_event:
+                        if user_instagram_event == 1:
                             self.I = True
                             base.execute_query(connection,"update camera set instagram_on = 0")
                             self.Instagram.destroy_instagram()
@@ -421,7 +423,23 @@ class Camera:
         self.photos = self.photos + "/" +self.user + photo_nr + ".jpg"
         print(self.photos)
 
+        time.sleep(2)
+        _, self.img = self.cap.read()
         cv2.imwrite(self.photos, self.img)
+
+        def get_image():
+            photo_icon_old = PIL.Image.open(f"{self.photos}")
+            photo_icon_new = photo_icon_old.resize((580,400))
+            return PIL.ImageTk.PhotoImage(photo_icon_new)
+
+        img = get_image()
+        canvas = Canvas(self.tk,width=580,height=400)
+        canvas.place(relx=0.35, rely=0.35)
+        canvas.create_image(0,0,anchor=NW,image=img)
+        time.sleep(5)
+        canvas.place_forget()
+
+
         if self.T:
             self.T = False 
             self.timeFrame.place(x=self.Tx, y=self.Ty)
@@ -448,7 +466,7 @@ class Camera:
         
         if self.S:
             self.S = False 
-            self.spotifyFrame.place(x=self.Sx, y=self.Sy, width=150, height=150) 
+            self.spotifyFrame.place(x=self.Sx, y=self.Sy) 
         
         if self.B:
             self.B = False 

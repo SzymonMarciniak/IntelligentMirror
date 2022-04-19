@@ -3,6 +3,8 @@ import email
 from email.header import decode_header
 from typing import List
 import os
+import time 
+import threading
 from tkinter import *
 
 from IntelligentMirror.DataBase.data_base import DataBase
@@ -37,6 +39,7 @@ class Gmail:
         Subject_list = []
         From_list = []
         From_list_2 = []
+        Body_list = []
 
 
         connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
@@ -85,6 +88,24 @@ class Gmail:
                                 if encoding == None:
                                     encoding = str("utf-8")
                                 From = From.decode(encoding)
+                            
+
+
+                            if msg.is_multipart():
+                                # iterate over email parts
+                                for part in msg.walk():
+                                    # extract content type of email
+                                    content_type = part.get_content_type()
+                                    content_disposition = str(part.get("Content-Disposition"))
+                                    try:
+                                        # get the email body
+                                        body = part.get_payload(decode=True).decode()
+                                    except:
+                                        body = " "
+
+                                    if content_type == "text/plain" and "attachment" not in content_disposition:
+                                        # print text/plain emails and skip attachments
+                                        Body_list.append(body)
 
                             From_list_2 = From.split()
                             From_list_2.pop()
@@ -94,13 +115,15 @@ class Gmail:
                             Subject_list.append(subject)
                             From_list.append(From_list_2)
                             From_list_2 = []
+
+                            
                 # print(From_list)
                 # print(Subject_list)
                 imap.close()
                 imap.logout()
 
-                return Subject_list, From_list 
-        except: return False, False 
+                return Subject_list, From_list, Body_list
+        except: return False, False , False 
         
 class GmailMain:
     """
@@ -156,77 +179,88 @@ class GmailMain:
 
         self.failed_label = Label(self.gmailFrame, bg="black", fg="white", bd=1, text="Connection\n failed", font=("", 20))
 
-        self.gmailFrame.bind("<Button-1>", self.drag_start_frame)
-        self.gmailFrame.bind("<B1-Motion>", self.drag_motion_frame)
-        self.gmailFrame.bind("<ButtonRelease-1>", self.drag_stop)
+        self.bodyFrame = Frame(tk, bg="black", bd=10, width=1000, height=1000)
+        self.titleBody = Label(self.bodyFrame, bg="black", fg="white", bd=1, text="", font=("", 20))
+        self.aaLabel = Label(self.bodyFrame, bg="black", fg="white", bd=1, \
+            text="======================================================================", font=("", 20))
+        self.authorBody = Label(self.bodyFrame, bg="black", fg="white", bd=1, text="", font=("", 20))
+        self.bbLabel = Label(self.bodyFrame, bg="black", fg="white", bd=1, \
+            text="======================================================================", font=("", 20))
+        self.bodyLabel = Label(self.bodyFrame, bg="black", fg="white", bd=1, text="", font=("", 20))
 
-        self.GmailLogo.bind("<Button-1>", self.drag_start_frame)
-        self.GmailLogo.bind("<B1-Motion>", self.drag_motion_frame)
-        self.GmailLogo.bind("<ButtonRelease-1>", self.drag_stop)
+        self.gmailFrame.bind("<Button-1>",lambda event: self.drag_start_frame(event, 0))
+        self.gmailFrame.bind("<B1-Motion>", lambda event:self.drag_motion_frame(event, 0))
+        self.gmailFrame.bind("<ButtonRelease-1>", lambda event:self.drag_stop(event, 0))
+
+        self.GmailLogo.bind("<Button-1>", lambda event:self.drag_start_frame(event, 0))
+        self.GmailLogo.bind("<B1-Motion>", lambda event:self.drag_motion_frame(event, 0))
+        self.GmailLogo.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 0))
         
-        self.gm0.bind("<Button-1>", self.drag_start_frame)
-        self.gm0.bind("<B1-Motion>", self.drag_motion_frame)
-        self.gm0.bind("<ButtonRelease-1>", self.drag_stop)
+        self.gm0.bind("<Button-1>",lambda event: self.drag_start_frame(event, 5))
+        self.gm0.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 5))
+        self.gm0.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 5))
 
-        self.from_label_0.bind("<Button-1>", self.drag_start_frame)
-        self.from_label_0.bind("<B1-Motion>", self.drag_motion_frame)
-        self.from_label_0.bind("<ButtonRelease-1>", self.drag_stop)
+        self.from_label_0.bind("<Button-1>",lambda event:self.drag_start_frame(event, 5))
+        self.from_label_0.bind("<B1-Motion>",lambda event:self.drag_motion_frame(event, 5))
+        self.from_label_0.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 5))
 
-        self.gm1.bind("<Button-1>", self.drag_start_frame)
-        self.gm1.bind("<B1-Motion>", self.drag_motion_frame)
-        self.gm1.bind("<ButtonRelease-1>", self.drag_stop)
+        self.gm1.bind("<Button-1>", lambda event:self.drag_start_frame(event, 1))
+        self.gm1.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 1))
+        self.gm1.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 1))
 
-        self.from_label_1.bind("<Button-1>", self.drag_start_frame)
-        self.from_label_1.bind("<B1-Motion>", self.drag_motion_frame)
-        self.from_label_1.bind("<ButtonRelease-1>", self.drag_stop)
+        self.from_label_1.bind("<Button-1>",lambda event: self.drag_start_frame(event, 1))
+        self.from_label_1.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 1))
+        self.from_label_1.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 1))
 
-        self.gm2.bind("<Button-1>", self.drag_start_frame)
-        self.gm2.bind("<B1-Motion>", self.drag_motion_frame)
-        self.gm2.bind("<ButtonRelease-1>", self.drag_stop)
+        self.gm2.bind("<Button-1>",lambda event: self.drag_start_frame(event, 2))
+        self.gm2.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 2))
+        self.gm2.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 2))
 
-        self.from_label_2.bind("<Button-1>", self.drag_start_frame)
-        self.from_label_2.bind("<B1-Motion>", self.drag_motion_frame)
-        self.from_label_2.bind("<ButtonRelease-1>", self.drag_stop)
+        self.from_label_2.bind("<Button-1>",lambda event: self.drag_start_frame(event, 2))
+        self.from_label_2.bind("<B1-Motion>", lambda event:self.drag_motion_frame(event, 2))
+        self.from_label_2.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 2))
 
-        self.gm3.bind("<Button-1>", self.drag_start_frame)
-        self.gm3.bind("<B1-Motion>", self.drag_motion_frame)
-        self.gm3.bind("<ButtonRelease-1>", self.drag_stop)
+        self.gm3.bind("<Button-1>",lambda event: self.drag_start_frame(event, 3))
+        self.gm3.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 3))
+        self.gm3.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 3))
 
-        self.from_label_3.bind("<Button-1>", self.drag_start_frame)
-        self.from_label_3.bind("<B1-Motion>", self.drag_motion_frame)
-        self.from_label_3.bind("<ButtonRelease-1>", self.drag_stop)
+        self.from_label_3.bind("<Button-1>",lambda event: self.drag_start_frame(event, 3))
+        self.from_label_3.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 3))
+        self.from_label_3.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 3))
 
-        self.subject_label_0.bind("<Button-1>", self.drag_start_frame)
-        self.subject_label_0.bind("<B1-Motion>", self.drag_motion_frame)
-        self.subject_label_0.bind("<ButtonRelease-1>", self.drag_stop)
+        self.subject_label_0.bind("<Button-1>",lambda event: self.drag_start_frame(event, 5))
+        self.subject_label_0.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 5))
+        self.subject_label_0.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 5))
 
-        self.subject_label_1.bind("<Button-1>", self.drag_start_frame)
-        self.subject_label_1.bind("<B1-Motion>", self.drag_motion_frame)
-        self.subject_label_1.bind("<ButtonRelease-1>", self.drag_stop)
+        self.subject_label_1.bind("<Button-1>", lambda event:self.drag_start_frame(event, 1))
+        self.subject_label_1.bind("<B1-Motion>", lambda event:self.drag_motion_frame(event, 1))
+        self.subject_label_1.bind("<ButtonRelease-1>", lambda event:self.drag_stop(event, 1))
 
-        self.subject_label_2.bind("<Button-1>", self.drag_start_frame)
-        self.subject_label_2.bind("<B1-Motion>", self.drag_motion_frame)
-        self.subject_label_2.bind("<ButtonRelease-1>", self.drag_stop)
+        self.subject_label_2.bind("<Button-1>", lambda event:self.drag_start_frame(event, 2))
+        self.subject_label_2.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 2))
+        self.subject_label_2.bind("<ButtonRelease-1>", lambda event:self.drag_stop(event, 2))
 
-        self.subject_label_3.bind("<Button-1>", self.drag_start_frame)
-        self.subject_label_3.bind("<B1-Motion>", self.drag_motion_frame)
-        self.subject_label_3.bind("<ButtonRelease-1>", self.drag_stop)
+        self.subject_label_3.bind("<Button-1>", lambda event:self.drag_start_frame(event, 3))
+        self.subject_label_3.bind("<B1-Motion>", lambda event:self.drag_motion_frame(event, 3))
+        self.subject_label_3.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 3))
 
-        self.preGmail.bind("<Button-1>", self.drag_start_frame)
-        self.preGmail.bind("<B1-Motion>", self.drag_motion_frame)
-        self.preGmail.bind("<ButtonRelease-1>", self.drag_stop)
+        self.preGmail.bind("<Button-1>",lambda event: self.drag_start_frame(event, 0))
+        self.preGmail.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 0))
+        self.preGmail.bind("<ButtonRelease-1>", lambda event:self.drag_stop(event, 0))
 
-        self.preGmail_Label.bind("<Button-1>", self.drag_start_frame)
-        self.preGmail_Label.bind("<B1-Motion>", self.drag_motion_frame)
-        self.preGmail_Label.bind("<ButtonRelease-1>", self.drag_stop)
+        self.preGmail_Label.bind("<Button-1>",lambda event: self.drag_start_frame(event, 0))
+        self.preGmail_Label.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 0))
+        self.preGmail_Label.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 0))
 
-        self.gmailLabelFrame.bind("<Button-1>", self.drag_start_frame)
-        self.gmailLabelFrame.bind("<B1-Motion>", self.drag_motion_frame)
-        self.gmailLabelFrame.bind("<ButtonRelease-1>", self.drag_stop)
+        self.gmailLabelFrame.bind("<Button-1>", lambda event:self.drag_start_frame(event, 0))
+        self.gmailLabelFrame.bind("<B1-Motion>", lambda event:self.drag_motion_frame(event, 0))
+        self.gmailLabelFrame.bind("<ButtonRelease-1>", lambda event:self.drag_stop(event, 0))
 
-        self.failed_label.bind("<Button-1>", self.drag_start_frame)
-        self.failed_label.bind("<B1-Motion>", self.drag_motion_frame)
-        self.failed_label.bind("<ButtonRelease-1>", self.drag_stop)
+        self.failed_label.bind("<Button-1>",lambda event: self.drag_start_frame(event, 0))
+        self.failed_label.bind("<B1-Motion>",lambda event: self.drag_motion_frame(event, 0))
+        self.failed_label.bind("<ButtonRelease-1>",lambda event: self.drag_stop(event, 0))
+
+        self.to_move = False 
 
     def set_from_gamil_headers(self) -> List:
         """
@@ -402,7 +436,7 @@ class GmailMain:
         self.gmailFrame.place(x=x, y=y)
 
         
-    def drag_start_frame(self, event):
+    def drag_start_frame(self, event, idx=False):
         self.gmailFrame.startX = event.x
         self.gmailFrame.startY = event.y
         
@@ -412,51 +446,81 @@ class GmailMain:
 
         if toolbar_event == "on":
             self.gmailFrame.ToOn = True 
+            self.to_move = True
             from IntelligentMirror.toolbar.display_toolbar import Toolbar
             Toolbar.HideToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, \
                 self.gmailFrame, self.quoteFrame, self.calendarFrame, self.photosFrame, self.spotifyFrame ,NoMove="gmail")
 
         else:
-            self.gmailFrame.ToOn = False
+            #self.gmailFrame.ToOn = False
+            self.to_move = False 
    
 
-    def drag_motion_frame(self, event):
-        x = self.gmailFrame.winfo_x() - self.gmailFrame.startX + event.x
-        y = self.gmailFrame.winfo_y() - self.gmailFrame.startY + event.y
+    def drag_motion_frame(self, event, idx=False):
+        if self.to_move:
+            x = self.gmailFrame.winfo_x() - self.gmailFrame.startX + event.x
+            y = self.gmailFrame.winfo_y() - self.gmailFrame.startY + event.y
 
-        tk_width = 1920
-        tk_height = 1080
-        frame_width = self.gmailFrame.winfo_width()
-        frame_height = self.gmailFrame.winfo_height()
+            tk_width = 1920
+            tk_height = 1080
+            frame_width = self.gmailFrame.winfo_width()
+            frame_height = self.gmailFrame.winfo_height()
 
-        max_x = tk_width - frame_width
-        max_y = tk_height - frame_height
+            max_x = tk_width - frame_width
+            max_y = tk_height - frame_height
 
-        if x > max_x:
-            x = max_x
-        elif x < 0:
-            x = 0
+            if x > max_x:
+                x = max_x
+            elif x < 0:
+                x = 0
 
-        if y > max_y:
-            y = max_y
-        elif y < 0:
-            y = 0
+            if y > max_y:
+                y = max_y
+            elif y < 0:
+                y = 0
 
-        self.gmailFrame.place(x=x, y=y)
+            self.gmailFrame.place(x=x, y=y)
 
-        self.gmailFrame.stopX = x
-        self.gmailFrame.stopY = y
+            self.gmailFrame.stopX = x
+            self.gmailFrame.stopY = y
 
-    def drag_stop(self, event=None):
-        
-        connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
-        RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
-        base.execute_query(connection, f"update user SET gmail_x={self.gmailFrame.stopX} WHERE id={RFace}")
-        base.execute_query(connection, f"update user SET gmail_y={self.gmailFrame.stopY} WHERE id={RFace}")
-        connection.close()
+    def drag_stop(self, event=None, idx=False):
+        if self.to_move:
+            connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+            RFace = base.read_query(connection,"select actuall_user from camera")[0][0]
+            base.execute_query(connection, f"update user SET gmail_x={self.gmailFrame.stopX} WHERE id={RFace}")
+            base.execute_query(connection, f"update user SET gmail_y={self.gmailFrame.stopY} WHERE id={RFace}")
+            connection.close()
 
-        if self.gmailFrame.ToOn == True: 
+            if self.gmailFrame.ToOn == True: 
 
-            from IntelligentMirror.toolbar.display_toolbar import Toolbar
-            Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, \
-                self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame, self.spotifyFrame)
+                from IntelligentMirror.toolbar.display_toolbar import Toolbar
+                Toolbar.OpenToolbarAnimation_DF(self.toolbarFrame, self.timeFrame, self.weatherFrame, \
+                    self.gmailFrame, self.quoteFrame, self.calendarFrame,self.photosFrame, self.spotifyFrame)
+        else:
+            if idx != False:
+                if idx == 5: idx=0
+                self.bodyFrame.place(relx=.26, rely=.2, width=1000, height=650)
+
+                self.titleBody.config(text=f"Title: {self.data[0][idx]}")
+                self.titleBody.pack(side=TOP)
+
+                self.aaLabel.pack(side=TOP)
+
+                self.authorBody.config(text=f"From: {self.data[1][idx]}")
+                self.authorBody.pack(side=TOP)
+
+                self.bbLabel.pack(side=TOP)
+
+                self.bodyLabel.config(text=f"{self.data[2][idx]}")
+                self.bodyLabel.pack(side=TOP)
+
+                t1 = threading.Thread(target= self.destoy_body)
+                t1.start()
+           
+
+    def destoy_body(self):
+        time.sleep(7)
+        for widget in self.bodyFrame.pack_slaves():
+            widget.pack_forget()
+        self.bodyFrame.place_forget()

@@ -274,6 +274,7 @@ class FunctionsActivateClass:
         
         if to_open:
             connection = base.create_db_connection("localhost","szymon","dzbanek","mirror")
+            print("HERERERERRERE#333333")
             base.execute_query(connection,"update camera set instagram_on = 1")
             connection.close()
 
