@@ -1,7 +1,7 @@
 # Intelligent Mirror
 
 # Documentation:
-https://github.com/SzymonMarciniak/EmployeeSafetySystem/blob/main/Documentation.pdf
+[https://github.com/SzymonMarciniak/EmployeeSafetySystem/blob/main/Documentation.pdf](https://github.com/SzymonMarciniak/IntelligentMirror/blob/main/Documentation.pdf)
 
 ## ENV
 To run the program you need set an environment variable - PYTHONPATH 
